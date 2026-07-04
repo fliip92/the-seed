@@ -19,17 +19,6 @@ ledger is also a record of digestion.
   generated artifact; until then the rule is doc-only, which violates LAW-2 and is why
   this entry exists
 
-## E-002 — CI is proven locally but not on a hosted runner
-
-- First observed: 2026-07-04, during germination
-- Where: [.github/workflows/seed-ci.yml](../../.github/workflows/seed-ci.yml) — no remote
-  exists yet, so the workflow has never executed on GitHub
-- Interest rate: medium (every merged change until hosting relies on agents remembering to
-  run `npm run check` locally)
-- Price: trivial once germination question 1 is answered — push, watch one run go green
-- Conversion path: invariant — hosted CI on every push/PR; blocked on Gardener answer to
-  germination question 1
-
 ## E-003 — Plan traceability is a stated metric with no enforcement
 
 - First observed: 2026-07-04, during germination
@@ -78,7 +67,7 @@ ledger is also a record of digestion.
 - First observed: 2026-07-04, when the negative tests proving the validators fire had to
   be re-run ad hoc after a failed verification workflow
 - Where: `.seed/checks/` — verified by session-run negative tests whose transcripts live
-  in [plan 0001](active/0001-germination.md), not by anything in CI
+  in [plan 0001](completed/0001-germination.md), not by anything in CI
 - Interest rate: medium (every validator change until then is verified only by whoever
   remembers to re-run the ad-hoc script; regressions land silently)
 - Price: medium — a committed structural test that seeds each violation class in a temp
@@ -101,4 +90,17 @@ ledger is also a record of digestion.
 
 ## Paid
 
-*(nothing paid yet — germination is day one)*
+## E-002 — CI is proven locally but not on a hosted runner
+
+- First observed: 2026-07-04, during germination
+- Where: [.github/workflows/seed-ci.yml](../../.github/workflows/seed-ci.yml) — no remote
+  existed, so the workflow had never executed on GitHub
+- Interest rate: medium (every merged change until hosting relied on agents remembering
+  to run `npm run check` locally)
+- Price: trivial once germination question 1 was answered — push, watch one run go green
+- Conversion path: invariant — hosted CI on every push/PR
+- Paid: 2026-07-04 — repository published (ring
+  [0004](../rings/0004-name-hosting-visibility.md)); first hosted run green:
+  [seed-ci run 28712013718](https://github.com/fliip92/the-seed/actions/runs/28712013718),
+  independently reporting `map_reachability 100.0% (35/35 files ≤3 hops), dead links: 0`
+  and `all checks passed`

@@ -1,6 +1,6 @@
 # Plan 0001 — Germination
 
-- Status: blocked: awaiting the Gardener's ring 0001 review (question 5) and the go-ahead to publish the remote
+- Status: completed 2026-07-04
 
 ## Goal
 
@@ -20,8 +20,8 @@ proving the map holds.
 6. ✅ Stand up first CI: map validation (dead links + three-hop reachability), anatomy
    validation, ring/plan/ledger format validation. Verified locally; hosted execution
    pending a remote ([E-002](../entropy-ledger.md)). See [.seed/README.md](../../../.seed/README.md).
-7. ⏳ Ask the Gardener the five germination questions; cut answers into rings; close this
-   plan.
+7. ✅ Ask the Gardener the five germination questions; cut answers into rings 0004–0008;
+   close this plan.
 
 ## Germination questions (SEED.md §9, delivered 2026-07-04)
 
@@ -65,6 +65,18 @@ repository as rings citing this plan (next free ring numbers, currently 0004+):
   still open). Question 5 pending: the Gardener is reading ring 0001 before confirming.
   Remote creation/push awaits explicit go-ahead — publishing is outward-facing, and the
   first green hosted CI run is what pays [E-002](../entropy-ledger.md).
+
+- **2026-07-04** — Gardener confirmed both pending items: ring 0001 stands as-is
+  (question 5 retired via ring [0008](../../rings/0008-ring-0001-confirmed.md)), and the
+  publish go-ahead was given. Public repository created:
+  [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed); `main` pushed.
+  First hosted CI run green —
+  [seed-ci run 28712013718](https://github.com/fliip92/the-seed/actions/runs/28712013718)
+  independently reported `map_reachability 100.0% (35/35 files ≤3 hops), dead links: 0`,
+  `all checks passed`. [E-002](../entropy-ledger.md) paid. Both Stage 0 exit criteria now
+  hold with evidence: a fresh agent reached its correct first action from a clean clone
+  (see Evidence), and CI proves the map holds on a hosted runner. Plan closed; Stage 1
+  (Rooting) proposed in [plan 0002](../active/0002-rooting.md).
 
 ## Decision log
 

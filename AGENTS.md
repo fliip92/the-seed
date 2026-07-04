@@ -16,16 +16,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 
 ## Current state
 
-- **Stage:** 0 — Germination. Steps 1–6 complete and verified. Step 7: germination
-  questions 1–4 answered and cut as rings 0004–0007; question 5 pending (the Gardener is
-  reviewing ring 0001 before confirming there is nothing more to record).
+- **Stage:** 0 — Germination **complete** (2026-07-04,
+  [plan 0001](docs/plans/completed/0001-germination.md)): all seven steps done, both exit
+  criteria evidenced — a fresh agent reached its correct first action from a clean clone,
+  and hosted CI proves the map holds. The repository is public:
+  [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
+- **Stage 0 → 1 transition:** proposed in [plan 0002](docs/plans/active/0002-rooting.md),
+  awaiting Gardener approval (SEED.md §4: transitions are ringed on approval).
 - **Correct first action for a fresh agent right now:** read
-  [plan 0001](docs/plans/active/0001-germination.md) and check whether the two pending
-  Gardener inputs have arrived: the ring 0001 review verdict (question 5) and the
-  go-ahead to create the public `the-seed` remote and push (which pays
-  [E-002](docs/plans/entropy-ledger.md)). Gardener input enters the repository only as
-  rings or plan-0001 log entries recording it — if neither shows it, it has not arrived;
-  in that case run the metabolism (see "Start here" above).
+  [plan 0002](docs/plans/active/0002-rooting.md). If the transition-approval ring exists
+  in [docs/rings/](docs/rings/README.md), execute the plan from its `Next actions`;
+  otherwise run the metabolism (see "Start here" above).
 
 ## Territory
 
