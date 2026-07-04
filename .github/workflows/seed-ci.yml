@@ -9,7 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ring-append-only diffs against the event's base commit
       - uses: actions/setup-node@v4
         with:
           node-version: 24
       - run: node .seed/checks/run-all.ts
+      - run: node .seed/tests/self-test.ts
+      - run: node .seed/checks/ring-append-only.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}

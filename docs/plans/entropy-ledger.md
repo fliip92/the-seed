@@ -39,18 +39,6 @@ ledger is also a record of digestion.
   [0004](../rings/0004-name-hosting-visibility.md)), which settles the name but not its
   legal clearance; a trademark search must still land before Stage 3 pollen distribution
 
-## E-005 — Ring append-only rule has no mechanical enforcement
-
-- First observed: 2026-07-04, adversarial drift hunt during germination verification
-- Where: [docs/rings/README.md](../rings/README.md) declares rings append-only ("never
-  edit a ring's Decision after merge"); nothing checks git history for edits
-- Interest rate: medium (a silently rewritten decision is worse than no decision — it
-  poisons LAW-10 retrieval)
-- Price: small — a CI step diffing `docs/rings/` against the merge base and failing on
-  modifications to existing rings
-- Conversion path: invariant — add the git-diff gate in Stage 1 alongside the other
-  machinery structural tests (E-007)
-
 ## E-006 — Fragment links pass validation without anchor checking
 
 - First observed: 2026-07-04, adversarial drift hunt during germination verification
@@ -61,19 +49,6 @@ ledger is also a record of digestion.
 - Price: small — slugify headings the way GitHub does and verify the anchor exists
 - Conversion path: invariant — extend the map validator with anchor checking when
   fragment links first appear in real use
-
-## E-007 — Machinery has no committed self-tests
-
-- First observed: 2026-07-04, when the negative tests proving the validators fire had to
-  be re-run ad hoc after a failed verification workflow
-- Where: `.seed/checks/` — verified by session-run negative tests whose transcripts live
-  in [plan 0001](completed/0001-germination.md), not by anything in CI
-- Interest rate: medium (every validator change until then is verified only by whoever
-  remembers to re-run the ad-hoc script; regressions land silently)
-- Price: medium — a committed structural test that seeds each violation class in a temp
-  copy and asserts the right check fires with a law-naming message
-- Conversion path: invariant — Stage 1 ("first structural lints on your own machinery"),
-  folding in the E-005 git-diff gate
 
 ## E-008 — Gardening cadence is manual until scheduled automation exists
 
@@ -104,3 +79,44 @@ ledger is also a record of digestion.
   [seed-ci run 28712013718](https://github.com/fliip92/the-seed/actions/runs/28712013718),
   independently reporting `map_reachability 100.0% (35/35 files ≤3 hops), dead links: 0`
   and `all checks passed`
+
+## E-005 — Ring append-only rule has no mechanical enforcement
+
+- First observed: 2026-07-04, adversarial drift hunt during germination verification
+- Where: [docs/rings/README.md](../rings/README.md) declares rings append-only ("never
+  edit a ring's Decision after merge"); nothing checks git history for edits
+- Interest rate: medium (a silently rewritten decision is worse than no decision — it
+  poisons LAW-10 retrieval)
+- Price: small — a CI step diffing `docs/rings/` against the merge base and failing on
+  modifications to existing rings
+- Conversion path: invariant — add the git-diff gate in Stage 1 alongside the other
+  machinery structural tests (E-007)
+- Paid: 2026-07-04 — [.seed/checks/ring-append-only.ts](../../.seed/checks/ring-append-only.ts)
+  runs in CI against the event's base ref and fails on any modification or deletion of
+  an existing ring (index README exempt); its fire/hold behavior is pinned by five
+  self-test cases (E-007). A symlink route around its pathspec, found in adversarial
+  review, is closed by the repo-wide symlink ban in `validate-anatomy` (self-tested).
+  Residual, accepted while solo (ring
+  [0006](../rings/0006-solo-until-flowering.md)): a force-push to `main` rewrites the
+  base the push event reports, so it can evade the diff — revisit at Flowering when
+  branch protection arrives
+
+## E-007 — Machinery has no committed self-tests
+
+- First observed: 2026-07-04, when the negative tests proving the validators fire had to
+  be re-run ad hoc after a failed verification workflow
+- Where: `.seed/checks/` — verified by session-run negative tests whose transcripts live
+  in [plan 0001](completed/0001-germination.md), not by anything in CI
+- Interest rate: medium (every validator change until then is verified only by whoever
+  remembers to re-run the ad-hoc script; regressions land silently)
+- Price: medium — a committed structural test that seeds each violation class in a temp
+  copy and asserts the right check fires with a law-naming message
+- Conversion path: invariant — Stage 1 ("first structural lints on your own machinery"),
+  folding in the E-005 git-diff gate
+- Paid: 2026-07-04 — [.seed/tests/self-test.ts](../../.seed/tests/self-test.ts)
+  (`npm test`, second CI step) seeds all 31 violation classes plus 5 gate scenarios into
+  temp copies and asserts the right check fires with a law-naming message; a pristine
+  copy must pass, and fixture numbers derive from the repo's current maxima so normal
+  growth cannot invalidate them. Sensitivity proven by mutation: disabling sequence
+  checking failed exactly the 6 sequence cases; neutering the gate failed exactly the
+  2 gate cases

@@ -9,6 +9,7 @@
     "node": ">=22.18"
   },
   "scripts": {
-    "check": "node .seed/checks/run-all.ts"
+    "check": "node .seed/checks/run-all.ts",
+    "test": "node .seed/tests/self-test.ts"
   }
 }

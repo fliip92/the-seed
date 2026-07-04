@@ -1,5 +1,10 @@
 // Enforces SEED.md §2: the anatomy exists and every organ directory carries a README
-// stating its purpose.
+// stating its purpose. Also bans symbolic links repo-wide: checks read through a
+// symlink while git diffs track only its target path, so linked content can change
+// with no diff at the linked path — the bypass class the E-005 gate review surfaced.
+import { lstatSync } from 'node:fs';
+import { join } from 'node:path';
+import { REPO_ROOT } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-2 — legible and enforceable, or it doesn\'t exist';
@@ -27,6 +32,8 @@ const REQUIRED_FILES: Array<{ path: string; purpose: string }> = [
   { path: 'pollen/README.md', purpose: 'portable distribution rules' },
   { path: '.seed/README.md', purpose: 'machinery index' },
   { path: '.seed/checks/run-all.ts', purpose: 'check runner CI executes' },
+  { path: '.seed/checks/ring-append-only.ts', purpose: 'ring append-only CI gate (E-005)' },
+  { path: '.seed/tests/self-test.ts', purpose: 'machinery self-tests (E-007, LAW-6)' },
 ];
 
 export const check: Check = {
@@ -44,8 +51,18 @@ export const check: Check = {
         });
       }
     }
+    for (const file of files) {
+      if (lstatSync(join(REPO_ROOT, file)).isSymbolicLink()) {
+        violations.push({
+          check: ID,
+          law: LAW,
+          problem: `${file} is a symbolic link`,
+          fix: 'replace the symlink with a regular file. Checks read through a symlink while git tracks only its target path, so the content here can change with no diff at this path — that bypasses path-scoped gates like ring-append-only (E-005).',
+        });
+      }
+    }
     return {
-      summary: `${REQUIRED_FILES.length} required anatomy paths present`,
+      summary: `${REQUIRED_FILES.length} required anatomy paths present, no symlinks`,
       violations,
     };
   },

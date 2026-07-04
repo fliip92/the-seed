@@ -22,7 +22,8 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
 - **Correct first action for a fresh agent right now:** execute
   [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — first up:
-  machinery self-tests (ledger E-007).
+  traceability gate (ledger E-003). Scope item 1 (machinery self-tests, E-007 + E-005)
+  landed 2026-07-04: `npm test` now verifies the verifiers.
 
 ## Territory
 
