@@ -51,40 +51,88 @@ export function readRepoFile(repoRelPath: string): string {
   return readFileSync(join(REPO_ROOT, repoRelPath), 'utf8');
 }
 
-export interface MdLink {
-  target: string;      // repo-relative posix path of the link target (fragment stripped)
-  line: number;        // 1-based line number in the source file
-  raw: string;         // the target exactly as written
+export interface MdLine {
+  n: number;    // 1-based line number
+  text: string; // line content with inline code spans blanked
 }
 
 /**
- * Extract local markdown link targets from a file, resolved repo-relative.
- * Skips external links (http/https/mailto), pure fragments, fenced code blocks,
- * and inline code spans.
+ * Markdown lines that carry meaning for link analysis: fenced code blocks are removed
+ * (fences close only on a matching marker — same character, at least the opening length)
+ * and inline code spans (any backtick run) are blanked.
+ */
+export function visibleMarkdownLines(repoRelPath: string): MdLine[] {
+  const lines = readRepoFile(repoRelPath).split('\n');
+  const out: MdLine[] = [];
+  let fence: { char: string; len: number } | null = null;
+  lines.forEach((raw, i) => {
+    const marker = raw.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (marker) {
+      const char = marker[1][0];
+      const len = marker[1].length;
+      if (fence === null) {
+        fence = { char, len };
+      } else if (fence.char === char && len >= fence.len) {
+        fence = null;
+      }
+      return; // fence markers and non-closing markers inside a fence are never content
+    }
+    if (fence !== null) return;
+    out.push({ n: i + 1, text: raw.replace(/(`+)[^`]*?\1/g, '') });
+  });
+  return out;
+}
+
+export interface MdLink {
+  target: string; // repo-relative posix path of the link target (fragment stripped)
+  line: number;   // 1-based line number in the source file
+  raw: string;    // the target exactly as written
+}
+
+/**
+ * Extract local inline-markdown link targets from a file, resolved repo-relative.
+ * Skips external links (http/https/mailto) and pure fragments. Targets starting with
+ * `/` resolve from the repo root. Reference-style and HTML links are deliberately not
+ * parsed — validate-map forbids them so this parser stays the single source of truth.
  */
 export function extractLocalLinks(repoRelPath: string): MdLink[] {
-  const lines = readRepoFile(repoRelPath).split('\n');
   const links: MdLink[] = [];
   const linkRe = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
-  let inFence = false;
-
-  lines.forEach((rawLine, i) => {
-    if (/^\s*(```|~~~)/.test(rawLine)) {
-      inFence = !inFence;
-      return;
-    }
-    if (inFence) return;
-    const line = rawLine.replace(/`[^`]*`/g, ''); // drop inline code spans
-    for (const match of line.matchAll(linkRe)) {
+  for (const { n, text } of visibleMarkdownLines(repoRelPath)) {
+    for (const match of text.matchAll(linkRe)) {
       const raw = match[1];
       if (/^(https?:|mailto:)/.test(raw) || raw.startsWith('#')) continue;
       const noFragment = raw.split('#')[0];
       if (noFragment === '') continue;
-      const abs = posix.normalize(posix.join(toPosix(dirname(repoRelPath)), noFragment));
-      links.push({ target: abs, line: i + 1, raw });
+      const target = noFragment.startsWith('/')
+        ? posix.normalize(noFragment.slice(1))
+        : posix.normalize(posix.join(toPosix(dirname(repoRelPath)), noFragment));
+      links.push({ target, line: n, raw });
     }
-  });
+  }
   return links;
+}
+
+export interface SequenceIssue {
+  kind: 'duplicate' | 'gap';
+  number: number;
+  expected: number;
+}
+
+/** Numbers must be exactly 1..N — no gaps, no duplicates. Input may be unsorted. */
+export function findSequenceIssues(numbers: number[]): SequenceIssue[] {
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const issues: SequenceIssue[] = [];
+  let expected = 1;
+  sorted.forEach((n, i) => {
+    if (i > 0 && n === sorted[i - 1]) {
+      issues.push({ kind: 'duplicate', number: n, expected });
+      return;
+    }
+    if (n !== expected) issues.push({ kind: 'gap', number: n, expected });
+    expected = n + 1;
+  });
+  return issues;
 }
 
 export function formatViolation(v: Violation): string {

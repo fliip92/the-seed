@@ -10,12 +10,19 @@ work it drives.
 
 ## Plan format (enforced by `.seed/checks/validate-plans.ts`)
 
+- Plans live only in `active/` or `completed/`; `docs/plans/` itself holds only this
+  README and the ledger (enforced).
 - Filename: `NNNN-slug.md` — four digits, sequential across active + completed combined,
-  no gaps, lowercase-kebab slug.
+  no gaps or duplicates, lowercase-kebab slug.
 - Title line: `# Plan NNNN — <title>` (number must match the filename).
-- A `- Status:` line near the top (e.g. `active`, `blocked: <on what>`, `completed YYYY-MM-DD`).
-- Required sections: `## Goal`, `## Progress log` (dated entries, newest last),
+- A `- Status:` line near the top, with exactly one of: `active`, `blocked: <on what>`,
+  `completed YYYY-MM-DD`. The status must agree with the directory: `completed` status ⟺
+  `completed/` directory (enforced).
+- Required sections: `## Goal`, `## Progress log` (dated entries
+  `- **YYYY-MM-DD** — <what happened>`, at least one, newest last — enforced),
   `## Decision log` (local decisions + pointers to any rings cut), `## Next actions`.
+- This explicit-key format is canonical and refines the shorthand sketch in SEED.md §2
+  (ring [0003](../rings/0003-artifact-field-formats.md)).
 
 ## Procedure
 
@@ -29,7 +36,9 @@ work it drives.
 
 ## Ledger entry format (enforced by `.seed/checks/validate-plans.ts`)
 
-Entries in [entropy-ledger.md](entropy-ledger.md) use `## E-NNN — <short description>`
-with bullets `- First observed:`, `- Where:`, `- Interest rate:` (high | medium | low),
-`- Price:`, `- Conversion path:`. Numbers are sequential; paid-off entries move to the
-ledger's "Paid" section rather than being deleted.
+The ledger has exactly two sections, `## Open` and `## Paid` — both required; paid-off
+entries move to `## Paid` rather than being deleted, keeping their numbers forever.
+Entries use `## E-NNN — <short description>` (three digits, em dash) with bullets
+`- First observed:`, `- Where:`, `- Interest rate:` (high | medium | low), `- Price:`,
+`- Conversion path:`. Numbers are sequential with no gaps or duplicates across both
+sections; no other `##` headings are permitted in the ledger.

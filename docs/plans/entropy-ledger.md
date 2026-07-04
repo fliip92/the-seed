@@ -49,6 +49,42 @@ ledger is also a record of digestion.
 - Conversion path: ring — Gardener names the project (germination question 1 or later);
   must resolve before any external use
 
+## E-005 — Ring append-only rule has no mechanical enforcement
+
+- First observed: 2026-07-04, adversarial drift hunt during germination verification
+- Where: [docs/rings/README.md](../rings/README.md) declares rings append-only ("never
+  edit a ring's Decision after merge"); nothing checks git history for edits
+- Interest rate: medium (a silently rewritten decision is worse than no decision — it
+  poisons LAW-10 retrieval)
+- Price: small — a CI step diffing `docs/rings/` against the merge base and failing on
+  modifications to existing rings
+- Conversion path: invariant — add the git-diff gate in Stage 1 alongside the other
+  machinery structural tests (E-007)
+
+## E-006 — Fragment links pass validation without anchor checking
+
+- First observed: 2026-07-04, adversarial drift hunt during germination verification
+- Where: `.seed/lib/repo.ts` strips `#fragment` before existence checks, so
+  `[x](SEED.md#no-such-section)` counts as a live link
+- Interest rate: low (fragments are rare here; a wrong one still lands the reader in the
+  right file)
+- Price: small — slugify headings the way GitHub does and verify the anchor exists
+- Conversion path: invariant — extend the map validator with anchor checking when
+  fragment links first appear in real use
+
+## E-007 — Machinery has no committed self-tests
+
+- First observed: 2026-07-04, when the negative tests proving the validators fire had to
+  be re-run ad hoc after a failed verification workflow
+- Where: `.seed/checks/` — verified by session-run negative tests whose transcripts live
+  in [plan 0001](active/0001-germination.md), not by anything in CI
+- Interest rate: medium (every validator change until then is verified only by whoever
+  remembers to re-run the ad-hoc script; regressions land silently)
+- Price: medium — a committed structural test that seeds each violation class in a temp
+  copy and asserts the right check fires with a law-naming message
+- Conversion path: invariant — Stage 1 ("first structural lints on your own machinery"),
+  folding in the E-005 git-diff gate
+
 ## Paid
 
 *(nothing paid yet — germination is day one)*

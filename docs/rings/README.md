@@ -8,6 +8,7 @@ directory — if a ring answers it, asking again is drift in you.
 
 - [0001 — Founding defaults](0001-founding-defaults.md)
 - [0002 — Germination implementation defaults](0002-germination-implementation-defaults.md)
+- [0003 — Ring and ledger field formats refine the genome's sketch](0003-artifact-field-formats.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 
@@ -15,9 +16,11 @@ directory — if a ring answers it, asking again is drift in you.
 - Title line: `# Ring NNNN — <title>` (number must match the filename).
 - Required bullets, each starting a line: `- Date:` (YYYY-MM-DD), `- Stage:`,
   `- Raised-by:` (`gardener` or `seed`), `- Question:`, `- Decision:`,
-  `- Alternatives considered:`, `- Enforcement:` (lint | structural test | CI gate |
-  doc-only with justification), `- Revisit-when:`.
+  `- Alternatives considered:`, `- Enforcement:` (must name a mechanism: lint |
+  structural test | CI gate | doc-only with justification — enforced), `- Revisit-when:`.
 - Multi-part answers go in indented sub-bullets under the relevant key.
+- This explicit-key format is canonical and refines the shorthand sketch in SEED.md §2
+  (ring [0003](0003-artifact-field-formats.md)).
 
 ## Procedure
 

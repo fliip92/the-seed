@@ -1,6 +1,6 @@
 # Plan 0001 — Germination
 
-- Status: blocked: awaiting Gardener answers to the germination questions (SEED.md §9)
+- Status: blocked: awaiting Gardener answers to the germination questions (below)
 
 ## Goal
 
@@ -18,45 +18,126 @@ proving the map holds.
    [ring 0002](../../rings/0002-germination-implementation-defaults.md) (implementation
    defaults the genome left open).
 6. ✅ Stand up first CI: map validation (dead links + three-hop reachability), anatomy
-   validation, ring/plan/ledger format validation. See [.seed/README.md](../../../.seed/README.md).
+   validation, ring/plan/ledger format validation. Verified locally; hosted execution
+   pending a remote ([E-002](../entropy-ledger.md)). See [.seed/README.md](../../../.seed/README.md).
 7. ⏳ Ask the Gardener the five germination questions; cut answers into rings; close this
    plan.
+
+## Germination questions (SEED.md §9, delivered 2026-07-04)
+
+Asked verbatim; answers arrive as a Gardener message in a working session and enter the
+repository as rings citing this plan (next free ring numbers, currently 0004+):
+
+1. Repository name, org, and visibility?
+2. License?
+3. First external host candidate — or does the seed grow solo until Flowering?
+4. Gardening cadence — how often do background cleanup tasks run, and what may automerge?
+5. Anything already decided in your head that belongs in Ring 0001 before I assume it?
 
 ## Progress log
 
 - **2026-07-04** — Genome read. Repository initialized on `main`. Map (`AGENTS.md`),
   anatomy, rings 0001–0002, entropy ledger (E-001…E-004), and `.seed/` machinery written.
-  Node 25 runs the TypeScript checks natively; zero dependencies.
-- **2026-07-04** — All checks pass locally (`npm run check`). Negative verification and a
-  fresh-agent exit-criterion test run via parallel subagents; evidence below.
-- **2026-07-04** — Germination questions delivered to the Gardener. Plan blocked on
-  answers.
+  Node 25 runs the TypeScript checks natively; zero dependencies. First full check run
+  green. Committed as `950d989`.
+- **2026-07-04** — First verification attempt (a four-agent background workflow) collapsed
+  under API instability: 21 stalled attempts over ~2.5 h, no results returned. Struggle is
+  data (SEED.md §3): fell back to deterministic inline negative tests plus two focused
+  subagents; the missing committed self-test for the machinery is priced as
+  [E-007](../entropy-ledger.md).
+- **2026-07-04** — Verification complete. Negative tests: 7/7 seeded violations caught
+  with law-naming, fix-carrying messages. Fresh-agent exit test: passed — correct first
+  action reached from a clean clone with no human help. Adversarial drift hunt: 15
+  verified findings (1 high, 5 medium, 9 low) — the high one a duplicate-number
+  suppression bug in all three sequence checks. All validator bugs fixed and covered by
+  12 regression tests same day; unenforceable-now rules priced as E-005…E-007; map/plan
+  wording drift fixed; ring [0003](../../rings/0003-artifact-field-formats.md) cut.
+  Evidence below.
+- **2026-07-04** — Germination questions delivered to the Gardener (recorded above). Plan
+  blocked on answers.
 
 ## Decision log
 
 - CI provider, runtime, and dependency policy → [ring 0002](../../rings/0002-germination-implementation-defaults.md).
-- Reachability exemptions kept minimal and explicit in `validate-map.ts`: only `.git/`,
-  `node_modules/`, and OS noise are excluded from the three-hop requirement;
-  `docs/fitness/history/` is covered by its README (snapshot files are append-only data,
-  listing each would be churn without legibility gain).
+- Ring/ledger explicit-key field format (refining the genome's §2 sketch) →
+  [ring 0003](../../rings/0003-artifact-field-formats.md).
+- Repo-walk exclusions (`.git/`, `node_modules/`, OS noise) live in `.seed/lib/repo.ts`
+  and apply to all checks. Reachability exemptions are narrower still: only files matching
+  `YYYY-MM-DD.json` under `docs/fitness/history/` are covered by that directory's README
+  (append-only data, excluded from the `map_reachability` denominator); anything else
+  there must be linked or deleted.
+- Reference-style and HTML links are forbidden outright rather than parsed: the inline
+  link parser stays the single source of truth for the map (LAW-7 — one boring format).
 - Fitness metrics are *defined* now ([FITNESS.md](../../fitness/FITNESS.md)) but computed
   from Stage 1, per the stage boundaries — no stage skipping.
 
 ## Evidence (LAW-6)
 
-- `npm run check` green on the committed tree (all four validators pass; map reachability
-  100%, 0 dead links).
-- Negative tests: each validator was confirmed to fire on a seeded violation (dead link,
-  missing anatomy README, malformed ring, malformed ledger entry) with a remediation
-  message naming the law it enforces. See progress log date 2026-07-04.
-- Fresh-agent test: an agent given only a clean clone and no instructions identified the
-  correct first action via `AGENTS.md` → this plan.
+Final check run on the tree this plan describes:
+
+```
+✓ seed/validate-anatomy — 19 required anatomy paths present
+✓ seed/validate-map — map_reachability 100.0% (28/28 files ≤3 hops), dead links: 0
+✓ seed/validate-rings — 3 ring(s) valid
+✓ seed/validate-plans — 1 plan(s), 7 ledger entries valid
+all checks passed
+```
+
+**Negative tests, round 1** (each validator fires; transcript excerpts, exit=1 in all
+cases, every message carries `law:` and `fix:` lines):
+
+```
+V1 dead link in AGENTS.md            → ✗ [seed/validate-map] AGENTS.md:63 dead link: docs/ghost.md
+V2 delete docs/principles/README.md  → ✗ [seed/validate-anatomy] required anatomy file missing (+ map dead link)
+V3 orphan file linked from nothing   → ✗ [seed/validate-map] docs/orphan.md is not reachable within 3 hops
+V4 ring missing Enforcement field    → ✗ [seed/validate-rings] …missing or malforms required field: Enforcement
+V5 malformed ledger heading E-9      → ✗ [seed/validate-plans] entry heading malformed (+ numbering gap)
+V6 ring numbering gap (0002→0004)    → ✗ [seed/validate-rings] title/filename mismatch + numbering violation
+V7 plan missing Next actions         → ✗ [seed/validate-plans] …missing required section: ## Next actions
+baseline before and after: exit=0
+```
+
+**Negative tests, round 2** (regressions for the drift-hunt fixes; exit=1 with law+fix
+in all cases, except R5 which must stay green):
+
+```
+R1  duplicate ring number            → ✗ duplicate ring number 0002: two rings claim the same citation
+R2  duplicate ledger number          → ✗ duplicate ledger number E-004
+R3  dead link in a depth-3 file      → ✗ docs/references/b.md:3 dead link (was invisible pre-fix)
+R4  non-snapshot file in data dir    → ✗ …hidden-knowledge.md is not reachable (was silently covered)
+R5  legit YYYY-MM-DD.json snapshot   → green; "1 data file(s) covered by README", excluded from metric
+R6  reference-style link definition  → ✗ uses a reference-style link definition
+R7  HTML link                        → ✗ uses a HTML link
+R8  dead link after ```-fence w/ ~~~ → ✗ caught (fence state no longer inverts)
+R9  Status outside vocabulary        → ✗ no valid `- Status:` line
+R10 plan file at docs/plans/ root    → ✗ sits directly in docs/plans/
+R11 lowercase ledger heading e-002   → ✗ heading neither Open, Paid, nor a valid entry
+R12 blocked-status plan in completed/→ ✗ is in completed/ but its status is "blocked: …"
+```
+
+**Fresh-agent exit test** (Stage 0 exit criterion): an agent given only a clean clone and
+zero instructions reached the correct first action via `AGENTS.md → SEED.md → plan 0001 →
+entropy ledger`, and verified from repo evidence alone that Gardener answers had not
+arrived. Its two reported frictions (ledger-conversion phrasing assuming an ungated entry
+exists; ambiguity about where answers materialize) were fixed in `AGENTS.md` and this plan
+the same day.
+
+**Adversarial drift hunt**: 15 verified findings. Disposition: findings 1–5 (validator
+bugs: duplicate suppression, depth-3 blind spot, data-dir escape, unparsed link forms,
+fence-state inversion) — fixed, regression-tested R1–R8. Findings 6–8 (circular evidence,
+unrecorded questions, present-tense CI claims) — fixed in this plan, `AGENTS.md`, and
+ring 0002. Findings 10–13 (documented-but-unenforced and enforced-but-undocumented rules,
+validation escape holes) — enforcement added (R9–R12) and READMEs aligned; the two rules
+needing git history or anchors priced as [E-005](../entropy-ledger.md) and
+[E-006](../entropy-ledger.md). Finding 14 (genome template sketch vs enforced format) —
+ring [0003](../../rings/0003-artifact-field-formats.md). Finding 15 (decision-log
+misattribution) — corrected above.
 
 ## Next actions
 
-1. **Gardener:** answer the five germination questions (SEED.md §9), asked in the session
-   of 2026-07-04.
-2. **Seed:** cut each answer into a ring (rings 0003+); apply any resulting changes
-   (name, license file, remote, cadence automation).
-3. **Seed:** flip `AGENTS.md` "Current state", set this plan to `completed`, move it to
-   `completed/`, and propose the Stage 1 (Rooting) plan for Gardener approval.
+1. **Gardener:** answer the five germination questions recorded above.
+2. **Seed:** cut each answer into a ring citing this plan (next free numbers); apply any
+   resulting changes (name, license file, remote + first hosted CI run closing
+   [E-002](../entropy-ledger.md), cadence automation).
+3. **Seed:** flip `AGENTS.md` "Current state", set this plan to `completed`, `git mv` it
+   to `completed/`, and propose the Stage 1 (Rooting) plan for Gardener approval.

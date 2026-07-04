@@ -9,18 +9,22 @@ You are an agent working in the Seed. This file is your entry point, every sessi
    It is the constitution; this map is the daily entry point.
 2. **Returning?** Open the active plan(s) in [docs/plans/active/](docs/plans/active/README.md)
    and continue from the latest `Next actions` section.
-3. **Nothing active?** Digest debt: pick the highest-interest entry in the
-   [entropy ledger](docs/plans/entropy-ledger.md) and convert it (SEED.md §3, Metabolism).
+3. **Nothing active?** Run the metabolism (SEED.md §3): sense for new entropy and price
+   it into the [entropy ledger](docs/plans/entropy-ledger.md), then convert the
+   highest-interest entry whose conversion path is not gated on a stage or the Gardener.
+   If every entry is gated, sensing new entropy *is* the work.
 
 ## Current state
 
-- **Stage:** 0 — Germination. Steps 1–6 complete; step 7 (Gardener's germination answers)
-  pending. See [plan 0001](docs/plans/active/0001-germination.md) for exact status and
-  next actions.
+- **Stage:** 0 — Germination. Steps 1–6 complete and verified; step 7 pending: the five
+  germination questions (recorded verbatim in
+  [plan 0001](docs/plans/active/0001-germination.md)) await Gardener answers.
 - **Correct first action for a fresh agent right now:** read
-  [plan 0001](docs/plans/active/0001-germination.md), check whether the Gardener has
-  answered the germination questions; if yes, cut the answers into rings and close the
-  plan; if no, run the metabolism on the entropy ledger.
+  [plan 0001](docs/plans/active/0001-germination.md) and check whether the Gardener's
+  answers have arrived. Answers enter the repository only as rings recording them — their
+  Question lines will cite the germination questions (SEED.md §9 / plan 0001 step 7). If
+  no such ring exists in [docs/rings/](docs/rings/README.md), they have not arrived; in
+  that case run the metabolism (see "Start here" above).
 
 ## Territory
 
@@ -40,8 +44,8 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 ## Protocols
 
 - **Verify everything:** run `npm run check` (or `node .seed/checks/run-all.ts`) before
-  claiming any change is done. CI runs the same checks — see
-  [.seed/README.md](.seed/README.md).
+  claiming any change is done. Hosted CI will run the same checks once a remote exists
+  ([E-002](docs/plans/entropy-ledger.md)) — see [.seed/README.md](.seed/README.md).
 - **Make a decision durable:** cut a ring — format and procedure in
   [docs/rings/README.md](docs/rings/README.md). Never ask the Gardener a question a ring
   already answers (LAW-10): search `docs/rings/` first.

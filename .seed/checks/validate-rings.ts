@@ -1,7 +1,7 @@
 // Enforces the ring format of SEED.md §2 and docs/rings/README.md: sequential numbering,
 // matching titles, and every required field present. Rings are how questions stay retired
 // (LAW-10).
-import { readRepoFile } from '../lib/repo.ts';
+import { readRepoFile, findSequenceIssues } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-10 — escalate scarce judgment; never ask twice';
@@ -73,20 +73,45 @@ export const check: Check = {
           });
         }
       }
+
+      // The Enforcement field must name its mechanism, not just say something. The
+      // field spans from its bullet to the next top-level bullet (sub-bullets and
+      // wrapped lines included).
+      const contentLines = content.split('\n');
+      const enfStart = contentLines.findIndex((l) => l.startsWith('- Enforcement:'));
+      if (enfStart !== -1) {
+        let fieldEnd = enfStart + 1;
+        while (fieldEnd < contentLines.length && !/^- \S/.test(contentLines[fieldEnd])) fieldEnd++;
+        const fieldText = contentLines.slice(enfStart, fieldEnd).join('\n');
+        if (!/(lint|structural test|structural|CI gate|doc-only)/i.test(fieldText)) {
+          violations.push({
+            check: ID,
+            law: 'LAW-2 — legible and enforceable, or it doesn\'t exist',
+            problem: `${file} Enforcement field names no mechanism: ${JSON.stringify(contentLines[enfStart])}`,
+            fix: 'state the mechanism: lint | structural test | CI gate | doc-only (doc-only must justify why not mechanical).',
+          });
+        }
+      }
     }
 
-    numbers.sort((a, b) => a - b);
-    numbers.forEach((n, i) => {
-      const expected = i + 1;
-      if (n !== expected && (i === 0 || numbers[i - 1] !== n)) {
-        violations.push({
-          check: ID,
-          law: LAW,
-          problem: `ring numbering broken at ${String(n).padStart(4, '0')}: expected ${String(expected).padStart(4, '0')} (rings are sequential with no gaps or duplicates)`,
-          fix: 'renumber the offending ring to the next free number. Rings are append-only: take max+1, never reuse or reorder.',
-        });
-      }
-    });
+    for (const issue of findSequenceIssues(numbers)) {
+      const n = String(issue.number).padStart(4, '0');
+      violations.push(
+        issue.kind === 'duplicate'
+          ? {
+              check: ID,
+              law: LAW,
+              problem: `duplicate ring number ${n}: two rings claim the same citation`,
+              fix: 'renumber one of them to the next free number (max+1). Rings are cited as `Ring NNNN`; an ambiguous citation retires nothing.',
+            }
+          : {
+              check: ID,
+              law: LAW,
+              problem: `ring numbering gap: found ${n} where ${String(issue.expected).padStart(4, '0')} was expected (rings are sequential, no gaps)`,
+              fix: `renumber ring ${n} to ${String(issue.expected).padStart(4, '0')}, or restore the missing ring. Rings are append-only: take max+1, never reuse or reorder.`,
+            },
+      );
+    }
 
     return { summary: `${ringFiles.length} ring(s) valid`, violations };
   },

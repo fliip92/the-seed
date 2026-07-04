@@ -28,7 +28,7 @@
     Remote execution remains unproven until hosted (priced as
     [E-002 in the entropy ledger](../plans/entropy-ledger.md)).
 - Enforcement: CI gate — `.seed/checks/validate-anatomy.ts` requires the shim and runner
-  to exist; `package.json` `engines` declares the Node floor; the checks themselves run on
-  every push/PR.
+  to exist; `package.json` `engines` declares the Node floor; the checks will run on
+  every push/PR once a remote exists (until then they run locally per session — E-002).
 - Revisit-when: The Gardener's answer to germination question 1 implies non-GitHub
   hosting, or machinery genuinely needs a dependency, or Node type stripping changes.

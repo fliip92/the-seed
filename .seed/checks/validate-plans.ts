@@ -1,15 +1,19 @@
 // Enforces LAW-5 (plans are first-class artifacts) and LAW-8 (entropy is paid
 // continuously): plan files carry the sections a hand-off needs, numbering is sequential
 // across active+completed, and every ledger entry is priced with a conversion path.
-import { readRepoFile } from '../lib/repo.ts';
+import { readRepoFile, findSequenceIssues } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const ID = 'seed/validate-plans';
 const PLAN_LAW = 'LAW-5 — plans are first-class artifacts';
 const LEDGER_LAW = 'LAW-8 — entropy is paid continuously';
-const PLAN_DIRS = ['docs/plans/active', 'docs/plans/completed'];
+const PLANS_ROOT = 'docs/plans';
+const ACTIVE = 'docs/plans/active';
+const COMPLETED = 'docs/plans/completed';
 const LEDGER = 'docs/plans/entropy-ledger.md';
 const FILENAME_RE = /^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
+const STATUS_RE = /^- Status: (active|blocked: .+|completed \d{4}-\d{2}-\d{2})\s*$/m;
+const DATED_ENTRY_RE = /^- \*\*(\d{4}-\d{2}-\d{2})\*\*/;
 
 const REQUIRED_SECTIONS = ['## Goal', '## Progress log', '## Decision log', '## Next actions'];
 
@@ -21,16 +25,42 @@ const LEDGER_FIELDS: Array<{ re: RegExp; name: string; hint: string }> = [
   { re: /^- Conversion path: .+/m, name: 'Conversion path', hint: '`- Conversion path: invariant | ring | deletion — and the concrete step`' },
 ];
 
+/** Lines of the named `## section` only (up to the next `## ` heading). */
+function sectionLines(content: string, heading: string): string[] {
+  const lines = content.split('\n');
+  const start = lines.findIndex((l) => l.trim() === heading);
+  if (start === -1) return [];
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((l) => l.startsWith('## '));
+  return end === -1 ? rest : rest.slice(0, end);
+}
+
 export const check: Check = {
   id: ID,
   run(files: string[]): CheckResult {
     const violations: Violation[] = [];
 
+    // Plans live only in active/ or completed/ — a plan at docs/plans/ root would
+    // silently escape all format and sequence validation.
+    for (const file of files) {
+      if (!file.startsWith(PLANS_ROOT + '/')) continue;
+      const rest = file.slice(PLANS_ROOT.length + 1);
+      if (!rest.includes('/') && file !== LEDGER && rest !== 'README.md') {
+        violations.push({
+          check: ID,
+          law: PLAN_LAW,
+          problem: `${file} sits directly in ${PLANS_ROOT}/ — only README.md and the entropy ledger live there`,
+          fix: `move it into ${ACTIVE}/ or ${COMPLETED}/ so it is validated and indexed, or delete it.`,
+        });
+      }
+    }
+
     // --- plans ---
     const planFiles = files
       .filter(
         (f) =>
-          PLAN_DIRS.some((d) => f.startsWith(d + '/')) && !f.endsWith('/README.md'),
+          (f.startsWith(ACTIVE + '/') || f.startsWith(COMPLETED + '/')) &&
+          !f.endsWith('/README.md'),
       )
       .sort();
 
@@ -60,14 +90,36 @@ export const check: Check = {
           fix: 'fix the title line so the plan is citable by number — format in docs/plans/README.md.',
         });
       }
-      if (!/^- Status: .+/m.test(content)) {
+
+      const status = content.match(STATUS_RE);
+      if (!status) {
         violations.push({
           check: ID,
           law: PLAN_LAW,
-          problem: `${file} has no \`- Status:\` line`,
+          problem: `${file} has no valid \`- Status:\` line`,
           fix: 'add `- Status: active` / `- Status: blocked: <on what>` / `- Status: completed YYYY-MM-DD` near the top. The next agent decides what to do from this line.',
         });
+      } else {
+        const isCompletedStatus = status[1].startsWith('completed');
+        const inCompletedDir = file.startsWith(COMPLETED + '/');
+        if (inCompletedDir && !isCompletedStatus) {
+          violations.push({
+            check: ID,
+            law: PLAN_LAW,
+            problem: `${file} is in completed/ but its status is "${status[1]}"`,
+            fix: 'set `- Status: completed YYYY-MM-DD`, or move the plan back to active/ — the directory and the status line must tell the same story.',
+          });
+        }
+        if (!inCompletedDir && isCompletedStatus) {
+          violations.push({
+            check: ID,
+            law: PLAN_LAW,
+            problem: `${file} is in active/ but its status is "${status[1]}"`,
+            fix: '`git mv` the plan to docs/plans/completed/ and update links to it — completed plans do not linger among live work.',
+          });
+        }
       }
+
       for (const section of REQUIRED_SECTIONS) {
         if (!new RegExp(`^${section}\\s*$`, 'm').test(content)) {
           violations.push({
@@ -78,20 +130,51 @@ export const check: Check = {
           });
         }
       }
-    }
 
-    numbers.sort((a, b) => a - b);
-    numbers.forEach((n, i) => {
-      const expected = i + 1;
-      if (n !== expected && (i === 0 || numbers[i - 1] !== n)) {
+      // Progress log: at least one dated entry, dates non-decreasing (newest last).
+      const dates = sectionLines(content, '## Progress log')
+        .map((l) => l.match(DATED_ENTRY_RE)?.[1])
+        .filter((d): d is string => d !== undefined);
+      if (dates.length === 0) {
         violations.push({
           check: ID,
           law: PLAN_LAW,
-          problem: `plan numbering broken at ${String(n).padStart(4, '0')}: expected ${String(expected).padStart(4, '0')} (sequential across active/ and completed/ combined)`,
-          fix: 'renumber the offending plan to the next free number across both directories.',
+          problem: `${file} Progress log has no dated entries`,
+          fix: 'log progress as `- **YYYY-MM-DD** — <what happened>`, newest last. The progress log is the hand-off to the next agent, who may be you with no memory.',
         });
+      } else {
+        for (let i = 1; i < dates.length; i++) {
+          if (dates[i] < dates[i - 1]) {
+            violations.push({
+              check: ID,
+              law: PLAN_LAW,
+              problem: `${file} Progress log entries out of order: ${dates[i]} appears after ${dates[i - 1]}`,
+              fix: 'keep progress entries in chronological order, newest last — an agent reads the log bottom-up for the latest state.',
+            });
+            break;
+          }
+        }
       }
-    });
+    }
+
+    for (const issue of findSequenceIssues(numbers)) {
+      const n = String(issue.number).padStart(4, '0');
+      violations.push(
+        issue.kind === 'duplicate'
+          ? {
+              check: ID,
+              law: PLAN_LAW,
+              problem: `duplicate plan number ${n} (numbering is shared across active/ and completed/)`,
+              fix: 'renumber one of the duplicates to the next free number (max+1) and update links to it.',
+            }
+          : {
+              check: ID,
+              law: PLAN_LAW,
+              problem: `plan numbering gap: found ${n} where ${String(issue.expected).padStart(4, '0')} was expected (sequential across active/ and completed/ combined)`,
+              fix: `renumber plan ${n} to ${String(issue.expected).padStart(4, '0')}, or restore the missing plan.`,
+            },
+      );
+    }
 
     // --- entropy ledger ---
     let ledgerEntries = 0;
@@ -112,14 +195,14 @@ export const check: Check = {
       const entryNumbers: number[] = [];
       for (const block of entryBlocks) {
         const headingLine = block.split('\n')[0].trim();
+        if (headingLine === 'Open' || headingLine === 'Paid') continue;
         const m = headingLine.match(/^E-(\d{3}) — .+/);
         if (!m) {
-          if (!/^E-/.test(headingLine)) continue; // "Open" / "Paid" structural headings
           violations.push({
             check: ID,
             law: LEDGER_LAW,
-            problem: `${LEDGER} entry heading malformed: "## ${headingLine}"`,
-            fix: 'use `## E-NNN — <short description>` (three digits, em dash) — format in docs/plans/README.md.',
+            problem: `${LEDGER} has a heading that is neither Open, Paid, nor a valid entry: "## ${headingLine}"`,
+            fix: 'ledger headings are exactly `## Open`, `## Paid`, and `## E-NNN — <short description>` (three digits, em dash) — format in docs/plans/README.md.',
           });
           continue;
         }
@@ -136,17 +219,24 @@ export const check: Check = {
           }
         }
       }
-      entryNumbers.sort((a, b) => a - b);
-      entryNumbers.forEach((n, i) => {
-        if (n !== i + 1 && (i === 0 || entryNumbers[i - 1] !== n)) {
-          violations.push({
-            check: ID,
-            law: LEDGER_LAW,
-            problem: `ledger numbering broken at E-${String(n).padStart(3, '0')}: expected E-${String(i + 1).padStart(3, '0')} (sequential, no gaps or duplicates, across Open and Paid)`,
-            fix: 'renumber the entry to the next free E-number; paid entries keep their numbers forever.',
-          });
-        }
-      });
+      for (const issue of findSequenceIssues(entryNumbers)) {
+        const n = `E-${String(issue.number).padStart(3, '0')}`;
+        violations.push(
+          issue.kind === 'duplicate'
+            ? {
+                check: ID,
+                law: LEDGER_LAW,
+                problem: `duplicate ledger number ${n}`,
+                fix: 'renumber one of the duplicates to the next free E-number; paid entries keep their numbers forever.',
+              }
+            : {
+                check: ID,
+                law: LEDGER_LAW,
+                problem: `ledger numbering gap: found ${n} where E-${String(issue.expected).padStart(3, '0')} was expected (sequential, across Open and Paid)`,
+                fix: `renumber ${n} to E-${String(issue.expected).padStart(3, '0')}, or restore the missing entry.`,
+              },
+        );
+      }
     }
 
     return {
