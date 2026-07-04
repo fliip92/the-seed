@@ -1,6 +1,6 @@
 # Plan 0002 — Rooting (Stage 1)
 
-- Status: blocked: awaiting Gardener approval of the Stage 0 → 1 transition (SEED.md §4)
+- Status: active
 
 ## Goal
 
@@ -36,6 +36,9 @@ item), and every session opens with the metabolism per the map.
 
 - **2026-07-04** — Drafted at germination close ([plan 0001](../completed/0001-germination.md)
   complete, both Stage 0 exit criteria evidenced). Awaiting transition approval.
+- **2026-07-04** — Transition approved by the Gardener; recorded as ring
+  [0009](../../rings/0009-stage-1-transition-approved.md). Plan active. Stage 1 begins
+  with scope item 1 (machinery self-tests, E-007).
 
 ## Decision log
 
@@ -43,8 +46,8 @@ item), and every session opens with the metabolism per the map.
 
 ## Next actions
 
-1. **Gardener:** approve the Stage 0 → 1 transition (this plan is the proposal —
-   SEED.md §4: transitions are proposed as execution plans, approved by a Gardener,
-   recorded as a ring).
-2. **Seed:** on approval — cut the transition ring, set this plan `active`, and begin
-   with scope item 1 (machinery self-tests, E-007).
+1. **Seed:** execute scope item 1 — machinery self-tests
+   ([E-007](../entropy-ledger.md)): a committed structural test that seeds each violation
+   class in a temp copy and asserts the right check fires with a law-naming message; wire
+   it into CI; include the ring append-only git gate ([E-005](../entropy-ledger.md)).
+2. **Seed:** then scope items 2–5 in order, logging progress and evidence here.

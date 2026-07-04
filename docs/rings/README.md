@@ -14,6 +14,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0006 — Solo until Flowering](0006-solo-until-flowering.md)
 - [0007 — Gardening cadence and automerge policy](0007-gardening-cadence-automerge.md)
 - [0008 — Ring 0001 confirmed: germination question 5 closed](0008-ring-0001-confirmed.md)
+- [0009 — Stage 0 → 1 transition approved](0009-stage-1-transition-approved.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 
