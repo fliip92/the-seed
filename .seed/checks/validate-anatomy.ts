@@ -8,6 +8,8 @@ const ID = 'seed/validate-anatomy';
 const REQUIRED_FILES: Array<{ path: string; purpose: string }> = [
   { path: 'SEED.md', purpose: 'the genome' },
   { path: 'AGENTS.md', purpose: 'the map (LAW-4)' },
+  { path: 'README.md', purpose: 'human-facing front door for the public repo (ring 0004)' },
+  { path: 'LICENSE', purpose: 'MIT (ring 0005)' },
   { path: 'package.json', purpose: 'machinery manifest (npm run check)' },
   { path: '.gitignore', purpose: 'repository hygiene' },
   { path: '.github/workflows/seed-ci.yml', purpose: 'CI shim delegating to .seed/ (ring 0002)' },

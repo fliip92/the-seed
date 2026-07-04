@@ -46,8 +46,9 @@ ledger is also a record of digestion.
 - Interest rate: low now, spikes to high at Stage 3 (pollen cannot ship under an uncleared
   name)
 - Price: Gardener judgment plus a trademark search
-- Conversion path: ring — Gardener names the project (germination question 1 or later);
-  must resolve before any external use
+- Conversion path: ring — the Gardener named it "The Seed" (ring
+  [0004](../rings/0004-name-hosting-visibility.md)), which settles the name but not its
+  legal clearance; a trademark search must still land before Stage 3 pollen distribution
 
 ## E-005 — Ring append-only rule has no mechanical enforcement
 
@@ -84,6 +85,19 @@ ledger is also a record of digestion.
   copy and asserts the right check fires with a law-naming message
 - Conversion path: invariant — Stage 1 ("first structural lints on your own machinery"),
   folding in the E-005 git-diff gate
+
+## E-008 — Gardening cadence is manual until scheduled automation exists
+
+- First observed: 2026-07-04, while adopting the cadence policy (ring
+  [0007](../rings/0007-gardening-cadence-automerge.md))
+- Where: the weekly gardening pass and the automerge class restrictions depend on an
+  agent being invoked and on rules no CI gate checks yet
+- Interest rate: medium (if no session opens, no gardening happens — drift accumulates
+  exactly when nobody is looking)
+- Price: medium — a scheduled agent invoking the gardening pass, plus a path-based CI
+  gate encoding the automerge classes
+- Conversion path: invariant — Stage 1 automation alongside doc-gardener and the
+  machinery structural tests (E-005, E-007)
 
 ## Paid
 

@@ -9,6 +9,10 @@ directory — if a ring answers it, asking again is drift in you.
 - [0001 — Founding defaults](0001-founding-defaults.md)
 - [0002 — Germination implementation defaults](0002-germination-implementation-defaults.md)
 - [0003 — Ring and ledger field formats refine the genome's sketch](0003-artifact-field-formats.md)
+- [0004 — Name, hosting, and visibility](0004-name-hosting-visibility.md)
+- [0005 — License: MIT](0005-license-mit.md)
+- [0006 — Solo until Flowering](0006-solo-until-flowering.md)
+- [0007 — Gardening cadence and automerge policy](0007-gardening-cadence-automerge.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

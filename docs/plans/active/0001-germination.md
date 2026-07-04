@@ -1,6 +1,6 @@
 # Plan 0001 — Germination
 
-- Status: blocked: awaiting Gardener answers to the germination questions (below)
+- Status: blocked: awaiting the Gardener's ring 0001 review (question 5) and the go-ahead to publish the remote
 
 ## Goal
 
@@ -55,6 +55,16 @@ repository as rings citing this plan (next free ring numbers, currently 0004+):
   Evidence below.
 - **2026-07-04** — Germination questions delivered to the Gardener (recorded above). Plan
   blocked on answers.
+- **2026-07-04** — Gardener answered questions 1–4; cut as rings
+  [0004](../../rings/0004-name-hosting-visibility.md) (name "The Seed", no org, public),
+  [0005](../../rings/0005-license-mit.md) (MIT, seed-recommended and adopted),
+  [0006](../../rings/0006-solo-until-flowering.md) (solo until Flowering),
+  [0007](../../rings/0007-gardening-cadence-automerge.md) (cadence + automerge policy,
+  seed-recommended and adopted). LICENSE and human-facing README added and enforced via
+  validate-anatomy; E-008 priced (manual cadence); E-004 updated (name settled, clearance
+  still open). Question 5 pending: the Gardener is reading ring 0001 before confirming.
+  Remote creation/push awaits explicit go-ahead — publishing is outward-facing, and the
+  first green hosted CI run is what pays [E-002](../entropy-ledger.md).
 
 ## Decision log
 
@@ -135,9 +145,12 @@ misattribution) — corrected above.
 
 ## Next actions
 
-1. **Gardener:** answer the five germination questions recorded above.
-2. **Seed:** cut each answer into a ring citing this plan (next free numbers); apply any
-   resulting changes (name, license file, remote + first hosted CI run closing
-   [E-002](../entropy-ledger.md), cadence automation).
-3. **Seed:** flip `AGENTS.md` "Current state", set this plan to `completed`, `git mv` it
-   to `completed/`, and propose the Stage 1 (Rooting) plan for Gardener approval.
+1. **Gardener:** review [ring 0001](../../rings/0001-founding-defaults.md) (question 5) —
+   confirm it, or state what to add/amend (additions become rings; amendments to SEED.md
+   need an approved PR).
+2. **Gardener:** confirm creating the public GitHub repo `the-seed` (personal account,
+   per ring [0004](../../rings/0004-name-hosting-visibility.md)) and pushing `main`.
+3. **Seed:** on both confirmations — cut any question-5 ring, create the remote, push,
+   verify the first hosted CI run is green (pays [E-002](../entropy-ledger.md)), then
+   flip `AGENTS.md` "Current state", set this plan `completed`, `git mv` it to
+   `completed/`, and propose the Stage 1 (Rooting) plan for Gardener approval.

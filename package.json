@@ -1,7 +1,8 @@
 {
-  "name": "seed",
+  "name": "the-seed",
   "private": true,
   "version": "0.1.0",
+  "license": "MIT",
   "description": "The Seed — self-hosting agent system. Entry point: AGENTS.md; constitution: SEED.md.",
   "type": "module",
   "engines": {

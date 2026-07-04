@@ -16,21 +16,23 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 
 ## Current state
 
-- **Stage:** 0 — Germination. Steps 1–6 complete and verified; step 7 pending: the five
-  germination questions (recorded verbatim in
-  [plan 0001](docs/plans/active/0001-germination.md)) await Gardener answers.
+- **Stage:** 0 — Germination. Steps 1–6 complete and verified. Step 7: germination
+  questions 1–4 answered and cut as rings 0004–0007; question 5 pending (the Gardener is
+  reviewing ring 0001 before confirming there is nothing more to record).
 - **Correct first action for a fresh agent right now:** read
-  [plan 0001](docs/plans/active/0001-germination.md) and check whether the Gardener's
-  answers have arrived. Answers enter the repository only as rings recording them — their
-  Question lines will cite the germination questions (SEED.md §9 / plan 0001 step 7). If
-  no such ring exists in [docs/rings/](docs/rings/README.md), they have not arrived; in
-  that case run the metabolism (see "Start here" above).
+  [plan 0001](docs/plans/active/0001-germination.md) and check whether the two pending
+  Gardener inputs have arrived: the ring 0001 review verdict (question 5) and the
+  go-ahead to create the public `the-seed` remote and push (which pays
+  [E-002](docs/plans/entropy-ledger.md)). Gardener input enters the repository only as
+  rings or plan-0001 log entries recording it — if neither shows it, it has not arrived;
+  in that case run the metabolism (see "Start here" above).
 
 ## Territory
 
 | Path | What it is | Index |
 |---|---|---|
 | [SEED.md](SEED.md) | The genome: laws, anatomy, stages, metabolism | — |
+| [README.md](README.md) | Human-facing front door (public repo, ring 0004); license: [MIT](LICENSE) | — |
 | [docs/rings/](docs/rings/README.md) | Decision log, append-only, numbered | [README](docs/rings/README.md) |
 | [docs/plans/](docs/plans/README.md) | Execution plans (active + completed) and the entropy ledger | [README](docs/plans/README.md) |
 | [docs/principles/](docs/principles/README.md) | Golden principles, each naming its enforcement | [README](docs/principles/README.md) |
