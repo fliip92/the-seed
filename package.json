@@ -1,0 +1,13 @@
+{
+  "name": "seed",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The Seed — self-hosting agent system. Entry point: AGENTS.md; constitution: SEED.md.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "check": "node .seed/checks/run-all.ts"
+  }
+}

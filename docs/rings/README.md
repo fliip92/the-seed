@@ -1,0 +1,29 @@
+# docs/rings/ — the decision log
+
+Append-only, numbered record of every decision that retired a question (LAW-10: never ask
+twice; SEED.md §2 defines the format). Before asking the Gardener anything, search this
+directory — if a ring answers it, asking again is drift in you.
+
+## Rings
+
+- [0001 — Founding defaults](0001-founding-defaults.md)
+- [0002 — Germination implementation defaults](0002-germination-implementation-defaults.md)
+
+## Format (enforced by `.seed/checks/validate-rings.ts`)
+
+- Filename: `NNNN-slug.md` — four digits, sequential, no gaps, lowercase-kebab slug.
+- Title line: `# Ring NNNN — <title>` (number must match the filename).
+- Required bullets, each starting a line: `- Date:` (YYYY-MM-DD), `- Stage:`,
+  `- Raised-by:` (`gardener` or `seed`), `- Question:`, `- Decision:`,
+  `- Alternatives considered:`, `- Enforcement:` (lint | structural test | CI gate |
+  doc-only with justification), `- Revisit-when:`.
+- Multi-part answers go in indented sub-bullets under the relevant key.
+
+## Procedure
+
+1. Take the next free number (check the list above — and add your ring to it).
+2. Write the ring using the format. State the enforcement mechanically wherever possible;
+   `doc-only` must justify why not mechanical (LAW-2).
+3. Run `npm run check` — the ring validator must pass.
+4. Rings are append-only: never edit a ring's Decision after merge. If a decision changes,
+   cut a new ring that supersedes it and note the supersession in both.

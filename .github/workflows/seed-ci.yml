@@ -1,0 +1,15 @@
+# Thin shim by design (ring 0002): all check logic lives in .seed/ so the CI provider
+# is swappable in one file.
+name: seed-ci
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node .seed/checks/run-all.ts
