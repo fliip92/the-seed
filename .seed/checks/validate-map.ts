@@ -27,6 +27,35 @@ const FORBIDDEN_LINK_FORMS: Array<{ re: RegExp; name: string }> = [
   { re: /<(?:a|img)\s[^>]*(?:href|src)\s*=/i, name: 'HTML link' },
 ];
 
+// A plan is a stable artifact identified by its number; its filing location — active/ vs
+// completed/ — is mutable state (a plan is `git mv`d to completed/ when it closes;
+// docs/plans/README.md § Procedure). A link written to one path therefore stays valid when
+// the plan moves to the other, so a plan link's existence is checked against the plan
+// wherever it currently lives. This closes the one place literal-path resolution collided
+// with append-only rings: ring 0009 links plan 0002 by its active/ path, and 0002 closes
+// into completed/, which no ring may be edited to follow (ring 0013). Only the
+// active/⇄completed/ segment flexes — the four-digit number and slug must still match
+// exactly, so a genuine typo stays a dead link. Mirrors the traceability rule that a prose
+// "plan NNNN" resolves against either directory (lib/repo.ts, plan-traceability.ts).
+const PLAN_LINK_RE = /^docs\/plans\/(?:active|completed)\/(\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md)$/;
+
+/**
+ * The existing repo file a link target resolves to — honoring the active/⇄completed/
+ * relocation of plans — or null if nothing exists at either location. Non-plan targets
+ * resolve iff they exist literally.
+ */
+function resolveLinkTarget(target: string, present: Set<string>): string | null {
+  if (present.has(target)) return target;
+  const plan = target.match(PLAN_LINK_RE);
+  if (plan) {
+    for (const dir of ['active', 'completed'] as const) {
+      const alt = `docs/plans/${dir}/${plan[1]}`;
+      if (present.has(alt)) return alt;
+    }
+  }
+  return null;
+}
+
 export interface ReachabilityResult {
   violations: Violation[];
   reachableCount: number;
@@ -54,7 +83,7 @@ export function analyzeReachability(files: string[]): ReachabilityResult {
     linksExtracted.add(file);
     const links = extractLocalLinks(file);
     for (const link of links) {
-      if (present.has(link.target)) continue;
+      if (resolveLinkTarget(link.target, present)) continue;
       const abs = join(REPO_ROOT, link.target);
       const isDir = existsSync(abs) && statSync(abs).isDirectory();
       violations.push({
@@ -76,9 +105,10 @@ export function analyzeReachability(files: string[]): ReachabilityResult {
     const depth = hop.get(file) as number;
     if (!file.endsWith('.md') || depth >= MAX_HOPS) continue;
     for (const link of checkLinksOf(file)) {
-      if (present.has(link.target) && !hop.has(link.target)) {
-        hop.set(link.target, depth + 1);
-        queue.push(link.target);
+      const resolved = resolveLinkTarget(link.target, present);
+      if (resolved && !hop.has(resolved)) {
+        hop.set(resolved, depth + 1);
+        queue.push(resolved);
       }
     }
   }

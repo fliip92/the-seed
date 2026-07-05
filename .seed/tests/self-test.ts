@@ -266,6 +266,13 @@ const CASES: ViolationCase[] = [
     expect: { check: MAP, law: LAW4, contains: ['docs/orphan.md:3 dead link'] },
   },
   {
+    // Guards the ring-0013 plan-link resolver against over-resolving: a well-formed plan
+    // path whose plan exists in NEITHER active/ nor completed/ must still be a dead link.
+    name: 'map: a plan-shaped link resolving to no plan in either directory is still dead',
+    seed: (r) => append(r, 'AGENTS.md', `\nSee [ghost plan](docs/plans/active/${PLAN_GAP}-ghost.md).\n`),
+    expect: { check: MAP, law: LAW4, contains: ['dead link', `docs/plans/active/${PLAN_GAP}-ghost.md`] },
+  },
+  {
     name: 'rings: bad filename',
     seed: (r) => write(r, 'docs/rings/not-a-ring.md', validRing(RING_NEXT)),
     expect: { check: RINGS, law: LAW10, contains: ['does not match the ring filename format'] },
@@ -441,6 +448,29 @@ for (const c of CASES) {
     );
   });
 }
+
+// --- plan links resolve across the active/⇄completed/ move (ring 0013). A plan closes by
+// --- `git mv` into completed/, but append-only rings link it by its active/ path and cannot
+// --- be repointed; validate-map must resolve the link to the plan wherever it now lives,
+// --- without weakening dead-link detection (the still-dead guard is a CASES entry above).
+inTempCopy((root) => {
+  write(
+    root,
+    `docs/plans/completed/${PLAN_NEXT}-fixture.md`,
+    validPlan(PLAN_NEXT, { status: '- Status: completed 2026-07-04' }),
+  );
+  append(
+    root,
+    'docs/plans/completed/README.md',
+    `\n- [${PLAN_NEXT} fixture](../active/${PLAN_NEXT}-fixture.md) — self-test fixture: a completed plan linked by its active/ path.\n`,
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'map: a completed plan linked by its active/ path resolves — no dead link (ring 0013)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
 
 // --- ring append-only gate (E-005): needs real git history, so these cases init a
 // --- scratch repo inside the temp copy.
