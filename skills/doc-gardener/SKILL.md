@@ -13,6 +13,11 @@ automatically, without being asked"* (SEED.md §4), and it is the source of the
   pass (ring [0007](../../docs/rings/0007-gardening-cadence-automerge.md)).
 - After any change that renames, moves, or deletes a file that documentation names.
 - In CI, to snapshot `drift_count` into fitness (plan 0002 scope item 4).
+- Automatically, weekly: [`.github/workflows/gardening-cadence.yml`](../../.github/workflows/gardening-cadence.yml)
+  runs the instruments and files a gardening-pass issue when drift surfaces, so the sense
+  step happens on cadence even when no session opens (ring
+  [0012](../../docs/rings/0012-cadence-automation-mechanism.md), converting E-008 — plan 0002
+  scope item 5).
 
 ## The instrument
 
@@ -54,7 +59,10 @@ New classes plug into the `DRIFT_CLASSES` registry without touching the runner.
    SEED.md, existing ring content, or principle statements; and it is mechanical
    (link/reference cleanup, format compliance, typo/stale-reference fixes, ledger
    bookkeeping). A stale path reference whose correct target is unambiguous is exactly
-   this class — fix it, commit tracing to a plan or ring.
+   this class — fix it and mark the commit `Automerge: stale-reference`, which the
+   automerge-scope gate checks for the touched-paths half (AGENTS.md § Protocols, ring
+   [0012](../../docs/rings/0012-cadence-automation-mechanism.md)); commit tracing to a plan
+   or ring.
 3. **Escalate or price** everything else. A drift whose resolution needs judgment (which
    of two files is canonical? should the doc or the code change?) becomes a Gardener
    question or a ledger entry (SEED.md §0) — never a silent guess.

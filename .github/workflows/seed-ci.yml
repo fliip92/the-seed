@@ -8,14 +8,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5 # v5 declares the Node 24 runtime (E-010: v4 rode the deprecating Node 20)
         with:
           fetch-depth: 0 # the git-aware gates diff against the event's base commit
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5 # v5 declares the Node 24 runtime (E-010)
         with:
           node-version: 24
       - run: node .seed/checks/run-all.ts
       - run: node .seed/tests/self-test.ts
       - run: node .seed/checks/ring-append-only.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       - run: node .seed/checks/plan-traceability.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
+      - run: node .seed/checks/automerge-scope.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       - run: node .seed/checks/fitness.ts

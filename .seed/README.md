@@ -55,6 +55,18 @@ are exempt (machine-written subjects; the commits they carry are each checked
 individually). This makes the SEED.md §6 `plan_traceability` metric computable from CI
 history.
 
+[checks/automerge-scope.ts](checks/automerge-scope.ts) enforces ring
+[0007](../docs/rings/0007-gardening-cadence-automerge.md)'s automerge touched-paths
+restriction (converted from ledger E-008; mechanism in ring
+[0012](../docs/rings/0012-cadence-automation-mechanism.md)): a commit that declares itself
+automerge-class — an `Automerge: <class>` trailer naming one of ring 0007's mechanical
+classes — must touch none of the Gardener-gated surfaces (SEED.md, existing ring content,
+principle statements; the README indices are exempt), else CI fails naming LAW-8. Unmarked
+commits are the Gardener-review path and are not constrained here. It makes the automerge
+claim trustworthy; the residual (nothing forces a constitution edit to carry — or omit —
+the marker while solo) is recorded with E-008 and hardens at Flowering with branch
+protection. The `Automerge:` convention lives in [AGENTS.md](../AGENTS.md) § Protocols.
+
 ## Drift detection
 
 [checks/doc-drift.ts](checks/doc-drift.ts) is the doc-gardener's instrument
@@ -92,10 +104,14 @@ themselves never gate. `--json` emits the exact `{ date, stage, metrics }` snaps
 from ledger E-007; LAW-6): it copies the repository to a temp directory, seeds one
 violation class per case — every class the checks above claim to catch, 31 in all —
 runs the copy's own `run-all.ts`, and asserts the right check fires with a law-naming
-message and exit 1. A pristine copy must pass. The gates are tested the same way against
+message and exit 1. A pristine copy must pass. The three gates are tested the same way against
 scratch git repos (append-only: modify, delete, append, unresolvable base, no shared
 history; traceability: plan and ring references pass, missing and phantom references
-fail, merge commits exempt, unresolvable base skips). Fixture numbers are derived from
+fail, merge commits exempt, unresolvable base skips; automerge-scope: marked-vs-protected
+fails, unknown class fails, unmarked passes, both README indices exempt, a non-ASCII-named
+protected add still fails, merge commit exempt, unresolvable base skips). The
+gardening-report composer is covered too (pristine → no findings + a valid date; a seeded
+stale reference flips has_findings and renders). Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.
@@ -107,12 +123,31 @@ concretely how to comply — the agent reading the failure *is* the context wind
 writing to (SEED.md §3). `lib/repo.ts` `formatViolation` enforces the shape; a check that
 can't fill in the `fix` field doesn't understand its own rule yet.
 
+## Gardening cadence
+
+[checks/gardening-report.ts](checks/gardening-report.ts) composes the weekly gardening
+pass (ring [0007](../docs/rings/0007-gardening-cadence-automerge.md), converting ledger
+E-008 — the scheduled half of plan 0002 scope item 5). It shells to the two instruments
+above (`doc-drift.ts --json` for the drift findings, `fitness.ts --json` for the current
+snapshot — the same subprocess-composition fitness uses, so no check imports another) and
+renders a markdown pass report plus the triage checklist. `--json` emits
+`{ date, has_findings, drift_count }`. Like the instruments it composes it is **advisory**:
+a sensing record, never a gate.
+
+[.github/workflows/gardening-cadence.yml](../.github/workflows/gardening-cadence.yml) runs
+it on a weekly cron (plus manual `workflow_dispatch`) and files a durable gardening-pass
+issue when there is drift to digest, so sensed entropy surfaces on cadence even when no
+working session opens — E-008's exact risk. Least privilege: `contents: read`,
+`issues: write`.
+
 ## CI
 
 [.github/workflows/seed-ci.yml](../.github/workflows/seed-ci.yml) is a deliberately thin
-shim: checkout (full history) → Node → the invariant checks, the self-tests, the
-git-aware gates, and the fitness snapshot, in that order. All logic lives here in
-`.seed/` so the CI provider is swappable in one file (ring 0002). Hosted since
+shim: checkout (full history) → Node → the invariant checks, the self-tests, the three
+git-aware gates (append-only, traceability, automerge-scope), and the fitness snapshot, in
+that order. All logic lives here in `.seed/` so the CI provider is swappable in one file
+(ring 0002). Both workflows pin `actions/checkout@v5` and `actions/setup-node@v5`, which
+declare the Node 24 runtime (E-010). Hosted since
 [E-002](../docs/plans/entropy-ledger.md) was paid.
 
 ## Repository plumbing

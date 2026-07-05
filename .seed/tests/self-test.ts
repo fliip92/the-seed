@@ -21,6 +21,7 @@ const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
+const AUTOMERGE = 'seed/automerge-scope';
 
 const LAW2 = "LAW-2 — legible and enforceable, or it doesn't exist";
 const LAW4 = 'LAW-4 — the map is the entry point';
@@ -89,6 +90,10 @@ const runTraceGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/plan-traceability.ts', args);
 const runDrift = (root: string): RunResult => runNode(root, '.seed/checks/doc-drift.ts');
 const runFitness = (root: string, args: string[] = []): RunResult => runNode(root, '.seed/checks/fitness.ts', args);
+const runAutomergeGate = (root: string, args: string[]): RunResult =>
+  runNode(root, '.seed/checks/automerge-scope.ts', args);
+const runReport = (root: string, args: string[] = []): RunResult =>
+  runNode(root, '.seed/checks/gardening-report.ts', args);
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -836,6 +841,240 @@ inTempCopy((root) => {
     'fitness: ledger_trend diffs against the state just before the trailing window (old baseline outside it)',
     m.ledger_trend === 1,
     `expected ledger_trend 1 (2 open now, 1 open a month ago), got:\n${output}`,
+  );
+});
+
+// --- automerge-scope gate (E-008, plan 0002 scope item 5): a commit that DECLARES itself
+// --- automerge-class (an `Automerge: <class>` trailer) must touch none of the Gardener-gated
+// --- paths (SEED.md, existing ring content, principle statements). Unmarked commits are the
+// --- Gardener-review path and are not this gate's business. Same scratch-git methodology as
+// --- the two gates above. Markers ride in the commit-message body.
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'docs/references/README.md', '\nA mechanical link fix.\n');
+  gitCommitAll(root, 'fix a link\n\nAutomerge: link');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  report(
+    'automerge: marked commit touching only an allowed path passes',
+    status === 0 && output.includes("stay within ring 0007's mechanical scope"),
+    `expected exit 0 + "stay within ...", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'SEED.md', '\nA quiet edit to the genome.\n');
+  gitCommitAll(root, 'touch the genome\n\nAutomerge: typo');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  const wanted = [`[${AUTOMERGE}]`, `law: ${LAW8}`, 'Gardener-gated path', 'SEED.md'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'automerge: marked commit touching SEED.md fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // Cutting a ring is a LAW-10 decision, not mechanical — so adding a ring file under an
+  // automerge marker must fail, independent of the append-only gate (which permits adds).
+  write(root, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
+  gitCommitAll(root, 'slip in a ring\n\nAutomerge: ledger');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  const wanted = [`[${AUTOMERGE}]`, `law: ${LAW8}`, 'Gardener-gated path', `docs/rings/${RING_NEXT}-fixture.md`];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'automerge: marked commit adding a ring fails (cutting a ring is not mechanical)',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  write(root, 'docs/principles/example.md', validPrinciple('Example principle'));
+  gitCommitAll(root, 'state a principle\n\nAutomerge: format');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  const wanted = [`[${AUTOMERGE}]`, `law: ${LAW8}`, 'Gardener-gated path', 'docs/principles/example.md'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'automerge: marked commit adding a principle statement fails (captured taste, not mechanical)',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // The README index is not ring *content*: "link/index fixes" is an allowed automerge class,
+  // and the index legitimately gains a line per ring. Pins the README exemption so a regression
+  // that over-broadly protects docs/rings/ cannot silently block a legitimate index fix.
+  append(root, 'docs/rings/README.md', '\n- an index line fix\n');
+  gitCommitAll(root, 'fix the ring index\n\nAutomerge: link');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  report(
+    'automerge: marked commit touching only the ring index README passes',
+    status === 0 && output.includes("stay within ring 0007's mechanical scope"),
+    `expected exit 0 + "stay within ...", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // The principles index README is exempt for the same reason as the ring index — pins that
+  // second exemption independently (a regression dropping only this guard would otherwise ship
+  // green, wrongly blocking a legitimate principles-index fix).
+  append(root, 'docs/principles/README.md', '\n- an index line fix\n');
+  gitCommitAll(root, 'fix the principles index\n\nAutomerge: link');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  report(
+    'automerge: marked commit touching only the principles index README passes',
+    status === 0 && output.includes("stay within ring 0007's mechanical scope"),
+    `expected exit 0 + "stay within ...", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // A protected file whose name carries a non-ASCII byte: git's default core.quotepath would
+  // double-quote it, and a raw prefix match would miss it — so this pins the -z fix. Assert on
+  // the exit code + the generic "Gardener-gated path" line, NOT the exact bytes, to sidestep
+  // any filesystem Unicode normalization. Reverting -z flips this red (the gate would exit 0).
+  write(root, 'docs/principles/café.md', validPrinciple('Accented example'));
+  gitCommitAll(root, 'slip in an oddly-named principle\n\nAutomerge: ledger');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  const wanted = [`[${AUTOMERGE}]`, `law: ${LAW8}`, 'Gardener-gated path'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'automerge: a marked commit adding a non-ASCII-named principle still fails (path-quoting closed by -z)',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // No marker → the Gardener-review path. This gate must NOT constrain it (touching the genome
+  // under Gardener review is legitimate); traceability and Gardener judgment bind it instead.
+  append(root, 'SEED.md', '\nA Gardener-reviewed genome amendment.\n');
+  gitCommitAll(root, 'amend the genome under review (plan 0002)');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  report(
+    'automerge: an unmarked commit touching SEED.md passes (gate only constrains automerge claims)',
+    status === 0 && output.includes('no automerge-marked commits'),
+    `expected exit 0 + "no automerge-marked commits", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  // An automerge claim must name a real mechanical class — `Automerge: anything` cannot buy a
+  // pass on the protected-path check by naming a class the gate does not recognize.
+  append(root, 'docs/references/README.md', '\nContent behind a bogus class token.\n');
+  gitCommitAll(root, 'bogus class\n\nAutomerge: whatever');
+  const { status, output } = runAutomergeGate(root, ['HEAD~1']);
+  const wanted = [`[${AUTOMERGE}]`, `law: ${LAW8}`, 'not a mechanical class'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'automerge: a marker naming an unknown class fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet', '-b', 'main');
+  gitCommitAll(root, 'base');
+  git(root, 'checkout', '--quiet', '-b', 'topic');
+  append(root, 'docs/references/README.md', '\nMechanical work on a branch.\n');
+  gitCommitAll(root, 'branch link fix\n\nAutomerge: link');
+  git(root, 'checkout', '--quiet', 'main');
+  git(
+    root,
+    '-c', 'user.email=self-test@seed',
+    '-c', 'user.name=Seed Self-Test',
+    '-c', 'commit.gpgsign=false',
+    'merge', '--quiet', '--no-ff', '--no-verify', '-m', 'Merge branch topic\n\nAutomerge: typo', 'topic',
+  );
+  // The merge commit is exempt (machine-written subject; its Automerge trailer is ignored),
+  // and the carried marked commit is still checked on its own — and it is within scope. The
+  // count assertion pins the exemption: drop --no-merges and the merge's own trailer counts,
+  // flipping "all 1" → "all 2" and failing this case (the sibling traceability test's trick).
+  const { status, output } = runAutomergeGate(root, ['HEAD^1']);
+  report(
+    'automerge: merge commit is exempt, carried marked commit still checked',
+    status === 0 &&
+      output.includes('all 1 automerge-marked commit(s)') &&
+      output.includes("stay within ring 0007's mechanical scope"),
+    `expected exit 0 + "all 1 automerge-marked commit(s)" + "stay within ...", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'only commit');
+  const { status, output } = runAutomergeGate(root, ['0000000000000000000000000000000000000000']);
+  report(
+    'automerge: unresolvable base skips with an explicit note',
+    status === 0 && output.includes('gate skipped'),
+    `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- gardening-report composer (E-008, plan 0002 scope item 5, the scheduled half). It
+// --- shells to doc-drift.ts and fitness.ts (fitness needs real history), so these init a
+// --- scratch repo. It is a composer, not a gate: the assertions are on has_findings / the
+// --- rendered report, and the exit code staying 0.
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: pristine base for the gardening report`);
+  const { status, output } = runReport(root, ['--json']);
+  let parsed: { has_findings?: unknown; drift_count?: unknown; date?: unknown } | null = null;
+  try {
+    parsed = JSON.parse(output);
+  } catch {
+    parsed = null;
+  }
+  // Assert `date` too: the workflow builds the issue title from it (`Gardening pass — <date>`)
+  // and dedupes by exact title, so a dropped/renamed date field would silently collapse every
+  // week onto one `— null` issue. Pin it as a real YYYY-MM-DD here.
+  const dateOk = typeof parsed?.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date as string);
+  report(
+    'gardening-report: pristine copy reports has_findings false, drift_count 0, and a valid date',
+    status === 0 && parsed?.has_findings === false && parsed?.drift_count === 0 && dateOk,
+    `expected has_findings false + drift_count 0 + a YYYY-MM-DD date, got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  append(root, 'docs/references/README.md', '\nSee `.seed/checks/ghost-check.ts` for details.\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a stale reference for the gardening report`);
+  const json = runReport(root, ['--json']);
+  const jsonParsed = JSON.parse(json.output) as { has_findings: boolean; drift_count: number };
+  const md = runReport(root);
+  const wantedMd = ['# Gardening pass', 'drift_count 1', '.seed/checks/ghost-check.ts', 'Fitness (SEED.md §6)'];
+  const missingMd = wantedMd.filter((s) => !md.output.includes(s));
+  report(
+    'gardening-report: a seeded stale reference flips has_findings and renders in the report',
+    json.status === 0 &&
+      jsonParsed.has_findings === true &&
+      jsonParsed.drift_count === 1 &&
+      md.status === 0 &&
+      missingMd.length === 0,
+    `expected has_findings true + drift_count 1 + a report naming the finding; json exit ${json.status}, md exit ${md.status}; missing in md: ${JSON.stringify(missingMd)}\n${json.output}\n---\n${md.output}`,
   );
 });
 

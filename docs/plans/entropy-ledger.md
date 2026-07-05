@@ -41,19 +41,6 @@ ledger is also a record of digestion.
 - Conversion path: invariant — extend the map validator with anchor checking when
   fragment links first appear in real use
 
-## E-008 — Gardening cadence is manual until scheduled automation exists
-
-- First observed: 2026-07-04, while adopting the cadence policy (ring
-  [0007](../rings/0007-gardening-cadence-automerge.md))
-- Where: the weekly gardening pass and the automerge class restrictions depend on an
-  agent being invoked and on rules no CI gate checks yet
-- Interest rate: medium (if no session opens, no gardening happens — drift accumulates
-  exactly when nobody is looking)
-- Price: medium — a scheduled agent invoking the gardening pass, plus a path-based CI
-  gate encoding the automerge classes
-- Conversion path: invariant — Stage 1 automation alongside doc-gardener and the
-  machinery structural tests (E-005, E-007)
-
 ## E-009 — Drift detection is v0: only the stale-path-reference class
 
 - First observed: 2026-07-04, building the doc-gardener (plan 0002 scope item 3)
@@ -90,7 +77,10 @@ ledger is also a record of digestion.
   published, and re-run CI to confirm green
 - Conversion path: invariant — update the pinned action versions in the CI shim; the
   hosted run is itself the enforcement. Fold into the next change touching CI (scope item 5
-  adds a path-based gate to the same workflow)
+  adds a path-based gate to the same workflow). Staged in plan 0002 scope item 5's commit:
+  both workflows now pin `actions/checkout@v5` and `actions/setup-node@v5` (Node 24 runtime).
+  Stays Open — its only enforcement is the hosted run, so it is Paid when the scope-item-5
+  push confirms seed-ci green with no deprecation warning, not before
 
 ## Paid
 
@@ -167,3 +157,33 @@ ledger is also a record of digestion.
   growth cannot invalidate them. Sensitivity proven by mutation: disabling sequence
   checking failed exactly the 6 sequence cases; neutering the gate failed exactly the
   2 gate cases
+
+## E-008 — Gardening cadence is manual until scheduled automation exists
+
+- First observed: 2026-07-04, while adopting the cadence policy (ring
+  [0007](../rings/0007-gardening-cadence-automerge.md))
+- Where: the weekly gardening pass and the automerge class restrictions depend on an
+  agent being invoked and on rules no CI gate checks yet
+- Interest rate: medium (if no session opens, no gardening happens — drift accumulates
+  exactly when nobody is looking)
+- Price: medium — a scheduled agent invoking the gardening pass, plus a path-based CI
+  gate encoding the automerge classes
+- Conversion path: invariant — Stage 1 automation alongside doc-gardener and the
+  machinery structural tests (E-005, E-007)
+- Paid: 2026-07-04 (plan 0002 scope item 5; mechanism ring
+  [0012](../rings/0012-cadence-automation-mechanism.md)). Two halves landed. **Path-based
+  gate:** [.seed/checks/automerge-scope.ts](../../.seed/checks/automerge-scope.ts) runs as a
+  seed-ci step — a commit declaring `Automerge: <class>` (a mechanical class of ring 0007)
+  must touch none of SEED.md, existing ring content, or principle statements (README indices
+  aside), else CI fails naming LAW-8; fire/hold behavior pinned by nine self-test cases and
+  mutation-checked (the E-005/E-007 Paid standard). **Scheduled pass:**
+  [.github/workflows/gardening-cadence.yml](../../.github/workflows/gardening-cadence.yml)
+  runs the sense/measure instruments weekly (cron + `workflow_dispatch`) via
+  [.seed/checks/gardening-report.ts](../../.seed/checks/gardening-report.ts) (composition
+  pinned by two self-tests) and files a durable gardening-pass issue when `drift_count > 0`.
+  Residual, accepted while solo (ring [0006](../rings/0006-solo-until-flowering.md)): nothing
+  forces a constitution-touching commit to carry — or omit — the marker, so the gate makes an
+  automerge *claim* trustworthy rather than forcing review; it hardens at Flowering with
+  branch protection, the same shape as E-005's force-push residual. Hosted confirmation of
+  the workflow's cron + issue-filing glue is its first `workflow_dispatch` run, captured on
+  the scope-item-5 push

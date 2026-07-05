@@ -108,6 +108,49 @@ item), and every session opens with the metabolism per the map.
   (`map_reachability` 100%, 46/46 files), `npm test` 59/59 green,
   `npm run fitness` printing the snapshot above.
 
+- **2026-07-04** — Scope item 5 implemented: cadence automation (converting
+  [E-008](../entropy-ledger.md); mechanism recorded as ring
+  [0012](../../rings/0012-cadence-automation-mechanism.md)), with the E-010 CI-action bump
+  folded in as the ledger directed. **Path-based automerge gate**
+  ([`.seed/checks/automerge-scope.ts`](../../../.seed/checks/automerge-scope.ts), CI's sixth
+  step): a commit that declares itself automerge-class with an `Automerge: <class>` trailer
+  (`<class>` one of ring 0007's six mechanical classes) must touch none of SEED.md, existing
+  ring content, or principle statements (README indices exempt), else CI fails naming LAW-8;
+  a marker naming an unknown class is itself a violation. Unmarked commits are the
+  Gardener-review path, unconstrained by the gate — the honest, bounded guarantee is that an
+  automerge *claim* provably stayed inside the mechanical boundary (the solo residual is
+  recorded with E-008 and hardens at Flowering, the E-005 shape). **Scheduled gardening pass**
+  ([`.github/workflows/gardening-cadence.yml`](../../../.github/workflows/gardening-cadence.yml),
+  weekly cron + `workflow_dispatch`, least-privilege `contents:read`/`issues:write`): runs the
+  sense/measure instruments and, via
+  [`.seed/checks/gardening-report.ts`](../../../.seed/checks/gardening-report.ts) (a subprocess
+  composer over doc-drift + fitness, the pattern fitness already uses), files a durable, dated
+  gardening-pass issue when `drift_count > 0`, so drift surfaces on cadence even when no session
+  opens. **E-010**: both workflows bumped to `actions/checkout@v5` / `actions/setup-node@v5`
+  (Node 24 runtime); staged and kept Open — its only enforcement is the hosted run, so it is
+  Paid when the push confirms green. Verified (LAW-6): eleven self-test cases pin the gate's
+  fire/hold behavior (marked+protected fails; a non-ASCII-named protected add still fails;
+  unknown class fails; unmarked passes; both README indices exempt; merge exempt; unresolvable
+  base skips) and two pin the report composition (pristine → no findings + valid date; a seeded
+  stale reference flips has_findings and renders); `npm test` 72/72 green; six guards
+  mutation-checked live (SEED.md protection, the ring- and principles-README exemptions, the
+  unknown-class guard, `has_findings`, the `-z` path-quoting fix, and the merge exemption each
+  failed exactly the case built to catch it). A 15-agent adversarial review (seven finder
+  lenses → eight per-finding adversarial verifiers) confirmed five defects (three refuted), all
+  folded in before landing: a **path-quoting bypass** (git's default `core.quotepath` quoted a
+  non-ASCII-named protected file, so `isProtected` missed it and a marked commit could add an
+  oddly-named ring/principle — closed with `-z`), a **merge-exemption self-test that asserted
+  too little** (it passed even with `--no-merges` dropped — now pins the marked count), and
+  three low-severity verification/doc gaps (the `--json` `date` field, the principles-README
+  exemption, and the `.seed/README` §Self-tests enumeration were unpinned/stale). The three
+  refutations were sound (an unreachable duplicate-issue path, spec'd class case-sensitivity, a
+  non-triggering prose false-positive). Local evidence: `npm run check` green
+  (`map_reachability` 100%, 50/50 files), `npm test` 72/72, the new gate green against `HEAD~1`,
+  both workflows parse, the cadence shell logic dry-runs correctly (clean tree → no issue
+  filed). Hosted evidence pending the scope-item-5 push: the scheduled workflow's first
+  `workflow_dispatch` run and the seed-ci run confirming the automerge gate + the v5 bump (no
+  Node-20 deprecation warning) — this pays E-010 and closes E-008's workflow-glue confirmation.
+
 ## Decision log
 
 - **Self-test strategy — subprocess in a temp copy.** Each case copies the working tree
@@ -191,12 +234,48 @@ item), and every session opens with the metabolism per the map.
   window is what "net change per week" actually means for a repo younger than a week: the
   whole ledger genuinely appeared in the last 7 days. Verified live by mutation (Progress
   log, scope item 4).
+- **Automerge is claimed per commit by a message trailer; the gate constrains the claim
+  (scope item 5, ring [0012](../../rings/0012-cadence-automation-mechanism.md)).** Solo
+  commits go straight to `main` (ring 0006), so there is no PR or branch to carry a label —
+  the commit message is the only durable per-commit channel, already used by traceability.
+  And there is no mechanical "was this Gardener-reviewed" signal while solo, so the gate
+  cannot require a review-marker on protected edits (the inverse polarity); it instead proves
+  that whatever *declares* `Automerge: <class>` stayed inside ring 0007's mechanical boundary.
+  Both alternatives (label marker, inverse polarity) revisit at Flowering with branch
+  protection.
+- **The automerge class vocabulary is required, and grounded in an append-only ring.** A
+  marker must name a real mechanical class (`link`, `format`, `typo`, `stale-reference`,
+  `regeneration`, `ledger`), or it is a violation — `Automerge: yes` cannot buy a pass on the
+  path check. The vocabulary derives from ring 0007's list, which the append-only gate freezes,
+  so gate and policy cannot silently drift (LAW-3).
+- **The scheduled pass files an issue, not an autonomous committer.** A Claude Code action
+  that commits automerge fixes on the schedule was rejected: heavier, dependent on an
+  API-key secret, less boring (LAW-7), and it would itself need the automerge gate to bound
+  it. A weekly cron that runs the instruments and files a durable, dated gardening-pass issue
+  when `drift_count > 0` converts E-008's actual risk (no session opens → drift unseen) into a
+  work item an in-session agent picks up — the boring, verifiable v0. v0 triggers on
+  `drift_count` alone (a metric moving is a trend to read, not a discrete task); widening the
+  trigger is a later priced step.
+- **E-008 is Paid on local evidence; E-010 stays Open.** The gate meets the E-005 Paid
+  standard (runs in CI, fire/hold pinned by self-tests + mutation) and the workflow's report
+  composition is self-tested, so E-008's substantive conversion is done locally; only the thin
+  cron/issue glue is hosted-pending, noted honestly. E-010's *entire* enforcement is the
+  hosted run (the deprecation warning surfaces only there), so its bump is staged but it is not
+  Paid until the scope-item-5 push confirms green — marking it Paid now would assert a result
+  not yet observed.
 
 ## Next actions
 
-1. **Seed:** execute scope item 5 — cadence automation (converting
-   [E-008](../entropy-ledger.md)): scheduled invocation of the gardening pass plus a
-   path-based gate encoding ring [0007](../../rings/0007-gardening-cadence-automerge.md)'s
-   automerge classes. Tier hint (ring
-   [0010](../../rings/0010-model-effort-selection.md)): security-relevant CI surface with
-   open design space — top tier, or mid-tier implementation plus a top-tier review.
+1. **Seed:** capture the scheduled workflow's first hosted run — trigger
+   [gardening-cadence.yml](../../../.github/workflows/gardening-cadence.yml) via
+   `workflow_dispatch` and confirm it composes the report and files/skips the issue correctly,
+   and that the scope-item-5 push's seed-ci run is green with the new automerge-scope gate and
+   no Node-20 deprecation warning (pays [E-010](../entropy-ledger.md)). Link both runs in the
+   scope item 5 progress entry and the E-008 / E-010 ledger entries.
+2. **Then:** with all five scope items evidenced, close this plan (move to `completed/`,
+   Status: completed) and open the Stage 1→2 transition as a new plan for Gardener approval
+   (SEED.md §4) — the Stage 1 exit criterion ("you detect your own drift automatically,
+   without being asked") is met by the doc-gardener (scope item 3) plus this scheduled cadence
+   (scope item 5). Tier hint (ring [0010](../../rings/0010-model-effort-selection.md)): a
+   stage-transition proposal is Gardener-judgment work — draft at mid tier; the decision is
+   the Gardener's.

@@ -21,15 +21,20 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   exit criteria evidenced in [plan 0001](docs/plans/completed/0001-germination.md); the
   repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
 - **Correct first action for a fresh agent right now:** execute
-  [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — first up:
-  cadence automation (scope item 5). Scope items 1–4 landed 2026-07-04: `npm test`
-  verifies the verifiers (E-007 + E-005), every commit to `main` must trace to a plan or
-  ring (E-003), the [doc-gardener](skills/doc-gardener/SKILL.md) drift detector
-  (`npm run garden`) reports `drift_count` as an advisory signal (ring
-  [0011](docs/rings/0011-drift-advisory.md)), and fitness v0
-  (`npm run fitness`, `.seed/checks/fitness.ts`) computes five of the six SEED.md §6
-  metrics on every CI run, with the first snapshot landed in
-  [docs/fitness/history/](docs/fitness/history/README.md).
+  [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — all five scope
+  items are now implemented; what remains is capturing the scheduled workflow's first
+  hosted run, then closing the plan and proposing the Stage 1→2 transition. Scope items
+  1–5 landed 2026-07-04: `npm test` verifies the verifiers (E-007 + E-005), every commit
+  to `main` must trace to a plan or ring (E-003), the
+  [doc-gardener](skills/doc-gardener/SKILL.md) drift detector (`npm run garden`) reports
+  `drift_count` as an advisory signal (ring [0011](docs/rings/0011-drift-advisory.md)),
+  fitness v0 (`npm run fitness`, `.seed/checks/fitness.ts`) computes five of the six
+  SEED.md §6 metrics on every CI run with snapshots in
+  [docs/fitness/history/](docs/fitness/history/README.md), and cadence automation (E-008)
+  ships the automerge-scope gate and a weekly
+  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow that files a
+  gardening-pass issue when drift surfaces (mechanism: ring
+  [0012](docs/rings/0012-cadence-automation-mechanism.md)).
 
 ## Territory
 
@@ -57,6 +62,15 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   `Plan 0002 scope item 2: …` or `… (ring 0010)` — enforced in CI by the
   traceability gate (`.seed/checks/plan-traceability.ts`, E-003). Work with no plan or
   ring behind it needs one first.
+- **Automerging a mechanical fix:** a change that qualifies for ring
+  [0007](docs/rings/0007-gardening-cadence-automerge.md)'s automerge classes may declare it
+  with an `Automerge: <class>` trailer in the commit message — `<class>` one of `link`,
+  `format`, `typo`, `stale-reference`, `regeneration`, `ledger`. The automerge-scope gate
+  (`.seed/checks/automerge-scope.ts`, E-008) then proves the claim: a marked commit must
+  touch none of SEED.md, existing ring content, or principle statements (the README indices
+  aside) — those need Gardener review. Omit the trailer for Gardener-gated work; an unmarked
+  commit is unconstrained by this gate. Mechanism: ring
+  [0012](docs/rings/0012-cadence-automation-mechanism.md).
 - **Make a decision durable:** cut a ring — format and procedure in
   [docs/rings/README.md](docs/rings/README.md). Never ask the Gardener a question a ring
   already answers (LAW-10): search `docs/rings/` first.

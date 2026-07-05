@@ -17,6 +17,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0009 — Stage 0 → 1 transition approved](0009-stage-1-transition-approved.md)
 - [0010 — Model and effort selection policy](0010-model-effort-selection.md)
 - [0011 — Drift detection is an advisory trend signal, not a gate](0011-drift-advisory.md)
+- [0012 — Cadence automation mechanism](0012-cadence-automation-mechanism.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

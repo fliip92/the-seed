@@ -1,0 +1,49 @@
+# The scheduled gardening pass (ring 0007, converting ledger E-008 — plan 0002 scope item 5).
+# Weekly, it runs the sense/measure instruments and files a durable gardening-pass issue when
+# there is drift to digest, so sensed entropy surfaces on cadence even when no working session
+# opens. Thin shim by design (ring 0002), like seed-ci.yml: the report logic lives in
+# .seed/checks/gardening-report.ts; this file only schedules it and files the issue.
+name: gardening-cadence
+on:
+  schedule:
+    - cron: "17 9 * * 1" # Mondays 09:17 UTC — weekly target (ring 0007); minute offset off :00 to dodge the scheduler stampede
+  workflow_dispatch: # manual trigger (also how the first hosted run is captured)
+permissions:
+  contents: read # read the tree + git history the report composes from
+  issues: write # file / refresh the gardening-pass issue
+jobs:
+  garden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5 # v5 declares the Node 24 runtime (E-010)
+        with:
+          fetch-depth: 0 # fitness's plan_traceability + ledger_trend walk git history
+      - uses: actions/setup-node@v5 # v5 declares the Node 24 runtime (E-010)
+        with:
+          node-version: 24
+      - name: Compose the gardening-pass report
+        run: |
+          set -euo pipefail
+          node .seed/checks/gardening-report.ts > "$RUNNER_TEMP/report.md"
+          cat "$RUNNER_TEMP/report.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: File or refresh the gardening-pass issue when there is drift to digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report_json="$(node .seed/checks/gardening-report.ts --json)"
+          has_findings="$(printf '%s' "$report_json" | jq -r .has_findings)"
+          export TITLE="Gardening pass — $(printf '%s' "$report_json" | jq -r .date)"
+          if [ "$has_findings" != "true" ]; then
+            echo "Nothing to digest this week (drift_count 0) — no issue filed; the sensing record is in the step summary."
+            exit 0
+          fi
+          gh label create gardening --force --color 0E8A16 --description "Weekly gardening cadence (ring 0007)" || true
+          matches="$(gh issue list --state open --limit 100 --json number,title --jq '.[] | select(.title == env.TITLE) | .number')"
+          existing="${matches%%$'\n'*}" # first line only, via parameter expansion — no pipe-to-head to SIGPIPE-trip under pipefail
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file "$RUNNER_TEMP/report.md"
+            echo "Refreshed gardening-pass issue #$existing"
+          else
+            gh issue create --title "$TITLE" --label gardening --body-file "$RUNNER_TEMP/report.md"
+          fi
