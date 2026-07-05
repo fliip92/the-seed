@@ -16,6 +16,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0008 — Ring 0001 confirmed: germination question 5 closed](0008-ring-0001-confirmed.md)
 - [0009 — Stage 0 → 1 transition approved](0009-stage-1-transition-approved.md)
 - [0010 — Model and effort selection policy](0010-model-effort-selection.md)
+- [0011 — Drift detection is an advisory trend signal, not a gate](0011-drift-advisory.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

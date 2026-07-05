@@ -83,6 +83,38 @@ export function visibleMarkdownLines(repoRelPath: string): MdLine[] {
   return out;
 }
 
+export interface InlineCode {
+  n: number;    // 1-based line number
+  code: string; // inner text of one inline code span (backtick delimiters stripped)
+}
+
+/**
+ * Every inline code span (any backtick run) sitting OUTSIDE a fenced code block, one
+ * entry per span, with its line number. This is the exact complement of the blanking
+ * `visibleMarkdownLines` does: link analysis wants prose with code removed, drift
+ * analysis wants the code spans themselves — a doc names repo paths inside backticks
+ * (`` `.seed/checks/run-all.ts` ``), so that is where stale references hide. Fence
+ * tracking is identical to `visibleMarkdownLines` so the two agree on what is code.
+ */
+export function inlineCodeSpans(repoRelPath: string): InlineCode[] {
+  const lines = readRepoFile(repoRelPath).split('\n');
+  const out: InlineCode[] = [];
+  let fence: { char: string; len: number } | null = null;
+  lines.forEach((raw, i) => {
+    const marker = raw.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (marker) {
+      const char = marker[1][0];
+      const len = marker[1].length;
+      if (fence === null) fence = { char, len };
+      else if (fence.char === char && len >= fence.len) fence = null;
+      return;
+    }
+    if (fence !== null) return;
+    for (const m of raw.matchAll(/(`+)([^`]*?)\1/g)) out.push({ n: i + 1, code: m[2] });
+  });
+  return out;
+}
+
 export interface MdLink {
   target: string; // repo-relative posix path of the link target (fragment stripped)
   line: number;   // 1-based line number in the source file

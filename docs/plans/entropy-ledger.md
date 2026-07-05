@@ -54,6 +54,28 @@ ledger is also a record of digestion.
 - Conversion path: invariant — Stage 1 automation alongside doc-gardener and the
   machinery structural tests (E-005, E-007)
 
+## E-009 — Drift detection is v0: only the stale-path-reference class
+
+- First observed: 2026-07-04, building the doc-gardener (plan 0002 scope item 3)
+- Where: `.seed/checks/doc-drift.ts` detects one drift class (a current-state doc naming a
+  repo path that no longer exists). Other doc↔code divergences — inventory drift (a list
+  that no longer mirrors its directory), stale counts baked into prose, and broader prose
+  drift — are still sensed by the agent on the gardening pass, not by the instrument, so
+  `drift_count` under-reports true drift. Two structural blind spots narrow it further:
+  the scan reads only *inline* backtick spans, so a path referenced solely inside a fenced
+  code block is not checked (in practice such paths are usually markdown-linked too and so
+  caught by the hard dead-link gate, `validate-map`); and the zero-dependency line parser
+  tracks only top-level (0–3-space-indented) fences, so a rare list-nested fenced block can
+  leak its inline paths — a limit shared with `visibleMarkdownLines`
+- Interest rate: low-medium (a fitness signal that under-counts can mask real drift; the
+  gap compounds only as the doc surface grows and new divergence shapes appear)
+- Price: small per class — each is a new entry in the `DRIFT_CLASSES` registry plus its
+  self-test cases; the runner and scan-surface logic are already shared
+- Conversion path: invariant — add a drift class to the registry when a divergence shape
+  proves to recur (the registry exists precisely so this needs no rework); the
+  advisory/gate split is settled by ring
+  [0011](../rings/0011-drift-advisory.md)
+
 ## Paid
 
 ## E-002 — CI is proven locally but not on a hosted runner

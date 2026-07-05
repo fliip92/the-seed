@@ -59,6 +59,25 @@ item), and every session opens with the metabolism per the map.
   first execution of the new gate green on GitHub —
   [seed-ci run 28725041081](https://github.com/fliip92/the-seed/actions/runs/28725041081),
   the gate reporting `all 1 new commit(s) since bff0793a40cf trace to a plan or ring`.
+- **2026-07-04** — Scope item 3 complete: the doc-gardener skill
+  ([skills/doc-gardener/SKILL.md](../../../skills/doc-gardener/SKILL.md)) and its
+  instrument, the [drift detector](../../../.seed/checks/doc-drift.ts) (`npm run garden`).
+  It scans the current-state doc surface for the `stale-path-reference` class and reports
+  `drift_count` — the SEED.md §6 metric it sources — as an **advisory** signal (always
+  exits 0 on findings; recorded as ring [0011](../../rings/0011-drift-advisory.md)),
+  because drift is a trend the gardening cadence digests, not a merge gate. Verified by
+  seven new self-tests (`npm test`, 50 total): a pristine copy reports `drift_count 0`; a
+  seeded stale reference is detected, counted, and names LAW-2; placeholders, glob forms,
+  excluded append-only regions, the `./` and `:line`/`#fragment` normalizations, and the
+  scan-surface inclusion side are each pinned by a case — and mutation testing confirms
+  every guard's case fails when its guard regresses (the E-007 standard). The v0 coverage
+  residual (one class; inline spans only) is priced as [E-009](../entropy-ledger.md). A
+  14-agent adversarial review confirmed seven low-severity findings (two refuted), all
+  folded in before landing: a glob-metacharacter gap (`[`, `]`, `?` slipped the placeholder
+  guard, contradicting the "globs skipped" contract), three unpinned self-test guards, and
+  honest scoping of the inline-only / fenced-block limit in E-009 and the skill. Local
+  evidence: `npm run check` green (`map_reachability` 100%, 44/44 files), `npm test` 50/50,
+  `npm run garden` `drift_count 0`.
 
 ## Decision log
 
@@ -103,18 +122,40 @@ item), and every session opens with the metabolism per the map.
 - **History is grandfathered.** Only commits past the merge base are judged. Two
   pre-gate commits on `main` carry no reference; rewriting them to satisfy a new gate
   would break the very append-only discipline the gates exist to protect.
+- **Drift is advisory, not a gate — recorded as ring
+  [0011](../../rings/0011-drift-advisory.md).** The detector reports `drift_count` and
+  exits 0; it lives outside `run-all.ts` and is verified by dedicated self-tests run
+  directly (the same precedent as the git-aware gates). Gating drift would block routine
+  merges on non-mechanical reconciliation and misreads the SEED.md §6 trend; the full
+  argument, and the promotion path to a hard invariant, live in the ring.
+- **Scan surface = current-state docs, not logs.** The detector scans only documentation
+  whose job is to describe the repo as it is now, and excludes SEED.md (genome, amended
+  only by Gardener PR + ring — ring 0007 keeps it out of the automerge remit),
+  `docs/rings/`, `docs/plans/completed/`, the active-plan bodies, and the ledger. In those
+  a path reference is legitimate point-in-time record, not actionable drift, and
+  "correcting" it would fight the append-only discipline the gates protect.
+- **Precision over recall in the path-claim rule.** A backtick token is treated as a
+  checkable repo-path claim only when it is unmistakably one (first segment an existing
+  top-level entry, has a separator, ends in a known extension, no placeholder/glob
+  metacharacters). A false positive poisons a *trend* metric, so the rule is deliberately
+  conservative — it misses relative and fenced-only references (priced as
+  [E-009](../entropy-ledger.md)) rather than risk noise. The rule was tuned against real
+  repository data: the committed tree's baseline is `drift_count 0`, which also lets a
+  single seeded reference read cleanly as `drift_count 1` in the self-tests.
 
 ## Next actions
 
-1. **Seed:** execute scope item 3 — doc-gardener skill
-   (`skills/doc-gardener/SKILL.md`): detects doc↔code drift and stale content; lands
-   fix-up commits within ring
-   [0007](../../rings/0007-gardening-cadence-automerge.md)'s automerge classes; feeds
-   `drift_count`. Tier hint (ring
-   [0010](../../rings/0010-model-effort-selection.md)): autonomous edit decisions carry
-   open design space — top tier, or mid-tier implementation plus a top-tier review pass.
-2. **Seed:** then scope items 4–5 in order, logging progress and evidence here. Tier
-   hints (ring [0010](../../rings/0010-model-effort-selection.md)): item 4 (fitness v0)
-   is mechanical — mid tier; item 5 (cadence automation, security-relevant CI surface)
-   carries open design space — top tier, or mid-tier implementation plus a top-tier
-   review.
+1. **Seed:** execute scope item 4 — Fitness v0 in CI: compute the SEED.md §6 metrics now
+   computable — `map_reachability` (from `.seed/checks/validate-map.ts`),
+   `enforcement_ratio` (over `docs/principles/`), `drift_count` (from
+   `node .seed/checks/doc-drift.ts --json`, now that scope item 3 sources it),
+   `plan_traceability` and `ledger_trend` (from CI/git history); the rest recorded null per
+   the [FITNESS.md](../../fitness/FITNESS.md) schema — and land the first dated snapshots in
+   `docs/fitness/history/`. Tier hint (ring
+   [0010](../../rings/0010-model-effort-selection.md)): mechanical — mid tier.
+2. **Seed:** then scope item 5 — cadence automation (converting
+   [E-008](../entropy-ledger.md)): scheduled invocation of the gardening pass plus a
+   path-based gate encoding ring [0007](../../rings/0007-gardening-cadence-automerge.md)'s
+   automerge classes. Tier hint (ring
+   [0010](../../rings/0010-model-effort-selection.md)): security-relevant CI surface with
+   open design space — top tier, or mid-tier implementation plus a top-tier review.

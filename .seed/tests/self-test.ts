@@ -87,6 +87,7 @@ const runGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/ring-append-only.ts', args);
 const runTraceGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/plan-traceability.ts', args);
+const runDrift = (root: string): RunResult => runNode(root, '.seed/checks/doc-drift.ts');
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -552,6 +553,104 @@ inTempCopy((root) => {
     'traceability: unresolvable base skips with an explicit note',
     status === 0 && output.includes('gate skipped'),
     `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- doc-gardener drift detector (plan 0002 scope item 3). It is ADVISORY (ring 0011):
+// --- it reports drift_count and exits 0 even with findings, so these assert on output and
+// --- on the exit code staying 0. A stale reference in a scanned current-state doc must
+// --- fire; a template placeholder and a reference inside an excluded append-only region
+// --- must stay silent — the precision guards that keep drift_count trustworthy. Pristine
+// --- must be exactly 0, so a single seeded reference reads as drift_count 1.
+
+inTempCopy((root) => {
+  const { status, output } = runDrift(root);
+  report(
+    'drift: pristine copy reports drift_count 0',
+    status === 0 && output.includes('drift_count 0'),
+    `expected exit 0 + "drift_count 0", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  append(root, 'docs/references/README.md', '\nSee `.seed/checks/ghost-check.ts` for details.\n');
+  const { status, output } = runDrift(root);
+  const wanted = ['[doc-drift/stale-path-reference]', `law: ${LAW2}`, '.seed/checks/ghost-check.ts', 'drift_count 1'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'drift: a stale path reference in a current-state doc is detected and counted (advisory, exit 0)',
+    status === 0 && missing.length === 0,
+    `expected exit 0 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  // Placeholders (<name>, NNNN) and every glob form (*, ?, [..], {..}) are patterns, not
+  // path claims — all must be skipped, or drift_count becomes noise. Pins the PLACEHOLDER
+  // guard including the [ ] ? classes a review found initially missing.
+  append(
+    root,
+    'docs/references/README.md',
+    '\nPatterns, not paths: `docs/rings/NNNN-slug.md`, `docs/principles/<name>.md`, `docs/rings/[0-9].md`, `docs/rings/000?-x.md`, `docs/fitness/history/*.json`.\n',
+  );
+  const { status, output } = runDrift(root);
+  report(
+    'drift: template placeholders and glob patterns are not flagged',
+    status === 0 && output.includes('drift_count 0'),
+    `expected exit 0 + "drift_count 0" (placeholders and globs skipped), got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  append(root, 'docs/rings/0001-founding-defaults.md', '\nA stale `.seed/checks/ghost-check.ts` inside an append-only ring.\n');
+  const { status, output } = runDrift(root);
+  report(
+    'drift: a reference inside an excluded append-only region is not flagged',
+    status === 0 && output.includes('drift_count 0'),
+    `expected exit 0 + "drift_count 0" (rings excluded from the scan), got exit ${status}:\n${output}`,
+  );
+});
+
+// A leading ./ is stripped to the repo-relative path — pins that normalization: without
+// it the token starts with `.` (not a top-level entry) and would be silently missed.
+inTempCopy((root) => {
+  append(root, 'docs/references/README.md', '\nRelative form `./.seed/checks/ghost-check.ts` is the same repo-relative file.\n');
+  const { status, output } = runDrift(root);
+  const wanted = ['[doc-drift/stale-path-reference]', '.seed/checks/ghost-check.ts', 'drift_count 1'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'drift: a ./-prefixed stale reference is normalized and detected',
+    status === 0 && missing.length === 0,
+    `expected exit 0 with ${JSON.stringify(wanted)} (leading ./ stripped), got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+// A trailing :line / #fragment is stripped before the existence check — pins that
+// normalization: without it the token fails the extension test and would be missed.
+inTempCopy((root) => {
+  append(root, 'docs/references/README.md', '\nWith a line anchor `.seed/checks/ghost-check.ts:42` names the same missing file.\n');
+  const { status, output } = runDrift(root);
+  const wanted = ['[doc-drift/stale-path-reference]', '.seed/checks/ghost-check.ts', 'drift_count 1'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'drift: a :line-decorated stale reference is normalized and detected',
+    status === 0 && missing.length === 0 && !output.includes('ghost-check.ts:42'),
+    `expected exit 0 with ${JSON.stringify(wanted)} (":42" stripped), got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+// The scan-surface INCLUSION side: detection must fire in a different scanned family than
+// the docs/references case above — here the top-level README. Pins isScanned() against a
+// regression that narrows the surface and silently stops detecting real drift.
+inTempCopy((root) => {
+  append(root, 'README.md', '\nBroken machinery pointer: `.seed/checks/ghost-check.ts`.\n');
+  const { status, output } = runDrift(root);
+  const wanted = ['[doc-drift/stale-path-reference]', 'README.md:', '.seed/checks/ghost-check.ts', 'drift_count 1'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'drift: a stale reference in a different scanned family (top-level README) is detected',
+    status === 0 && missing.length === 0,
+    `expected exit 0 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
   );
 });
 

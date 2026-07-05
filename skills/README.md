@@ -7,9 +7,13 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
 
 ## Planted skills
 
-None yet. The garden grows by stage (SEED.md §4):
+- [doc-gardener](doc-gardener/SKILL.md) — detects doc↔code drift and stale content, lands
+  the mechanical fixes within the gardening automerge classes, and is the source of the
+  `drift_count` fitness metric (Stage 1; plan
+  [0002](../docs/plans/active/0002-rooting.md)).
 
-- **Stage 1:** doc-gardener (drift detection + fix-up PRs).
+The garden grows by stage (SEED.md §4). Still to plant:
+
 - **Stage 2:** grill-the-gardener, repo-fitness, postmortem, parallel-worktrees,
   onboard-human, feedback.
 

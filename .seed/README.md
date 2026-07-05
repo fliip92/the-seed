@@ -9,9 +9,11 @@ dependencies; ring [0002](../docs/rings/0002-germination-implementation-defaults
 ```bash
 npm run check          # the invariant checks (fast, no git needed)
 npm test               # the machinery self-tests (spawns the checks in temp copies)
+npm run garden         # the doc-gardener drift scan (advisory; reports drift_count)
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
+node .seed/checks/doc-drift.ts
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -50,6 +52,20 @@ base ref must reference an existing plan or ring in its message — `plan 0002`,
 are exempt (machine-written subjects; the commits they carry are each checked
 individually). This makes the SEED.md §6 `plan_traceability` metric computable from CI
 history.
+
+## Drift detection
+
+[checks/doc-drift.ts](checks/doc-drift.ts) is the doc-gardener's instrument
+([skills/doc-gardener/SKILL.md](../skills/doc-gardener/SKILL.md)). It scans the
+current-state doc surface for doc↔code drift — v0 detects the `stale-path-reference` class
+(a current-state doc names a repo path that no longer exists) — and reports `drift_count`,
+the SEED.md §6 fitness metric it sources. Unlike the checks above it is **advisory, not a
+gate**: it always exits 0 on findings (ring
+[0011](../docs/rings/0011-drift-advisory.md)), because drift is a trend the gardening
+cadence digests continuously (LAW-8), not a merge blocker. It is therefore outside
+`run-all.ts`; its detection is verified by the self-tests. `--json` emits
+`{ drift_count, findings }` for the fitness computation (plan
+[0002](../docs/plans/active/0002-rooting.md) scope item 4).
 
 ## Self-tests
 
