@@ -75,10 +75,21 @@ item), and every session opens with the metabolism per the map.
   compute the repo's current max ring/plan/ledger numbers at runtime; a hardcoded
   "found 0011 where 0010 was expected" would have failed CI the day ring 0010 was cut
   for real.
+- **Model/effort selection is policy, not catalog** — recorded as ring
+  [0010](../../rings/0010-model-effort-selection.md): verification-harness strength
+  decides the tier; volatile per-item tier hints live in `Next actions` below and die
+  with this plan.
 
 ## Next actions
 
 1. **Seed:** execute scope item 2 — traceability gate ([E-003](../entropy-ledger.md)):
    every change landing on `main` must trace to a plan or ring (commit-message reference
-   checked in CI), making the `plan_traceability` metric computable.
-2. **Seed:** then scope items 3–5 in order, logging progress and evidence here.
+   checked in CI), making the `plan_traceability` metric computable. Tier hint (ring
+   [0010](../../rings/0010-model-effort-selection.md)): mid-tier model at default
+   effort — pattern work fully covered by the self-test harness; one mid-effort review
+   pass suffices.
+2. **Seed:** then scope items 3–5 in order, logging progress and evidence here. Tier
+   hints (ring [0010](../../rings/0010-model-effort-selection.md)): item 4 (fitness v0)
+   is mechanical — mid tier; items 3 (doc-gardener, autonomous edit decisions) and 5
+   (cadence automation, security-relevant CI surface) carry open design space — top
+   tier, or mid-tier implementation plus a top-tier review.
