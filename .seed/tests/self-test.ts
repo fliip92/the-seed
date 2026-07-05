@@ -273,6 +273,16 @@ const CASES: ViolationCase[] = [
     expect: { check: MAP, law: LAW4, contains: ['dead link', `docs/plans/active/${PLAN_GAP}-ghost.md`] },
   },
   {
+    // Slug-exactness guard (ring 0013): a link with a REAL plan number but the WRONG slug
+    // must stay dead — resolution keys on the exact NNNN-slug.md basename, never the number
+    // alone. The ghost case above uses a number absent from both dirs, so it only pins
+    // number-mismatch; this pins slug-mismatch, catching a regression to number-only
+    // ("glob NNNN-*") matching that would silently resolve a misspelled slug.
+    name: 'map: a plan link with a real number but a wrong slug is still dead',
+    seed: (r) => append(r, 'AGENTS.md', `\nSee [wrong slug](docs/plans/completed/${PLAN_DUP}-wrong-slug.md).\n`),
+    expect: { check: MAP, law: LAW4, contains: ['dead link', `docs/plans/completed/${PLAN_DUP}-wrong-slug.md`] },
+  },
+  {
     name: 'rings: bad filename',
     seed: (r) => write(r, 'docs/rings/not-a-ring.md', validRing(RING_NEXT)),
     expect: { check: RINGS, law: LAW10, contains: ['does not match the ring filename format'] },
@@ -467,6 +477,25 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'map: a completed plan linked by its active/ path resolves — no dead link (ring 0013)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  // The reverse direction: a plan living in active/ linked by its completed/ path also
+  // resolves — guards against narrowing PLAN_LINK_RE's (active|completed) alternation to
+  // one side. A plan can move back to active/ (validate-plans documents that path), so a
+  // completed/-written link must survive it too.
+  write(root, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT));
+  append(
+    root,
+    'docs/plans/active/README.md',
+    `\n- [${PLAN_NEXT} fixture](../completed/${PLAN_NEXT}-fixture.md) — self-test fixture: an active plan linked by its completed/ path.\n`,
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'map: an active plan linked by its completed/ path resolves — no dead link (ring 0013)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );
