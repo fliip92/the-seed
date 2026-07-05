@@ -17,7 +17,7 @@ import { analyzeReachability } from './validate-map.ts';
 
 // Bumped by hand alongside the next stage-transition ring (SEED.md §4) — stage changes are
 // rare, deliberate, Gardener-approved events, not something worth deriving mechanically.
-const CURRENT_STAGE = 1;
+const CURRENT_STAGE = 2; // Stage 2 — Growth (ring 0014). Agreement with AGENTS.md is unchecked — E-011.
 
 const PRINCIPLES_DIR = 'docs/principles';
 const LEDGER = 'docs/plans/entropy-ledger.md';

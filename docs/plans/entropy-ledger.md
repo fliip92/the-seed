@@ -15,9 +15,9 @@ ledger is also a record of digestion.
 - Interest rate: low (the directory is empty; compounds only once generators exist)
 - Price: small — a generation manifest (source → artifact) plus a CI check that artifacts
   match regeneration
-- Conversion path: invariant — build the manifest + check in Stage 1 alongside the first
-  generated artifact; until then the rule is doc-only, which violates LAW-2 and is why
-  this entry exists
+- Conversion path: invariant — build the manifest + check alongside the first generated
+  artifact (Stage 1 closed with none; the directory is still empty); until then the rule is
+  doc-only, which violates LAW-2 and is why this entry exists
 
 ## E-004 — "Seed" is an uncleared working codename
 
@@ -62,6 +62,22 @@ ledger is also a record of digestion.
   proves to recur (the registry exists precisely so this needs no rework); the
   advisory/gate split is settled by ring
   [0011](../rings/0011-drift-advisory.md)
+
+## E-011 — The current growth stage is stated in two places, unchecked
+
+- First observed: 2026-07-05, enacting the Stage 1→2 transition (ring
+  [0014](../rings/0014-stage-2-transition-approved.md))
+- Where: [AGENTS.md](../../AGENTS.md) `Current state` states the stage in prose, and
+  [.seed/checks/fitness.ts](../../.seed/checks/fitness.ts) hardcodes `CURRENT_STAGE`; both
+  are bumped by hand on a transition (a deliberate choice noted in fitness.ts) and nothing
+  checks the two agree
+- Interest rate: low (the stage changes about once per stage, so the two rarely drift — but a
+  forgotten bump would silently mislabel every fitness snapshot's `stage` until noticed)
+- Price: small — a structural check that the `- **Stage:**` number in AGENTS.md and
+  `CURRENT_STAGE` in fitness.ts name the same stage
+- Conversion path: invariant — add the agreement check; it verifies the hand-bump rather than
+  mechanizing the decision fitness.ts deliberately keeps manual, so it respects that comment
+  while closing the LAW-2 gap. Fold into the next change touching either
 
 ## Paid
 

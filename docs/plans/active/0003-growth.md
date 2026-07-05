@@ -9,11 +9,12 @@ Stage 2) — the skills that make the seed useful beyond maintaining itself — 
 assess a foreign repository without modifying it and produce a proposal its owners could
 judge on evidence (the Stage 2 exit criterion).
 
-This plan is first a **transition proposal**. SEED.md §4 requires each stage transition to
-be proposed as an execution plan, approved by a Gardener, and recorded as a ring. It is
-`active` because it is the live proposal, but no scope item below starts and no transition
-ring is cut until the Gardener approves — mirroring how [plan 0002](../completed/0002-rooting.md)
-opened ("drafted / awaiting transition approval") and [ring 0009](../../rings/0009-stage-1-transition-approved.md).
+This plan opened as a **transition proposal** (SEED.md §4 requires each stage transition to
+be proposed as an execution plan, approved by a Gardener, and recorded as a ring). The
+Gardener **approved** it on 2026-07-05, recorded as
+[ring 0014](../../rings/0014-stage-2-transition-approved.md); Stage 2 (Growth) is now underway
+and this is the governing execution plan — the same arc [plan 0002](../completed/0002-rooting.md)
+followed via [ring 0009](../../rings/0009-stage-1-transition-approved.md).
 
 ## Stage 1 exit criterion — evidence
 
@@ -86,12 +87,21 @@ carried its own decisions). The exit criterion governs completion, not the item 
   complete, exit criterion evidenced above). Proposed for Gardener approval of the Stage 1→2
   (Rooting → Growth) transition (SEED.md §4). Awaiting approval; on approval a transition ring
   is cut (the ring 0009 pattern) and scope item 1 (grill-the-gardener) begins.
+- **2026-07-05** — Transition **approved** by the Gardener; recorded as
+  [ring 0014](../../rings/0014-stage-2-transition-approved.md). Stage 2 (Growth) entered; this
+  is the governing execution plan. AGENTS.md `Current state` and `fitness.ts` (`CURRENT_STAGE`)
+  flipped to Stage 2; the transition surfaced that the current stage lives in two unchecked
+  places, priced as [E-011](../entropy-ledger.md), and retired two now-stale "in Stage 1"
+  claims (E-001's conversion path and `docs/generated/`). Scope item 1 (grill-the-gardener) is
+  the live work; each Stage 2 skill cuts rings for its build decisions as it is designed (the
+  plan 0002 rhythm).
 
 ## Next actions
 
-1. **Gardener:** approve (or amend) the Stage 1→2 (Rooting → Growth) transition. The Stage 1
-   exit criterion is evidenced above, and SEED.md §4 forbids lingering past an exit criterion.
-   On approval, the seed cuts the transition ring (the [ring 0009](../../rings/0009-stage-1-transition-approved.md)
-   pattern) and updates the [AGENTS.md](../../../AGENTS.md) `Current state` stage line.
-2. **Seed, on approval:** open scope item 1 (grill-the-gardener) with its verification, and
-   log progress here — the plan 0002 rhythm.
+1. ✅ **Transition approved** (2026-07-05) — recorded as
+   [ring 0014](../../rings/0014-stage-2-transition-approved.md); Stage 2 entered, this plan
+   governing, [AGENTS.md](../../../AGENTS.md) `Current state` + `fitness.ts` flipped.
+2. **Seed:** open scope item 1 — **grill-the-gardener** (architecture elicitation): interview
+   the Gardener until the target architecture fits one page, is expressible as lintable rules,
+   and has an explicit human/agent ownership split (SEED.md §4). Ship it with its verification
+   (LAW-6), cut a ring for each build decision, and log progress here — the plan 0002 rhythm.

@@ -19,6 +19,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0011 — Drift detection is an advisory trend signal, not a gate](0011-drift-advisory.md)
 - [0012 — Cadence automation mechanism](0012-cadence-automation-mechanism.md)
 - [0013 — Plan links resolve across active/ and completed/](0013-plan-links-resolve-across-active-completed.md)
+- [0014 — Stage 1 → 2 transition approved](0014-stage-2-transition-approved.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

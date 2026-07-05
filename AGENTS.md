@@ -16,27 +16,28 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 
 ## Current state
 
-- **Stage:** 1 — Rooting, entered 2026-07-04 (ring
-  [0009](docs/rings/0009-stage-1-transition-approved.md)). Stage 0 completed with both
-  exit criteria evidenced in [plan 0001](docs/plans/completed/0001-germination.md); the
-  repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
-- **Correct first action for a fresh agent right now:** Stage 1's self-maintenance organs
-  are all built and evidenced in [plan 0002](docs/plans/completed/0002-rooting.md)
-  (completed 2026-07-05), so the Stage 1 exit criterion — the seed detects its own drift
-  automatically, without being asked — is met. The live work is
-  [plan 0003](docs/plans/active/0003-growth.md): the **Stage 1→2 (Rooting → Growth)
-  transition proposal, awaiting Gardener approval** (SEED.md §4); on approval the seed cuts
-  the transition ring (the ring 0009 pattern) and Stage 2 (the skill garden) begins. What
-  Stage 1 shipped: `npm test` verifies the verifiers (E-007 + E-005), every commit to `main`
-  must trace to a plan or ring (E-003), the [doc-gardener](skills/doc-gardener/SKILL.md)
-  drift detector (`npm run garden`) reports `drift_count` as an advisory signal (ring
-  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`,
-  `.seed/checks/fitness.ts`) computes five of the six SEED.md §6 metrics on every CI run with
-  snapshots in [docs/fitness/history/](docs/fitness/history/README.md), cadence automation
-  ships the automerge-scope gate and a weekly
-  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow (mechanism: ring
-  [0012](docs/rings/0012-cadence-automation-mechanism.md)), and plan cross-references survive
-  the active/⇄completed/ move (ring [0013](docs/rings/0013-plan-links-resolve-across-active-completed.md)).
+- **Stage:** 2 — Growth, entered 2026-07-05 (ring
+  [0014](docs/rings/0014-stage-2-transition-approved.md)). Stage 1 (Rooting) completed with
+  its exit criterion evidenced in [plan 0002](docs/plans/completed/0002-rooting.md) — the
+  seed detects its own drift automatically (doc-gardener + scheduled cadence); Stage 0 in
+  [plan 0001](docs/plans/completed/0001-germination.md). The repository is public:
+  [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
+- **Correct first action for a fresh agent right now:** Stage 2 (Growth) is underway
+  (transition approved 2026-07-05, ring
+  [0014](docs/rings/0014-stage-2-transition-approved.md)). The governing plan is
+  [plan 0003](docs/plans/active/0003-growth.md) — continue from its `Next actions`: the next
+  work is scope item 1, **grill-the-gardener** (architecture elicitation). Stage 2 grows the
+  skill garden (grill-the-gardener, repo-fitness, postmortem, parallel-worktrees,
+  onboard-human, feedback), each shipping its own verification (LAW-6); the exit criterion is
+  assessing a foreign repository read-only and producing an evidence-judgeable proposal
+  (SEED.md §4). Stage 1's self-maintenance organs — all built and evidenced in
+  [plan 0002](docs/plans/completed/0002-rooting.md) — remain live: the self-tests
+  (`npm test`), the traceability gate, the [doc-gardener](skills/doc-gardener/SKILL.md) drift
+  detector (`npm run garden`, advisory per ring
+  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`) with snapshots
+  in [docs/fitness/history/](docs/fitness/history/README.md), and the weekly
+  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow (ring
+  [0012](docs/rings/0012-cadence-automation-mechanism.md)).
 
 ## Territory
 
