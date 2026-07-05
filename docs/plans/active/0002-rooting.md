@@ -55,7 +55,10 @@ item), and every session opens with the metabolism per the map.
   (existing plan and ring references pass; missing and phantom references fail naming
   LAW-5; merge commits exempt; unresolvable base skips with a note). The commit-message
   convention is documented in AGENTS.md § Protocols. Local evidence: `npm run check`
-  green, `npm test` 43/43 green, both gates green against `HEAD~1`.
+  green, `npm test` 43/43 green, both gates green against `HEAD~1`. Hosted evidence:
+  first execution of the new gate green on GitHub —
+  [seed-ci run 28725041081](https://github.com/fliip92/the-seed/actions/runs/28725041081),
+  the gate reporting `all 1 new commit(s) since bff0793a40cf trace to a plan or ring`.
 
 ## Decision log
 

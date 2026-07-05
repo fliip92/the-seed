@@ -84,8 +84,10 @@ ledger is also a record of digestion.
   plan or ring in its message ("plan 0002", "ring 0010"), else CI fails naming LAW-5.
   Merge commits are exempt (machine-written; their carried commits are checked
   individually) and history before the merge base is never re-judged. Fire/hold behavior
-  pinned by six self-test cases (the E-007 harness). `plan_traceability` is now
-  computable from CI history — fitness v0 (plan 0002 scope item 4) will compute it
+  pinned by six self-test cases (the E-007 harness). First hosted execution green:
+  [seed-ci run 28725041081](https://github.com/fliip92/the-seed/actions/runs/28725041081).
+  `plan_traceability` is now computable from CI history — fitness v0 (plan 0002 scope
+  item 4) will compute it
 
 ## E-005 — Ring append-only rule has no mechanical enforcement
 
