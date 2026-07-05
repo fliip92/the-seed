@@ -88,6 +88,7 @@ const runGate = (root: string, args: string[]): RunResult =>
 const runTraceGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/plan-traceability.ts', args);
 const runDrift = (root: string): RunResult => runNode(root, '.seed/checks/doc-drift.ts');
+const runFitness = (root: string, args: string[] = []): RunResult => runNode(root, '.seed/checks/fitness.ts', args);
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -107,6 +108,26 @@ function gitCommitAll(root: string, message: string): void {
     '-c', 'commit.gpgsign=false',
     'commit', '--quiet', '--no-verify', '-m', message,
   );
+}
+
+// Same as gitCommitAll, but with a controllable author/committer date — needed to put a
+// commit outside fitness.ts's ledger_trend trailing-7-day window on purpose.
+function gitCommitAllAt(root: string, message: string, iso: string): void {
+  git(root, 'add', '-A');
+  const res = spawnSync(
+    'git',
+    [
+      '-C', root,
+      '-c', 'user.email=self-test@seed',
+      '-c', 'user.name=Seed Self-Test',
+      '-c', 'commit.gpgsign=false',
+      'commit', '--quiet', '--no-verify', '-m', message,
+    ],
+    { encoding: 'utf8', env: { ...process.env, GIT_AUTHOR_DATE: iso, GIT_COMMITTER_DATE: iso } },
+  );
+  if (res.status !== 0) {
+    throw new Error(`dated git commit failed in ${root}:\n${res.stdout}${res.stderr}`);
+  }
 }
 
 const edit = (root: string, relPath: string, fn: (content: string) => string): void =>
@@ -158,6 +179,30 @@ function validPlan(num: string, opts: { title?: string; status?: string | null; 
   return sections
     .filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection))
     .join('\n');
+}
+
+function validPrinciple(name: string, opts: { enforcement?: string | null } = {}): string {
+  const lines = [
+    `# ${name}`,
+    '',
+    '- Statement: Self-test fixture principle.',
+    '- Rationale: Exists only inside a self-test temp copy.',
+  ];
+  if (opts.enforcement !== null) lines.push(`- Enforcement: ${opts.enforcement ?? 'structural test — fixture'}`);
+  lines.push('- Exceptions: none', '');
+  return lines.join('\n');
+}
+
+// A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
+// ledgerCounts() parses matters here, not validate-plans.ts's full field set (these cases
+// run fitness.ts directly, never through run-all.ts).
+function minimalLedger(openEntries: number, paidEntries: number): string {
+  const lines: string[] = ['# Entropy ledger', '', '## Open', ''];
+  let n = 1;
+  for (let i = 0; i < openEntries; i++) lines.push(`## E-${pad3(n++)} — Self-test fixture debt`, '');
+  lines.push('## Paid', '');
+  for (let i = 0; i < paidEntries; i++) lines.push(`## E-${pad3(n++)} — Self-test fixture debt`, '');
+  return lines.join('\n');
 }
 
 function validLedgerEntry(num: string, opts: { drop?: string } = {}): string {
@@ -651,6 +696,146 @@ inTempCopy((root) => {
     'drift: a stale reference in a different scanned family (top-level README) is detected',
     status === 0 && missing.length === 0,
     `expected exit 0 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+// --- fitness v0 (plan 0002 scope item 4): computes the SEED.md §6 metrics and prints a
+// --- dated snapshot. It is ADVISORY, like doc-drift — these cases assert on the computed
+// --- numbers in its --json output, not on exit code alone. Two of its five metrics need
+// --- real git history, so these cases init a scratch repo, like the gate tests above.
+
+function fitnessMetrics(output: string): Record<string, unknown> {
+  return (JSON.parse(output) as { metrics: Record<string, unknown> }).metrics;
+}
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: base for fitness JSON shape`);
+  const { status, output } = runFitness(root, ['--json']);
+  let parsed: { date?: unknown; stage?: unknown; metrics?: Record<string, unknown> } | null = null;
+  try {
+    parsed = JSON.parse(output);
+  } catch {
+    parsed = null;
+  }
+  const wantedKeys = ['drift_count', 'enforcement_ratio', 'escalation_rate', 'ledger_trend', 'map_reachability', 'plan_traceability'];
+  const gotKeys = parsed?.metrics ? Object.keys(parsed.metrics).sort() : [];
+  report(
+    'fitness: --json emits a {date, stage, metrics} snapshot with escalation_rate null',
+    status === 0 &&
+      typeof parsed?.date === 'string' &&
+      typeof parsed?.stage === 'number' &&
+      JSON.stringify(gotKeys) === JSON.stringify(wantedKeys) &&
+      parsed?.metrics?.escalation_rate === null,
+    `expected a well-formed snapshot with escalation_rate null, got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: base, no principles stated`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: enforcement_ratio is vacuously 1 with zero stated principles',
+    m.enforcement_ratio === 1,
+    `expected enforcement_ratio 1, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'docs/principles/enforced-example.md', validPrinciple('Enforced example'));
+  write(root, 'docs/principles/missing-field-example.md', validPrinciple('Missing field example', { enforcement: null }));
+  write(root, 'docs/principles/explicit-none-example.md', validPrinciple('Explicit none example', { enforcement: 'none' }));
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: three principles, two unenforced`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: enforcement_ratio counts a missing Enforcement field and an explicit "none" as unenforced',
+    m.enforcement_ratio === 1 / 3,
+    `expected enforcement_ratio 1/3, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  append(root, 'docs/references/README.md', '\nSee `.seed/checks/ghost-check.ts` for details.\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: stale reference for fitness`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: drift_count matches the doc-gardener scan',
+    m.drift_count === 1,
+    `expected drift_count 1, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'docs/orphan.md', '# Orphan\n\nNothing links here.\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: unreachable file for fitness`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: map_reachability drops below 1 when a file is unreachable',
+    typeof m.map_reachability === 'number' && m.map_reachability < 1,
+    `expected map_reachability < 1, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a change that names its plan`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: plan_traceability is 1.0 across full history when every commit traces',
+    m.plan_traceability === 1,
+    `expected plan_traceability 1, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: base (traced)`);
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, 'a change that references nothing at all');
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: plan_traceability is a fraction when one of two commits does not trace',
+    m.plan_traceability === 0.5,
+    `expected plan_traceability 0.5, got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'docs/plans/entropy-ledger.md', minimalLedger(1, 0));
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: fresh ledger, whole history inside the window`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    "fitness: ledger_trend baselines at zero when the ledger's whole history is younger than the window",
+    m.ledger_trend === 1,
+    `expected ledger_trend 1 (1 open entry, nothing existed before it), got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'docs/plans/entropy-ledger.md', minimalLedger(1, 0));
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  gitCommitAllAt(root, `Plan ${PLAN_DUP} fixture: ledger baseline`, thirtyDaysAgo);
+  write(root, 'docs/plans/entropy-ledger.md', minimalLedger(2, 0));
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: one more open entry this week`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: ledger_trend diffs against the state just before the trailing window (old baseline outside it)',
+    m.ledger_trend === 1,
+    `expected ledger_trend 1 (2 open now, 1 open a month ago), got:\n${output}`,
   );
 });
 

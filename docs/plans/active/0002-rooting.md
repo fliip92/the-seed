@@ -82,6 +82,31 @@ item), and every session opens with the metabolism per the map.
   the hosted runner independently reporting `all checks passed` (`map_reachability` 100.0%,
   44/44), `all 50 self-tests passed` (the seven doc-drift cases among them), and both
   git-aware gates green.
+- **2026-07-04** — Scope item 4 complete: fitness v0.
+  [`.seed/checks/fitness.ts`](../../../.seed/checks/fitness.ts) (`npm run fitness`)
+  computes five of SEED.md §6's six metrics and prints them as a dated
+  `{ date, stage, metrics }` snapshot: `map_reachability` and `drift_count` are reused
+  directly from `validate-map.ts` (now exporting `analyzeReachability`) and
+  `doc-drift.ts --json`; `plan_traceability` walks the repo's entire non-merge commit
+  history for a resolvable reference, sharing its reference grammar with
+  `plan-traceability.ts` via two new `lib/repo.ts` helpers
+  (`extractPlanRingRefs`/`numberedFilenames`) so the gate and the trend cannot silently
+  disagree on what "traces"; `enforcement_ratio` scans `docs/principles/` for a non-empty,
+  non-"none" Enforcement field (vacuously 1 while zero principles are stated, the same
+  zero-denominator convention `map_reachability` already used); `ledger_trend` diffs
+  current open-entry count against the ledger's state just before a trailing 7-day git
+  window, falling back to a zero baseline while the repo (or the ledger) is younger than
+  the window itself — honest for a one-day-old repo: everything open today genuinely did
+  appear within the last week. `escalation_rate` stays null (no run-log instrument yet).
+  Wired as CI's fifth step (advisory: only a thrown error fails it, the numbers never
+  gate). Verified by nine new self-tests (59 total, two mutation-checked live: breaking
+  the window-baseline branch and weakening the enforcement "none" guard both failed
+  exactly the case built to catch them). First snapshot landed:
+  [docs/fitness/history/2026-07-04.json](../../fitness/history/2026-07-04.json)
+  (`map_reachability` 100%, `enforcement_ratio` 100% vacuous, `drift_count` 0,
+  `plan_traceability` 100%, `ledger_trend` +6). Local evidence: `npm run check` green
+  (`map_reachability` 100%, 46/46 files), `npm test` 59/59 green,
+  `npm run fitness` printing the snapshot above.
 
 ## Decision log
 
@@ -146,18 +171,30 @@ item), and every session opens with the metabolism per the map.
   [E-009](../entropy-ledger.md)) rather than risk noise. The rule was tuned against real
   repository data: the committed tree's baseline is `drift_count 0`, which also lets a
   single seeded reference read cleanly as `drift_count 1` in the self-tests.
+- **`enforcement_ratio` is vacuously 1 with zero principles stated.** Mirrors
+  `map_reachability`'s own zero-denominator convention (already silent precedent in
+  `validate-map.ts`): an empty set has nothing unenforced in it. Alternative rejected:
+  `null` — the metric genuinely is computable today (0/0 by convention), and `null` is
+  reserved for metrics with no instrument at all (`escalation_rate`). The trend becomes
+  informative the moment Stage 2 authors the first real principle.
+- **`plan_traceability` walks full history, independent of the gate.**
+  `plan-traceability.ts` judges commits since a base ref and fails CI; the fitness metric
+  needs a repo-wide trend and must never fail. Rather than import the gate script (it
+  executes and calls `process.exit` at module scope) or fork its regex, the reference
+  grammar (`extractPlanRingRefs`, `numberedFilenames`) moved to `lib/repo.ts` so both
+  consumers share one definition of "traces" — a duplicated regex here would have been
+  exactly the kind of invariant-vs-implementation split LAW-3 warns against.
+- **`ledger_trend` falls back to a zero baseline inside the trailing window, not to the
+  ledger's inception content.** The first version tried "diff against the ledger's
+  oldest known state," which double-counts entries paid off within the window as if they
+  never existed. Diffing against "nothing" when no prior commit sits outside the 7-day
+  window is what "net change per week" actually means for a repo younger than a week: the
+  whole ledger genuinely appeared in the last 7 days. Verified live by mutation (Progress
+  log, scope item 4).
 
 ## Next actions
 
-1. **Seed:** execute scope item 4 — Fitness v0 in CI: compute the SEED.md §6 metrics now
-   computable — `map_reachability` (from `.seed/checks/validate-map.ts`),
-   `enforcement_ratio` (over `docs/principles/`), `drift_count` (from
-   `node .seed/checks/doc-drift.ts --json`, now that scope item 3 sources it),
-   `plan_traceability` and `ledger_trend` (from CI/git history); the rest recorded null per
-   the [FITNESS.md](../../fitness/FITNESS.md) schema — and land the first dated snapshots in
-   `docs/fitness/history/`. Tier hint (ring
-   [0010](../../rings/0010-model-effort-selection.md)): mechanical — mid tier.
-2. **Seed:** then scope item 5 — cadence automation (converting
+1. **Seed:** execute scope item 5 — cadence automation (converting
    [E-008](../entropy-ledger.md)): scheduled invocation of the gardening pass plus a
    path-based gate encoding ring [0007](../../rings/0007-gardening-cadence-automerge.md)'s
    automerge classes. Tier hint (ring

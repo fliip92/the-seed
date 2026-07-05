@@ -6,9 +6,20 @@ trend.
 
 ## Status
 
-Metrics are **defined** (below) and **computed from Stage 1** (Rooting), when fitness v0
-lands in CI — per the stage boundaries in SEED.md §4. One preview is already available:
-`.seed/checks/validate-map.ts` prints `map_reachability` on every run.
+Fitness v0 landed in Stage 1 (Rooting), per SEED.md §4 (plan 0002 scope item 4):
+[`.seed/checks/fitness.ts`](../../.seed/checks/fitness.ts) (`npm run fitness`) computes
+five of the six metrics below on every CI run; `escalation_rate` stays null until a
+run-log instrument exists. Latest snapshot —
+[2026-07-04](history/2026-07-04.json), the first landed:
+
+| Metric | Value |
+|---|---|
+| `map_reachability` | 100.0% |
+| `enforcement_ratio` | 100.0% (vacuous — no principles stated yet) |
+| `drift_count` | 0 |
+| `plan_traceability` | 100.0% |
+| `escalation_rate` | null |
+| `ledger_trend` | +6 open entries (repo younger than the trailing 7-day window) |
 
 ## Metric definitions (v0)
 

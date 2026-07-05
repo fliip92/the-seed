@@ -16,9 +16,7 @@
 // commits they carry are each checked individually), and history before the merge base
 // is never re-judged.
 import { execFileSync } from 'node:child_process';
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
-import { REPO_ROOT, formatViolation } from '../lib/repo.ts';
+import { REPO_ROOT, formatViolation, extractPlanRingRefs, numberedFilenames } from '../lib/repo.ts';
 import type { Violation } from '../lib/repo.ts';
 
 const ID = 'seed/plan-traceability';
@@ -59,15 +57,8 @@ try {
 // Existence is checked against HEAD's tree. Safe: plans are kept forever and rings are
 // append-only (the sibling gate), so a reference that resolved when its commit landed
 // cannot have gone stale.
-const numbersIn = (dir: string): string[] =>
-  readdirSync(join(REPO_ROOT, dir))
-    .map((f) => f.match(/^(\d{4})-/)?.[1])
-    .filter((n): n is string => n !== undefined);
-const ringNums = new Set(numbersIn('docs/rings'));
-const planNums = new Set([...numbersIn('docs/plans/active'), ...numbersIn('docs/plans/completed')]);
-
-// "plan 0002", "Ring 0010", and ranges like "rings 0004-0007" (both endpoints count).
-const REF_RE = /\b(plans?|rings?)\s+(\d{4})(?:\s*[-–]\s*(\d{4}))?/gi;
+const ringNums = new Set(numberedFilenames('docs/rings'));
+const planNums = new Set([...numberedFilenames('docs/plans/active'), ...numberedFilenames('docs/plans/completed')]);
 
 const commits = git('rev-list', '--no-merges', `${mergeBase}..HEAD`)
   .split('\n')
@@ -77,12 +68,7 @@ const violations: Violation[] = [];
 for (const sha of commits) {
   const message = git('show', '-s', '--format=%B', sha);
   const subject = message.split('\n')[0];
-  const refs: { kind: 'plan' | 'ring'; num: string }[] = [];
-  for (const m of message.matchAll(REF_RE)) {
-    const kind = m[1].toLowerCase().startsWith('plan') ? 'plan' : 'ring';
-    refs.push({ kind, num: m[2] });
-    if (m[3] !== undefined) refs.push({ kind, num: m[3] });
-  }
+  const refs = extractPlanRingRefs(message);
   if (refs.length === 0) {
     violations.push({
       check: ID,

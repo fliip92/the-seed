@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-04",
+  "stage": 1,
+  "metrics": {
+    "map_reachability": 1,
+    "enforcement_ratio": 1,
+    "drift_count": 0,
+    "plan_traceability": 1,
+    "escalation_rate": null,
+    "ledger_trend": 6
+  }
+}

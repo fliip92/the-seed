@@ -22,11 +22,14 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
 - **Correct first action for a fresh agent right now:** execute
   [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — first up:
-  fitness v0 in CI (scope item 4). Scope items 1–3 landed 2026-07-04: `npm test`
+  cadence automation (scope item 5). Scope items 1–4 landed 2026-07-04: `npm test`
   verifies the verifiers (E-007 + E-005), every commit to `main` must trace to a plan or
-  ring (E-003), and the [doc-gardener](skills/doc-gardener/SKILL.md) drift detector
+  ring (E-003), the [doc-gardener](skills/doc-gardener/SKILL.md) drift detector
   (`npm run garden`) reports `drift_count` as an advisory signal (ring
-  [0011](docs/rings/0011-drift-advisory.md)).
+  [0011](docs/rings/0011-drift-advisory.md)), and fitness v0
+  (`npm run fitness`, `.seed/checks/fitness.ts`) computes five of the six SEED.md §6
+  metrics on every CI run, with the first snapshot landed in
+  [docs/fitness/history/](docs/fitness/history/README.md).
 
 ## Territory
 

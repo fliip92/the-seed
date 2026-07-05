@@ -27,97 +27,119 @@ const FORBIDDEN_LINK_FORMS: Array<{ re: RegExp; name: string }> = [
   { re: /<(?:a|img)\s[^>]*(?:href|src)\s*=/i, name: 'HTML link' },
 ];
 
-export const check: Check = {
-  id: ID,
-  run(files: string[]): CheckResult {
-    const present = new Set(files);
-    const violations: Violation[] = [];
+export interface ReachabilityResult {
+  violations: Violation[];
+  reachableCount: number;
+  knowledgeTotal: number;
+  deadLinks: number;
+  coveredCount: number;
+  /** reachableCount / knowledgeTotal; 1 (vacuously fully reachable) when knowledgeTotal is 0. */
+  fraction: number;
+}
 
-    // Hop 0 is the map itself; a link found in a file at hop d lands its target at d+1.
-    const hop = new Map<string, number>([[MAP, 0]]);
-    const queue: string[] = [MAP];
-    const linksExtracted = new Set<string>();
+/**
+ * The map_reachability computation (SEED.md §6): shared by this check's CI-facing
+ * summary and by fitness.ts, which needs the raw fraction, not a parsed summary string.
+ */
+export function analyzeReachability(files: string[]): ReachabilityResult {
+  const present = new Set(files);
+  const violations: Violation[] = [];
 
-    const checkLinksOf = (file: string): ReturnType<typeof extractLocalLinks> => {
-      linksExtracted.add(file);
-      const links = extractLocalLinks(file);
-      for (const link of links) {
-        if (present.has(link.target)) continue;
-        const abs = join(REPO_ROOT, link.target);
-        const isDir = existsSync(abs) && statSync(abs).isDirectory();
-        violations.push({
-          check: ID,
-          law: LAW,
-          problem: isDir
-            ? `${file}:${link.line} links to a directory: ${link.raw}`
-            : `${file}:${link.line} dead link: ${link.raw} (resolves to ${link.target}, which does not exist)`,
-          fix: isDir
-            ? `link to the directory's README.md instead (e.g. ${link.target}/README.md) so reachability stays well-defined.`
-            : `point the link at an existing file, or create ${link.target}. Knowledge that cannot be reached from the map is entropy (SEED.md §0).`,
-        });
-      }
-      return links;
-    };
+  // Hop 0 is the map itself; a link found in a file at hop d lands its target at d+1.
+  const hop = new Map<string, number>([[MAP, 0]]);
+  const queue: string[] = [MAP];
+  const linksExtracted = new Set<string>();
 
-    while (queue.length > 0) {
-      const file = queue.shift() as string;
-      const depth = hop.get(file) as number;
-      if (!file.endsWith('.md') || depth >= MAX_HOPS) continue;
-      for (const link of checkLinksOf(file)) {
-        if (present.has(link.target) && !hop.has(link.target)) {
-          hop.set(link.target, depth + 1);
-          queue.push(link.target);
-        }
-      }
-    }
-
-    // A dead link is a lie wherever it lives: sweep every md file whose links the BFS
-    // did not extract — unreachable files AND files sitting at exactly MAX_HOPS.
-    for (const file of files) {
-      if (file.endsWith('.md') && !linksExtracted.has(file)) checkLinksOf(file);
-    }
-
-    // Link forms the parser cannot follow are forbidden everywhere.
-    for (const file of files) {
-      if (!file.endsWith('.md')) continue;
-      for (const { n, text } of visibleMarkdownLines(file)) {
-        for (const form of FORBIDDEN_LINK_FORMS) {
-          if (form.re.test(text)) {
-            violations.push({
-              check: ID,
-              law: LAW,
-              problem: `${file}:${n} uses a ${form.name}, which the map parser cannot follow`,
-              fix: 'use an inline markdown link — [text](relative/path.md) — so dead-link and reachability analysis see it.',
-            });
-          }
-        }
-      }
-    }
-
-    const isCoveredData = (file: string): boolean =>
-      DATA_DIRS.some(
-        (d) =>
-          file.startsWith(d.dir + '/') &&
-          d.pattern.test(file.slice(d.dir.length + 1)) &&
-          hop.has(d.readme),
-      );
-
-    const covered = files.filter((f) => !hop.has(f) && isCoveredData(f));
-    const unreachable = files.filter((f) => !hop.has(f) && !isCoveredData(f));
-    for (const file of unreachable) {
+  const checkLinksOf = (file: string): ReturnType<typeof extractLocalLinks> => {
+    linksExtracted.add(file);
+    const links = extractLocalLinks(file);
+    for (const link of links) {
+      if (present.has(link.target)) continue;
+      const abs = join(REPO_ROOT, link.target);
+      const isDir = existsSync(abs) && statSync(abs).isDirectory();
       violations.push({
         check: ID,
         law: LAW,
-        problem: `${file} is not reachable within ${MAX_HOPS} hops of ${MAP}`,
-        fix: `link it from ${MAP} or from an index README already on the map (e.g. the README of its directory). If it should not exist, delete it — digest or delete (SEED.md §0).`,
+        problem: isDir
+          ? `${file}:${link.line} links to a directory: ${link.raw}`
+          : `${file}:${link.line} dead link: ${link.raw} (resolves to ${link.target}, which does not exist)`,
+        fix: isDir
+          ? `link to the directory's README.md instead (e.g. ${link.target}/README.md) so reachability stays well-defined.`
+          : `point the link at an existing file, or create ${link.target}. Knowledge that cannot be reached from the map is entropy (SEED.md §0).`,
       });
     }
+    return links;
+  };
 
-    const knowledgeTotal = files.length - covered.length;
-    const reachableCount = knowledgeTotal - unreachable.length;
-    const pct = knowledgeTotal === 0 ? 100 : (reachableCount / knowledgeTotal) * 100;
-    const deadLinks = violations.filter((v) => v.problem.includes('dead link')).length;
-    const coveredNote = covered.length > 0 ? `, ${covered.length} data file(s) covered by README` : '';
+  while (queue.length > 0) {
+    const file = queue.shift() as string;
+    const depth = hop.get(file) as number;
+    if (!file.endsWith('.md') || depth >= MAX_HOPS) continue;
+    for (const link of checkLinksOf(file)) {
+      if (present.has(link.target) && !hop.has(link.target)) {
+        hop.set(link.target, depth + 1);
+        queue.push(link.target);
+      }
+    }
+  }
+
+  // A dead link is a lie wherever it lives: sweep every md file whose links the BFS
+  // did not extract — unreachable files AND files sitting at exactly MAX_HOPS.
+  for (const file of files) {
+    if (file.endsWith('.md') && !linksExtracted.has(file)) checkLinksOf(file);
+  }
+
+  // Link forms the parser cannot follow are forbidden everywhere.
+  for (const file of files) {
+    if (!file.endsWith('.md')) continue;
+    for (const { n, text } of visibleMarkdownLines(file)) {
+      for (const form of FORBIDDEN_LINK_FORMS) {
+        if (form.re.test(text)) {
+          violations.push({
+            check: ID,
+            law: LAW,
+            problem: `${file}:${n} uses a ${form.name}, which the map parser cannot follow`,
+            fix: 'use an inline markdown link — [text](relative/path.md) — so dead-link and reachability analysis see it.',
+          });
+        }
+      }
+    }
+  }
+
+  const isCoveredData = (file: string): boolean =>
+    DATA_DIRS.some(
+      (d) =>
+        file.startsWith(d.dir + '/') &&
+        d.pattern.test(file.slice(d.dir.length + 1)) &&
+        hop.has(d.readme),
+    );
+
+  const covered = files.filter((f) => !hop.has(f) && isCoveredData(f));
+  const unreachable = files.filter((f) => !hop.has(f) && !isCoveredData(f));
+  for (const file of unreachable) {
+    violations.push({
+      check: ID,
+      law: LAW,
+      problem: `${file} is not reachable within ${MAX_HOPS} hops of ${MAP}`,
+      fix: `link it from ${MAP} or from an index README already on the map (e.g. the README of its directory). If it should not exist, delete it — digest or delete (SEED.md §0).`,
+    });
+  }
+
+  const knowledgeTotal = files.length - covered.length;
+  const reachableCount = knowledgeTotal - unreachable.length;
+  const fraction = knowledgeTotal === 0 ? 1 : reachableCount / knowledgeTotal;
+  const deadLinks = violations.filter((v) => v.problem.includes('dead link')).length;
+
+  return { violations, reachableCount, knowledgeTotal, deadLinks, coveredCount: covered.length, fraction };
+}
+
+export const check: Check = {
+  id: ID,
+  run(files: string[]): CheckResult {
+    const { violations, reachableCount, knowledgeTotal, deadLinks, coveredCount, fraction } =
+      analyzeReachability(files);
+    const pct = fraction * 100;
+    const coveredNote = coveredCount > 0 ? `, ${coveredCount} data file(s) covered by README` : '';
     return {
       summary: `map_reachability ${pct.toFixed(1)}% (${reachableCount}/${knowledgeTotal} files ≤${MAX_HOPS} hops${coveredNote}), dead links: ${deadLinks}`,
       violations,

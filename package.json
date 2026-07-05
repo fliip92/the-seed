@@ -11,6 +11,7 @@
   "scripts": {
     "check": "node .seed/checks/run-all.ts",
     "test": "node .seed/tests/self-test.ts",
-    "garden": "node .seed/checks/doc-drift.ts"
+    "garden": "node .seed/checks/doc-drift.ts",
+    "fitness": "node .seed/checks/fitness.ts"
   }
 }

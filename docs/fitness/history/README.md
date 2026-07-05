@@ -7,5 +7,5 @@ is entropy of the worst kind.
 Schema: see [FITNESS.md](../FITNESS.md). Files in this directory are append-only data and
 are covered by this README for map-reachability purposes.
 
-Empty until Stage 1 (Rooting) — fitness v0 is a Stage 1 exit organ, and stages are not
-skipped (SEED.md §4).
+First snapshot: `2026-07-04.json`, landed with fitness v0 (plan 0002 scope item 4;
+computed by [fitness.ts](../../../.seed/checks/fitness.ts)).

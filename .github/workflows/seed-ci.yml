@@ -18,3 +18,4 @@ jobs:
       - run: node .seed/tests/self-test.ts
       - run: node .seed/checks/ring-append-only.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       - run: node .seed/checks/plan-traceability.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
+      - run: node .seed/checks/fitness.ts

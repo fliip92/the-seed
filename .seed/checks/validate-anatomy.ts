@@ -34,6 +34,7 @@ const REQUIRED_FILES: Array<{ path: string; purpose: string }> = [
   { path: '.seed/checks/run-all.ts', purpose: 'check runner CI executes' },
   { path: '.seed/checks/ring-append-only.ts', purpose: 'ring append-only CI gate (E-005)' },
   { path: '.seed/checks/doc-drift.ts', purpose: 'doc-gardener drift detector, source of drift_count (plan 0002)' },
+  { path: '.seed/checks/fitness.ts', purpose: 'fitness v0 snapshot computation, SEED.md §6 (plan 0002)' },
   { path: '.seed/tests/self-test.ts', purpose: 'machinery self-tests (E-007, LAW-6)' },
 ];
 

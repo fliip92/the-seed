@@ -10,10 +10,12 @@ dependencies; ring [0002](../docs/rings/0002-germination-implementation-defaults
 npm run check          # the invariant checks (fast, no git needed)
 npm test               # the machinery self-tests (spawns the checks in temp copies)
 npm run garden         # the doc-gardener drift scan (advisory; reports drift_count)
+npm run fitness        # the fitness v0 snapshot (advisory; prints all SEED.md §6 metrics)
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
 node .seed/checks/doc-drift.ts
+node .seed/checks/fitness.ts
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -67,6 +69,23 @@ cadence digests continuously (LAW-8), not a merge blocker. It is therefore outsi
 `{ drift_count, findings }` for the fitness computation (plan
 [0002](../docs/plans/active/0002-rooting.md) scope item 4).
 
+## Fitness
+
+[checks/fitness.ts](checks/fitness.ts) computes the SEED.md §6 fitness v0 metrics (plan
+[0002](../docs/plans/active/0002-rooting.md) scope item 4) and prints a dated snapshot —
+`docs/fitness/history/*.json`, rendered in [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md).
+Five of six metrics are computable today: `map_reachability` (reuses
+`validate-map.ts`'s own computation), `enforcement_ratio` (scans `docs/principles/` for a
+non-empty Enforcement field, vacuously 1 while no principle is stated yet),
+`drift_count` (shells out to `doc-drift.ts --json`), `plan_traceability` (walks the
+repo's entire non-merge commit history for a resolvable plan/ring reference, sharing its
+reference grammar with `plan-traceability.ts` via `lib/repo.ts` so the gate and the trend
+cannot silently disagree on what "traces" means), and `ledger_trend` (net change in open
+ledger entries over a trailing 7-day git window). `escalation_rate` stays `null` — no
+run-log instrument exists yet. Like doc-drift, it is **advisory**: a CI step runs it for
+hosted evidence, but only a thrown error (a broken instrument) fails the run — the numbers
+themselves never gate. `--json` emits the exact `{ date, stage, metrics }` snapshot shape.
+
 ## Self-tests
 
 [tests/self-test.ts](tests/self-test.ts) (`npm test`) verifies the verifiers (converted
@@ -91,9 +110,9 @@ can't fill in the `fix` field doesn't understand its own rule yet.
 ## CI
 
 [.github/workflows/seed-ci.yml](../.github/workflows/seed-ci.yml) is a deliberately thin
-shim: checkout (full history) → Node → the invariant checks, the self-tests, and the
-git-aware gates, in that order. All logic lives here in `.seed/` so the CI
-provider is swappable in one file (ring 0002). Hosted since
+shim: checkout (full history) → Node → the invariant checks, the self-tests, the
+git-aware gates, and the fitness snapshot, in that order. All logic lives here in
+`.seed/` so the CI provider is swappable in one file (ring 0002). Hosted since
 [E-002](../docs/plans/entropy-ledger.md) was paid.
 
 ## Repository plumbing

@@ -145,6 +145,34 @@ export function extractLocalLinks(repoRelPath: string): MdLink[] {
   return links;
 }
 
+/** Four-digit numbers prefixing filenames directly inside `dir` (rings, plans/active, plans/completed). */
+export function numberedFilenames(dir: string): string[] {
+  return readdirSync(join(REPO_ROOT, dir))
+    .map((f) => f.match(/^(\d{4})-/)?.[1])
+    .filter((n): n is string => n !== undefined);
+}
+
+export interface PlanRingRef {
+  kind: 'plan' | 'ring';
+  num: string;
+}
+
+/** Matches "plan 0002", "Ring 0010", "rings 0004-0007" (both endpoints count) in prose. */
+export const PLAN_RING_REF_RE = /\b(plans?|rings?)\s+(\d{4})(?:\s*[-–]\s*(\d{4}))?/gi;
+
+/** Every plan/ring reference named in free text — the single definition of what counts as
+ * a traceable citation, shared by the plan-traceability gate and the fitness metric it
+ * feeds, so the two cannot silently drift apart on what "traces" means. */
+export function extractPlanRingRefs(text: string): PlanRingRef[] {
+  const refs: PlanRingRef[] = [];
+  for (const m of text.matchAll(PLAN_RING_REF_RE)) {
+    const kind: 'plan' | 'ring' = m[1].toLowerCase().startsWith('plan') ? 'plan' : 'ring';
+    refs.push({ kind, num: m[2] });
+    if (m[3] !== undefined) refs.push({ kind, num: m[3] });
+  }
+  return refs;
+}
+
 export interface SequenceIssue {
   kind: 'duplicate' | 'gap';
   number: number;
