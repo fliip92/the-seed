@@ -48,6 +48,14 @@ item), and every session opens with the metabolism per the map.
   all fixed before landing: a gate crash on no-common-ancestor bases, a symlink route
   around the gate's pathspec, and hardcoded fixture numbers that the next real ring
   would have invalidated. Local evidence: `npm run check` green, `npm test` 37/37 green.
+- **2026-07-04** — Scope item 2 complete: the
+  [plan traceability gate](../../../.seed/checks/plan-traceability.ts) runs as a fourth
+  CI step (E-003 paid): every non-merge commit since the event's base ref must name an
+  existing plan or ring in its message. Six new self-test cases pin fire/hold behavior
+  (existing plan and ring references pass; missing and phantom references fail naming
+  LAW-5; merge commits exempt; unresolvable base skips with a note). The commit-message
+  convention is documented in AGENTS.md § Protocols. Local evidence: `npm run check`
+  green, `npm test` 43/43 green, both gates green against `HEAD~1`.
 
 ## Decision log
 
@@ -79,17 +87,31 @@ item), and every session opens with the metabolism per the map.
   [0010](../../rings/0010-model-effort-selection.md): verification-harness strength
   decides the tier; volatile per-item tier hints live in `Next actions` below and die
   with this plan.
+- **Traceability is per-commit, not per-PR.** SEED.md §4 says "merged PRs must trace",
+  but solo pushes straight to `main` are the normal landing path today (ring
+  [0006](../../rings/0006-solo-until-flowering.md)), so PR-level checking would gate
+  nothing. The gate checks every non-merge commit since the base ref; merge commits are
+  exempt because their subjects are machine-written and the commits they carry are each
+  checked individually.
+- **References must resolve.** "plan 0002" counts only if that plan exists in `active/`
+  or `completed/` (rings likewise) — a phantom reference traces to nothing. Existence is
+  checked against HEAD's tree, which cannot go stale: plans are kept forever and rings
+  are append-only (the sibling gate).
+- **History is grandfathered.** Only commits past the merge base are judged. Two
+  pre-gate commits on `main` carry no reference; rewriting them to satisfy a new gate
+  would break the very append-only discipline the gates exist to protect.
 
 ## Next actions
 
-1. **Seed:** execute scope item 2 — traceability gate ([E-003](../entropy-ledger.md)):
-   every change landing on `main` must trace to a plan or ring (commit-message reference
-   checked in CI), making the `plan_traceability` metric computable. Tier hint (ring
-   [0010](../../rings/0010-model-effort-selection.md)): mid-tier model at default
-   effort — pattern work fully covered by the self-test harness; one mid-effort review
-   pass suffices.
-2. **Seed:** then scope items 3–5 in order, logging progress and evidence here. Tier
+1. **Seed:** execute scope item 3 — doc-gardener skill
+   (`skills/doc-gardener/SKILL.md`): detects doc↔code drift and stale content; lands
+   fix-up commits within ring
+   [0007](../../rings/0007-gardening-cadence-automerge.md)'s automerge classes; feeds
+   `drift_count`. Tier hint (ring
+   [0010](../../rings/0010-model-effort-selection.md)): autonomous edit decisions carry
+   open design space — top tier, or mid-tier implementation plus a top-tier review pass.
+2. **Seed:** then scope items 4–5 in order, logging progress and evidence here. Tier
    hints (ring [0010](../../rings/0010-model-effort-selection.md)): item 4 (fitness v0)
-   is mechanical — mid tier; items 3 (doc-gardener, autonomous edit decisions) and 5
-   (cadence automation, security-relevant CI surface) carry open design space — top
-   tier, or mid-tier implementation plus a top-tier review.
+   is mechanical — mid tier; item 5 (cadence automation, security-relevant CI surface)
+   carries open design space — top tier, or mid-tier implementation plus a top-tier
+   review.

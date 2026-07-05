@@ -20,6 +20,7 @@ const MAP = 'seed/validate-map';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const GATE = 'seed/ring-append-only';
+const TRACE = 'seed/plan-traceability';
 
 const LAW2 = "LAW-2 — legible and enforceable, or it doesn't exist";
 const LAW4 = 'LAW-4 — the map is the entry point';
@@ -84,6 +85,8 @@ function runNode(root: string, script: string, args: string[] = []): RunResult {
 const runChecks = (root: string): RunResult => runNode(root, '.seed/checks/run-all.ts');
 const runGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/ring-append-only.ts', args);
+const runTraceGate = (root: string, args: string[]): RunResult =>
+  runNode(root, '.seed/checks/plan-traceability.ts', args);
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -454,6 +457,99 @@ inTempCopy((root) => {
   const { status, output } = runGate(root, ['main']);
   report(
     'gate: base with no shared history skips with an explicit note',
+    status === 0 && output.includes('gate skipped'),
+    `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- plan traceability gate (E-003): every non-merge commit since the base must
+// --- reference an existing plan or ring in its message. The current maxima double as
+// --- guaranteed-existing references (artifacts are append-only and kept forever).
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a change that names its plan`);
+  const { status, output } = runTraceGate(root, ['HEAD~1']);
+  report(
+    'traceability: commit referencing an existing plan passes',
+    status === 0 && output.includes('trace to a plan or ring'),
+    `expected exit 0 + "trace to a plan or ring", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, `Fixture change decided by ring ${RING_DUP}`);
+  const { status, output } = runTraceGate(root, ['HEAD~1']);
+  report(
+    'traceability: commit referencing an existing ring passes',
+    status === 0 && output.includes('trace to a plan or ring'),
+    `expected exit 0 + "trace to a plan or ring", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, 'a change that references nothing at all');
+  const { status, output } = runTraceGate(root, ['HEAD~1']);
+  const wanted = [`[${TRACE}]`, `law: ${LAW5}`, 'no plan or ring reference'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'traceability: commit with no reference fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, `a change blaming ring ${RING_GAP}, which does not exist`);
+  const { status, output } = runTraceGate(root, ['HEAD~1']);
+  const wanted = [`[${TRACE}]`, `law: ${LAW5}`, 'none of these exist'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'traceability: commit referencing a nonexistent ring fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet', '-b', 'main');
+  gitCommitAll(root, 'base');
+  git(root, 'checkout', '--quiet', '-b', 'topic');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: traced work on a branch`);
+  git(root, 'checkout', '--quiet', 'main');
+  git(
+    root,
+    '-c', 'user.email=self-test@seed',
+    '-c', 'user.name=Seed Self-Test',
+    '-c', 'commit.gpgsign=false',
+    'merge', '--quiet', '--no-ff', '--no-verify', '-m', 'Merge branch topic', 'topic',
+  );
+  const { status, output } = runTraceGate(root, ['HEAD^1']);
+  report(
+    'traceability: merge commit is exempt, carried commits still checked',
+    status === 0 && output.includes('all 1 new commit(s)'),
+    `expected exit 0 + "all 1 new commit(s)", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'only commit');
+  const { status, output } = runTraceGate(root, ['0000000000000000000000000000000000000000']);
+  report(
+    'traceability: unresolvable base skips with an explicit note',
     status === 0 && output.includes('gate skipped'),
     `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
   );

@@ -19,15 +19,6 @@ ledger is also a record of digestion.
   generated artifact; until then the rule is doc-only, which violates LAW-2 and is why
   this entry exists
 
-## E-003 — Plan traceability is a stated metric with no enforcement
-
-- First observed: 2026-07-04, during germination
-- Where: SEED.md §6 (`plan_traceability`) and §4 Stage 1 ("merged PRs must trace to a plan
-  or ring") — nothing checks this today
-- Interest rate: medium (unattributed changes accumulate silently until Stage 1)
-- Price: small — a CI check that the branch/PR references a plan or ring identifier
-- Conversion path: invariant — mechanical trace check, scheduled as Stage 1 work
-
 ## E-004 — "Seed" is an uncleared working codename
 
 - First observed: 2026-07-03, planted in SEED.md §8
@@ -79,6 +70,22 @@ ledger is also a record of digestion.
   [seed-ci run 28712013718](https://github.com/fliip92/the-seed/actions/runs/28712013718),
   independently reporting `map_reachability 100.0% (35/35 files ≤3 hops), dead links: 0`
   and `all checks passed`
+
+## E-003 — Plan traceability is a stated metric with no enforcement
+
+- First observed: 2026-07-04, during germination
+- Where: SEED.md §6 (`plan_traceability`) and §4 Stage 1 ("merged PRs must trace to a plan
+  or ring") — nothing checks this today
+- Interest rate: medium (unattributed changes accumulate silently until Stage 1)
+- Price: small — a CI check that the branch/PR references a plan or ring identifier
+- Conversion path: invariant — mechanical trace check, scheduled as Stage 1 work
+- Paid: 2026-07-04 — [.seed/checks/plan-traceability.ts](../../.seed/checks/plan-traceability.ts)
+  runs in CI against the event's base ref: every non-merge commit must name an existing
+  plan or ring in its message ("plan 0002", "ring 0010"), else CI fails naming LAW-5.
+  Merge commits are exempt (machine-written; their carried commits are checked
+  individually) and history before the merge base is never re-judged. Fire/hold behavior
+  pinned by six self-test cases (the E-007 harness). `plan_traceability` is now
+  computable from CI history — fitness v0 (plan 0002 scope item 4) will compute it
 
 ## E-005 — Ring append-only rule has no mechanical enforcement
 

@@ -22,8 +22,9 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
 - **Correct first action for a fresh agent right now:** execute
   [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — first up:
-  traceability gate (ledger E-003). Scope item 1 (machinery self-tests, E-007 + E-005)
-  landed 2026-07-04: `npm test` now verifies the verifiers.
+  doc-gardener skill (scope item 3). Scope items 1–2 landed 2026-07-04: `npm test`
+  verifies the verifiers (E-007 + E-005), and every commit to `main` must now trace to
+  a plan or ring (E-003).
 
 ## Territory
 
@@ -44,8 +45,13 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 ## Protocols
 
 - **Verify everything:** run `npm run check` (or `node .seed/checks/run-all.ts`) before
-  claiming any change is done. Hosted CI will run the same checks once a remote exists
-  ([E-002](docs/plans/entropy-ledger.md)) — see [.seed/README.md](.seed/README.md).
+  claiming any change is done. Hosted CI runs the same checks, the self-tests, and the
+  git-aware gates on every push/PR ([E-002](docs/plans/entropy-ledger.md), paid) — see
+  [.seed/README.md](.seed/README.md).
+- **Committing:** every commit message names the plan or ring governing it — e.g.
+  `Plan 0002 scope item 2: …` or `… (ring 0010)` — enforced in CI by the
+  traceability gate (`.seed/checks/plan-traceability.ts`, E-003). Work with no plan or
+  ring behind it needs one first.
 - **Make a decision durable:** cut a ring — format and procedure in
   [docs/rings/README.md](docs/rings/README.md). Never ask the Gardener a question a ring
   already answers (LAW-10): search `docs/rings/` first.
