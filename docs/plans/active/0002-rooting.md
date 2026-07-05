@@ -77,7 +77,11 @@ item), and every session opens with the metabolism per the map.
   guard, contradicting the "globs skipped" contract), three unpinned self-test guards, and
   honest scoping of the inline-only / fenced-block limit in E-009 and the skill. Local
   evidence: `npm run check` green (`map_reachability` 100%, 44/44 files), `npm test` 50/50,
-  `npm run garden` `drift_count 0`.
+  `npm run garden` `drift_count 0`. Hosted evidence: first execution green on GitHub —
+  [seed-ci run 28726001712](https://github.com/fliip92/the-seed/actions/runs/28726001712),
+  the hosted runner independently reporting `all checks passed` (`map_reachability` 100.0%,
+  44/44), `all 50 self-tests passed` (the seven doc-drift cases among them), and both
+  git-aware gates green.
 
 ## Decision log
 
