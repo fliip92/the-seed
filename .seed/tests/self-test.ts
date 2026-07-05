@@ -19,6 +19,7 @@ const ANATOMY = 'seed/validate-anatomy';
 const MAP = 'seed/validate-map';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
+const ARCH = 'seed/validate-architecture';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
@@ -196,6 +197,47 @@ function validPrinciple(name: string, opts: { enforcement?: string | null } = {}
   if (opts.enforcement !== null) lines.push(`- Enforcement: ${opts.enforcement ?? 'structural test — fixture'}`);
   lines.push('- Exceptions: none', '');
   return lines.join('\n');
+}
+
+// A valid architecture doc (ring 0015): title, the three required sections, one rule naming
+// an enforcement, and a two-sided ownership split — well under the one-page budget. Each opt
+// breaks exactly one completion condition so a case fails for the one field it targets.
+function validArchitecture(opts: {
+  title?: string;
+  dropSection?: string;
+  ruleEnforcement?: string;
+  rules?: string[] | null;
+  ownership?: string[];
+  filler?: string;
+} = {}): string {
+  const rules =
+    opts.rules === undefined
+      ? [`- Dependencies point inward, never outward. — Enforcement: ${opts.ruleEnforcement ?? 'lint — seed/dep-direction'}`]
+      : opts.rules ?? [];
+  const ownership = opts.ownership ?? [
+    '- Human (Gardener): intent, priorities, taste, and gate approvals.',
+    '- Agent (Seed): everything else — code, docs, lints, CI.',
+  ];
+  const sections = [
+    `# Architecture — ${opts.title ?? 'Self-test fixture target'}`,
+    '',
+    '- One-liner: A fixture architecture that exists only inside a temp copy.',
+    '',
+    '## Shape',
+    '',
+    'One layer, one boundary; the fixture describes nothing real.',
+    ...(opts.filler ? ['', opts.filler] : []),
+    '',
+    '## Rules',
+    '',
+    ...rules,
+    '',
+    '## Ownership',
+    '',
+    ...ownership,
+    '',
+  ];
+  return sections.filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection)).join('\n');
 }
 
 // A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
@@ -405,6 +447,86 @@ const CASES: ViolationCase[] = [
     seed: (r) => symlinkSync('../SEED.md', join(r, 'docs/genome-link.md')),
     expect: { check: ANATOMY, law: LAW2, contains: ['docs/genome-link.md is a symbolic link'] },
   },
+  // --- architecture-doc format (grill-the-gardener, ring 0015). These write an
+  // --- unreachable doc into docs/architecture/, so validate-map also fires — the assertion
+  // --- only requires the architecture marker + message present, so the extra noise is
+  // --- harmless. The valid-doc-passes and doc-only-passes paths need reachability and so
+  // --- run as standalone exit-0 blocks below.
+  {
+    name: 'architecture: invalid title line',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture().replace('# Architecture — Self-test fixture target', '# Arch fixture')),
+    expect: { check: ARCH, law: LAW2, contains: ['is not a valid architecture title'] },
+  },
+  {
+    name: 'architecture: missing ## Shape section',
+    seed: (r) => write(r, 'docs/architecture/fixture.md', validArchitecture({ dropSection: '## Shape' })),
+    expect: { check: ARCH, law: LAW2, contains: ['missing required section: ## Shape'] },
+  },
+  {
+    // A different section than Shape, so the sectionBody(...) === null skip on ## Rules is
+    // exercised (not just the emit path).
+    name: 'architecture: missing ## Rules section',
+    seed: (r) => write(r, 'docs/architecture/fixture.md', validArchitecture({ dropSection: '## Rules' })),
+    expect: { check: ARCH, law: LAW2, contains: ['missing required section: ## Rules'] },
+  },
+  {
+    // No `Enforcement:` clause at all, and the sentence contains 'lintable' — pins that the
+    // mechanism is required in a real enforcement clause, not merely as a substring in prose.
+    name: 'architecture: a rule with no Enforcement clause is caught',
+    seed: (r) => write(r, 'docs/architecture/fixture.md', validArchitecture({ rules: ['- Boundaries stay explicit and lintable.'] })),
+    expect: { check: ARCH, law: LAW2, contains: ['rule does not name an enforcement'] },
+  },
+  {
+    name: "architecture: a rule's Enforcement clause names no mechanism",
+    seed: (r) => write(r, 'docs/architecture/fixture.md', validArchitecture({ ruleEnforcement: 'we will be careful' })),
+    expect: { check: ARCH, law: LAW2, contains: ["rule's enforcement names no mechanism"] },
+  },
+  {
+    // A good first rule and a bad second — exercises the rule loop past index 0.
+    name: 'architecture: one unenforced rule among several is caught',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ rules: ['- Dependencies point inward. Enforcement: lint (seed/dep-direction)', '- Modules stay small and cohesive.'] })),
+    expect: { check: ARCH, law: LAW2, contains: ['rule does not name an enforcement', 'Modules stay small'] },
+  },
+  {
+    name: 'architecture: an empty rules section',
+    seed: (r) => write(r, 'docs/architecture/fixture.md', validArchitecture({ rules: null })),
+    expect: { check: ARCH, law: LAW2, contains: ['## Rules names no rules'] },
+  },
+  {
+    name: 'architecture: ownership names only the human side',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ ownership: ['- Human (Gardener): intent, priorities, taste, and gate approvals.'] })),
+    expect: { check: ARCH, law: LAW2, contains: ['## Ownership does not name', 'the agent/Seed side'] },
+  },
+  {
+    // The mirror branch: only the agent side named, so the human-side message fires.
+    name: 'architecture: ownership names only the agent side',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ ownership: ['- Agent (Seed): everything else, code, docs, lints, CI.'] })),
+    expect: { check: ARCH, law: LAW2, contains: ['## Ownership does not name', 'the human/Gardener side'] },
+  },
+  {
+    // A single bullet that mentions both sides is not a split — the whole-section-OR bypass.
+    name: 'architecture: a single both-mentioning ownership bullet is not a split',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ ownership: ["- Human (Gardener): intent, priorities, taste, not the seed's concern."] })),
+    expect: { check: ARCH, law: LAW2, contains: ['both sides on separate bullets'] },
+  },
+  {
+    name: 'architecture: over the one-page word budget',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ filler: Array(480).fill('word').join(' ') })),
+    expect: { check: ARCH, law: LAW2, contains: ['over the one-page word budget of 500'] },
+  },
+  {
+    // Few words, many lines (a tall diagram) — the word cap misses it, the line cap catches it.
+    name: 'architecture: over the one-page line budget',
+    seed: (r) =>
+      write(r, 'docs/architecture/fixture.md', validArchitecture({ filler: Array(90).fill('x').join('\n') })),
+    expect: { check: ARCH, law: LAW2, contains: ['over the one-page line budget of 80'] },
+  },
 ];
 
 // --- runner ---
@@ -500,6 +622,42 @@ inTempCopy((root) => {
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );
 });
+
+// --- architecture-doc format, the exit-0 side (ring 0015): a valid doc must pass all
+// --- checks, so it is linked from the docs/architecture/ README (reachability) and its
+// --- content honors every completion condition. The pristine copy already proves the check
+// --- is vacuous with zero docs (docs/architecture/ holds only its README).
+
+inTempCopy((root) => {
+  write(root, 'docs/architecture/fixture.md', validArchitecture());
+  append(root, 'docs/architecture/README.md', '\n- [fixture](fixture.md) — self-test fixture architecture doc.\n');
+  const { status, output } = runChecks(root);
+  report(
+    'architecture: a valid, linked architecture doc passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// Every enforcement mechanism in the vocabulary (besides the default `lint`) must be
+// accepted — pins MECHANISM_RE against a regression that narrows it and wrongly rejects a
+// legitimately-enforced rule. doc-only especially: a rule may name it when no lint exists yet.
+for (const mech of [
+  'doc-only, justified: the target has no CI yet, priced as debt.',
+  'CI gate (the hosted workflow)',
+  'structural test (a machinery check)',
+]) {
+  inTempCopy((root) => {
+    write(root, 'docs/architecture/fixture.md', validArchitecture({ ruleEnforcement: mech }));
+    append(root, 'docs/architecture/README.md', '\n- [fixture](fixture.md) — self-test fixture architecture doc.\n');
+    const { status, output } = runChecks(root);
+    report(
+      `architecture: a rule enforced by "${mech.split(/[ ,(]/)[0]}" passes`,
+      status === 0 && output.includes('all checks passed'),
+      `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+    );
+  });
+}
 
 // --- ring append-only gate (E-005): needs real git history, so these cases init a
 // --- scratch repo inside the temp copy.

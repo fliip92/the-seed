@@ -95,13 +95,30 @@ carried its own decisions). The exit criterion governs completion, not the item 
   claims (E-001's conversion path and `docs/generated/`). Scope item 1 (grill-the-gardener) is
   the live work; each Stage 2 skill cuts rings for its build decisions as it is designed (the
   plan 0002 rhythm).
+- **2026-07-05** — Scope item 1, **grill-the-gardener**, planted. The skill
+  ([skills/grill-the-gardener/SKILL.md](../../../skills/grill-the-gardener/SKILL.md)) is the
+  architecture-elicitation interview procedure; its output is a one-page architecture doc in the
+  new [docs/architecture/](../../architecture/README.md) organ. Verification (LAW-6):
+  [`.seed/checks/validate-architecture.ts`](../../../.seed/checks/validate-architecture.ts) (in
+  `run-all.ts`) binds every architecture doc to the interview's three exit conditions — one
+  page, lintable rules each naming an enforcement, explicit human/agent ownership split —
+  pinned by temp-copy cases in the self-tests. Build decision recorded as
+  [ring 0015](../../rings/0015-grill-the-gardener-architecture-doc.md): the artifact format,
+  the `docs/architecture/` home, the 500-word one-page cap, and the choice not to hand-author
+  the seed's own architecture doc (it would duplicate the genome into a drift-prone second
+  source). `npm run check` + `npm test` green; `drift_count` 0.
 
 ## Next actions
 
 1. ✅ **Transition approved** (2026-07-05) — recorded as
    [ring 0014](../../rings/0014-stage-2-transition-approved.md); Stage 2 entered, this plan
    governing, [AGENTS.md](../../../AGENTS.md) `Current state` + `fitness.ts` flipped.
-2. **Seed:** open scope item 1 — **grill-the-gardener** (architecture elicitation): interview
-   the Gardener until the target architecture fits one page, is expressible as lintable rules,
-   and has an explicit human/agent ownership split (SEED.md §4). Ship it with its verification
-   (LAW-6), cut a ring for each build decision, and log progress here — the plan 0002 rhythm.
+2. ✅ **Scope item 1 — grill-the-gardener planted** (2026-07-05): the elicitation skill plus
+   its structural verification (`validate-architecture.ts`) and the `docs/architecture/` organ;
+   build decision in [ring 0015](../../rings/0015-grill-the-gardener-architecture-doc.md).
+3. **Seed:** open scope item 2 — **repo-fitness**: read-only fitness assessment of *any*
+   repository, computing the SEED.md §6 metrics without mutating the target (and against this
+   repo). It is the load-bearing organ for the Stage 2 exit criterion, now that
+   grill-the-gardener supplies the target architecture a fitness verdict is judged against. Ship
+   it with its verification (LAW-6), cut a ring for each build decision, and log progress here —
+   the plan 0002 rhythm.

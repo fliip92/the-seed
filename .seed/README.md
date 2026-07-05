@@ -29,6 +29,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-map.ts](checks/validate-map.ts) | No dead links; every file ≤3 hops from AGENTS.md; reports `map_reachability` | LAW-4 |
 | [checks/validate-rings.ts](checks/validate-rings.ts) | Ring filenames, sequence, and format (SEED.md §2) | LAW-10 |
 | [checks/validate-plans.ts](checks/validate-plans.ts) | Plan filenames, sequence, format; ledger entry format | LAW-5, LAW-8 |
+| [checks/validate-architecture.ts](checks/validate-architecture.ts) | Architecture-doc format (grill-the-gardener): one page, lintable rules each naming an enforcement, explicit human/agent ownership split (SEED.md §4) | LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -102,7 +103,7 @@ themselves never gate. `--json` emits the exact `{ date, stage, metrics }` snaps
 
 [tests/self-test.ts](tests/self-test.ts) (`npm test`) verifies the verifiers (converted
 from ledger E-007; LAW-6): it copies the repository to a temp directory, seeds one
-violation class per case — every class the checks above claim to catch, 31 in all —
+violation class per case — every class the checks above claim to catch —
 runs the copy's own `run-all.ts`, and asserts the right check fires with a law-naming
 message and exit 1. A pristine copy must pass. The three gates are tested the same way against
 scratch git repos (append-only: modify, delete, append, unresolvable base, no shared

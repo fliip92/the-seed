@@ -11,11 +11,16 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   the mechanical fixes within the gardening automerge classes, and is the source of the
   `drift_count` fitness metric (Stage 1; plan
   [0002](../docs/plans/completed/0002-rooting.md)).
+- [grill-the-gardener](grill-the-gardener/SKILL.md) — architecture elicitation: interview the
+  Gardener until the target architecture fits one page, is expressible as lintable rules, and
+  has an explicit human/agent ownership split, producing an
+  [architecture doc](../docs/architecture/README.md) its verification enforces (Stage 2, plan
+  [0003](../docs/plans/active/0003-growth.md) scope item 1; ring
+  [0015](../docs/rings/0015-grill-the-gardener-architecture-doc.md)).
 
 The garden grows by stage (SEED.md §4). Still to plant:
 
-- **Stage 2:** grill-the-gardener, repo-fitness, postmortem, parallel-worktrees,
-  onboard-human, feedback.
+- **Stage 2:** repo-fitness, postmortem, parallel-worktrees, onboard-human, feedback.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.

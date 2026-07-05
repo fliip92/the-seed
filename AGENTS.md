@@ -25,8 +25,10 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 - **Correct first action for a fresh agent right now:** Stage 2 (Growth) is underway
   (transition approved 2026-07-05, ring
   [0014](docs/rings/0014-stage-2-transition-approved.md)). The governing plan is
-  [plan 0003](docs/plans/active/0003-growth.md) — continue from its `Next actions`: the next
-  work is scope item 1, **grill-the-gardener** (architecture elicitation). Stage 2 grows the
+  [plan 0003](docs/plans/active/0003-growth.md) — continue from its `Next actions`: scope item
+  1, **grill-the-gardener** (architecture elicitation), is planted (ring
+  [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)); the next work is scope item
+  2, **repo-fitness** (read-only assessment of any repository). Stage 2 grows the
   skill garden (grill-the-gardener, repo-fitness, postmortem, parallel-worktrees,
   onboard-human, feedback), each shipping its own verification (LAW-6); the exit criterion is
   assessing a foreign repository read-only and producing an evidence-judgeable proposal
@@ -48,6 +50,7 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 | [docs/rings/](docs/rings/README.md) | Decision log, append-only, numbered | [README](docs/rings/README.md) |
 | [docs/plans/](docs/plans/README.md) | Execution plans (active + completed) and the entropy ledger | [README](docs/plans/README.md) |
 | [docs/principles/](docs/principles/README.md) | Golden principles, each naming its enforcement | [README](docs/principles/README.md) |
+| [docs/architecture/](docs/architecture/README.md) | Elicited target architectures (grill-the-gardener) | [README](docs/architecture/README.md) |
 | [docs/fitness/](docs/fitness/FITNESS.md) | Fitness metrics, current scores, dated history | [FITNESS.md](docs/fitness/FITNESS.md) |
 | [docs/references/](docs/references/README.md) | Distilled external docs, curated for agents | [README](docs/references/README.md) |
 | [docs/generated/](docs/generated/README.md) | Regenerated-only artifacts — never hand-edit | [README](docs/generated/README.md) |

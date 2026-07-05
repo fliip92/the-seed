@@ -6,8 +6,9 @@ import { check as anatomy } from './validate-anatomy.ts';
 import { check as map } from './validate-map.ts';
 import { check as rings } from './validate-rings.ts';
 import { check as plans } from './validate-plans.ts';
+import { check as architecture } from './validate-architecture.ts';
 
-const CHECKS: Check[] = [anatomy, map, rings, plans];
+const CHECKS: Check[] = [anatomy, map, rings, plans, architecture];
 
 const files = listRepoFiles();
 let failed = 0;
