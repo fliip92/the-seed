@@ -147,9 +147,22 @@ item), and every session opens with the metabolism per the map.
   non-triggering prose false-positive). Local evidence: `npm run check` green
   (`map_reachability` 100%, 50/50 files), `npm test` 72/72, the new gate green against `HEAD~1`,
   both workflows parse, the cadence shell logic dry-runs correctly (clean tree → no issue
-  filed). Hosted evidence pending the scope-item-5 push: the scheduled workflow's first
-  `workflow_dispatch` run and the seed-ci run confirming the automerge gate + the v5 bump (no
-  Node-20 deprecation warning) — this pays E-010 and closes E-008's workflow-glue confirmation.
+  filed).
+
+- **2026-07-05** — Scope item 5 hosted evidence captured (`Next actions` item 1 done). The
+  scope-item-5 push (`cc6a261`) drove **seed-ci green** —
+  [run 28752296476](https://github.com/fliip92/the-seed/actions/runs/28752296476): all six
+  check steps pass including the new automerge-scope gate (step 8), which correctly reported
+  `no automerge-marked commits since b40492419aef; 1 commit(s) on the Gardener-review path`
+  (`cc6a261` is unmarked plan work, so the gate constrains nothing and passes); the `@v5`
+  actions ran with **no Node-20 deprecation warning** (job annotations empty — the sole
+  `DEP0040 punycode` line is a Node-internal userland notice, not the Actions runtime
+  deprecation), **paying [E-010](../entropy-ledger.md)**. The first
+  `workflow_dispatch` of the scheduled pass ran **gardening-cadence green** —
+  [run 28752304367](https://github.com/fliip92/the-seed/actions/runs/28752304367): it composed
+  the report and took the skip path (`drift_count 0` → "no issue filed"; no `gardening-pass`
+  issue created), **closing E-008's workflow-glue confirmation**. All five scope items are now
+  hosted-evidenced; what remains is `Next actions` item 2 (close this plan, propose Stage 1→2).
 
 ## Decision log
 

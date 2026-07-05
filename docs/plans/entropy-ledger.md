@@ -63,25 +63,6 @@ ledger is also a record of digestion.
   advisory/gate split is settled by ring
   [0011](../rings/0011-drift-advisory.md)
 
-## E-010 — CI pins action versions on the Node 20 runtime GitHub is deprecating
-
-- First observed: 2026-07-04, in the seed-ci run landing plan 0002 scope item 3 (hosted
-  run 28726001712 emitted the deprecation warning)
-- Where: [.github/workflows/seed-ci.yml](../../.github/workflows/seed-ci.yml) uses
-  `actions/checkout@v4` and `actions/setup-node@v4`, which target the Node 20 runtime;
-  GitHub now force-runs them on Node 24 and has announced Node 20's removal from its runners
-- Interest rate: low (runs are green today — GitHub transparently runs the actions on
-  Node 24; the risk is a future runner change breaking the pinned versions with no local
-  signal, since the deprecation only surfaces in hosted CI)
-- Price: trivial — bump to the action versions that declare a Node 24 runtime once
-  published, and re-run CI to confirm green
-- Conversion path: invariant — update the pinned action versions in the CI shim; the
-  hosted run is itself the enforcement. Fold into the next change touching CI (scope item 5
-  adds a path-based gate to the same workflow). Staged in plan 0002 scope item 5's commit:
-  both workflows now pin `actions/checkout@v5` and `actions/setup-node@v5` (Node 24 runtime).
-  Stays Open — its only enforcement is the hosted run, so it is Paid when the scope-item-5
-  push confirms seed-ci green with no deprecation warning, not before
-
 ## Paid
 
 ## E-002 — CI is proven locally but not on a hosted runner
@@ -185,5 +166,30 @@ ledger is also a record of digestion.
   forces a constitution-touching commit to carry — or omit — the marker, so the gate makes an
   automerge *claim* trustworthy rather than forcing review; it hardens at Flowering with
   branch protection, the same shape as E-005's force-push residual. Hosted confirmation of
-  the workflow's cron + issue-filing glue is its first `workflow_dispatch` run, captured on
-  the scope-item-5 push
+  the workflow's cron + issue-filing glue: its first `workflow_dispatch` run green —
+  [gardening-cadence run 28752304367](https://github.com/fliip92/the-seed/actions/runs/28752304367)
+  — composed the report and took the skip path (`drift_count 0` → "no issue filed"; no
+  `gardening-pass` issue created), on 2026-07-05 after the scope-item-5 push
+
+## E-010 — CI pins action versions on the Node 20 runtime GitHub is deprecating
+
+- First observed: 2026-07-04, in the seed-ci run landing plan 0002 scope item 3 (hosted
+  run 28726001712 emitted the deprecation warning)
+- Where: [.github/workflows/seed-ci.yml](../../.github/workflows/seed-ci.yml) and
+  [gardening-cadence.yml](../../.github/workflows/gardening-cadence.yml) used
+  `actions/checkout@v4` / `actions/setup-node@v4`, which target the Node 20 runtime GitHub
+  now force-runs on Node 24 and has announced removing from its runners
+- Interest rate: low (runs were green — GitHub transparently ran the actions on Node 24;
+  the risk was a future runner change breaking the pinned versions with no local signal,
+  since the deprecation only surfaced in hosted CI)
+- Price: trivial — bump to the action versions that declare a Node 24 runtime, and re-run
+  CI to confirm green
+- Conversion path: invariant — update the pinned action versions in the CI shim; the
+  hosted run is itself the enforcement. Folded into plan 0002 scope item 5's commit (the
+  same change adding the automerge-scope gate)
+- Paid: 2026-07-05 — both workflows pin `actions/checkout@v5` / `actions/setup-node@v5`
+  (Node 24 runtime); the scope-item-5 push's seed-ci run confirms it green with no Node-20
+  deprecation warning —
+  [seed-ci run 28752296476](https://github.com/fliip92/the-seed/actions/runs/28752296476),
+  job annotations empty (the only `DEP0040 punycode` line is a Node-internal userland-module
+  notice, not the Actions Node-20 runtime deprecation this entry tracked)
