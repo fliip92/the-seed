@@ -76,6 +76,22 @@ ledger is also a record of digestion.
   advisory/gate split is settled by ring
   [0011](../rings/0011-drift-advisory.md)
 
+## E-010 — CI pins action versions on the Node 20 runtime GitHub is deprecating
+
+- First observed: 2026-07-04, in the seed-ci run landing plan 0002 scope item 3 (hosted
+  run 28726001712 emitted the deprecation warning)
+- Where: [.github/workflows/seed-ci.yml](../../.github/workflows/seed-ci.yml) uses
+  `actions/checkout@v4` and `actions/setup-node@v4`, which target the Node 20 runtime;
+  GitHub now force-runs them on Node 24 and has announced Node 20's removal from its runners
+- Interest rate: low (runs are green today — GitHub transparently runs the actions on
+  Node 24; the risk is a future runner change breaking the pinned versions with no local
+  signal, since the deprecation only surfaces in hosted CI)
+- Price: trivial — bump to the action versions that declare a Node 24 runtime once
+  published, and re-run CI to confirm green
+- Conversion path: invariant — update the pinned action versions in the CI shim; the
+  hosted run is itself the enforcement. Fold into the next change touching CI (scope item 5
+  adds a path-based gate to the same workflow)
+
 ## Paid
 
 ## E-002 — CI is proven locally but not on a hosted runner
