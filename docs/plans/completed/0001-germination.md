@@ -76,7 +76,7 @@ repository as rings citing this plan (next free ring numbers, currently 0004+):
   `all checks passed`. [E-002](../entropy-ledger.md) paid. Both Stage 0 exit criteria now
   hold with evidence: a fresh agent reached its correct first action from a clean clone
   (see Evidence), and CI proves the map holds on a hosted runner. Plan closed; Stage 1
-  (Rooting) proposed in [plan 0002](../active/0002-rooting.md).
+  (Rooting) proposed in [plan 0002](0002-rooting.md).
 
 ## Decision log
 

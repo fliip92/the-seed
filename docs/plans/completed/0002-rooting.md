@@ -1,6 +1,6 @@
 # Plan 0002 — Rooting (Stage 1)
 
-- Status: active
+- Status: completed 2026-07-05
 
 ## Goal
 
@@ -34,7 +34,7 @@ item), and every session opens with the metabolism per the map.
 
 ## Progress log
 
-- **2026-07-04** — Drafted at germination close ([plan 0001](../completed/0001-germination.md)
+- **2026-07-04** — Drafted at germination close ([plan 0001](0001-germination.md)
   complete, both Stage 0 exit criteria evidenced). Awaiting transition approval.
 - **2026-07-04** — Transition approved by the Gardener; recorded as ring
   [0009](../../rings/0009-stage-1-transition-approved.md). Plan active. Stage 1 begins
@@ -164,6 +164,18 @@ item), and every session opens with the metabolism per the map.
   issue created), **closing E-008's workflow-glue confirmation**. All five scope items are now
   hosted-evidenced; what remains is `Next actions` item 2 (close this plan, propose Stage 1→2).
 
+- **2026-07-05** — Plan closed. All five scope items are implemented and hosted-evidenced
+  (entries above); the **Stage 1 exit criterion is met** — the seed detects its own drift
+  automatically, without being asked — via the [doc-gardener](../../../skills/doc-gardener/SKILL.md)
+  (scope item 3) and the scheduled [gardening-cadence](../../../.github/workflows/gardening-cadence.yml)
+  (scope item 5). Status set to `completed 2026-07-05`; plan `git mv`d to `completed/`. Moving
+  the file would have dead-linked append-only [ring 0009](../../rings/0009-stage-1-transition-approved.md)
+  (which links this plan by its `active/` path and cannot be edited); that class was fixed
+  first in [ring 0013](../../rings/0013-plan-links-resolve-across-active-completed.md) — plan
+  links now resolve across `active/`⇄`completed/`. The Stage 1→2 (Rooting → Growth) transition
+  is proposed as [plan 0003](../active/0003-growth.md) for Gardener approval (SEED.md §4); on
+  approval it is recorded as a ring (the ring 0009 pattern).
+
 ## Decision log
 
 - **Self-test strategy — subprocess in a temp copy.** Each case copies the working tree
@@ -279,16 +291,16 @@ item), and every session opens with the metabolism per the map.
 
 ## Next actions
 
-1. **Seed:** capture the scheduled workflow's first hosted run — trigger
-   [gardening-cadence.yml](../../../.github/workflows/gardening-cadence.yml) via
-   `workflow_dispatch` and confirm it composes the report and files/skips the issue correctly,
-   and that the scope-item-5 push's seed-ci run is green with the new automerge-scope gate and
-   no Node-20 deprecation warning (pays [E-010](../entropy-ledger.md)). Link both runs in the
-   scope item 5 progress entry and the E-008 / E-010 ledger entries.
-2. **Then:** with all five scope items evidenced, close this plan (move to `completed/`,
-   Status: completed) and open the Stage 1→2 transition as a new plan for Gardener approval
-   (SEED.md §4) — the Stage 1 exit criterion ("you detect your own drift automatically,
-   without being asked") is met by the doc-gardener (scope item 3) plus this scheduled cadence
-   (scope item 5). Tier hint (ring [0010](../../rings/0010-model-effort-selection.md)): a
-   stage-transition proposal is Gardener-judgment work — draft at mid tier; the decision is
-   the Gardener's.
+Plan complete — both original `Next actions` items are done:
+
+1. ✅ **Hosted evidence captured** (2026-07-05): scope item 5's seed-ci run and the
+   gardening-cadence `workflow_dispatch` are green and linked in the progress log; E-010 and
+   E-008 are Paid in the [ledger](../entropy-ledger.md).
+2. ✅ **Plan closed; transition proposed:** all five scope items are evidenced, the Stage 1
+   exit criterion is met (doc-gardener scope item 3 + scheduled cadence scope item 5), Status
+   is `completed 2026-07-05`, and the plan lives in `completed/`. The Stage 1→2 (Rooting →
+   Growth) transition is proposed as [plan 0003](../active/0003-growth.md) for Gardener
+   approval (SEED.md §4); on approval it is recorded as a ring, following the
+   [ring 0009](../../rings/0009-stage-1-transition-approved.md) pattern.
+
+Nothing further here — the successor work lives in [plan 0003](../active/0003-growth.md).

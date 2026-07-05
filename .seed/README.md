@@ -79,12 +79,12 @@ gate**: it always exits 0 on findings (ring
 cadence digests continuously (LAW-8), not a merge blocker. It is therefore outside
 `run-all.ts`; its detection is verified by the self-tests. `--json` emits
 `{ drift_count, findings }` for the fitness computation (plan
-[0002](../docs/plans/active/0002-rooting.md) scope item 4).
+[0002](../docs/plans/completed/0002-rooting.md) scope item 4).
 
 ## Fitness
 
 [checks/fitness.ts](checks/fitness.ts) computes the SEED.md §6 fitness v0 metrics (plan
-[0002](../docs/plans/active/0002-rooting.md) scope item 4) and prints a dated snapshot —
+[0002](../docs/plans/completed/0002-rooting.md) scope item 4) and prints a dated snapshot —
 `docs/fitness/history/*.json`, rendered in [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md).
 Five of six metrics are computable today: `map_reachability` (reuses
 `validate-map.ts`'s own computation), `enforcement_ratio` (scans `docs/principles/` for a

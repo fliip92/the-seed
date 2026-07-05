@@ -20,21 +20,23 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   [0009](docs/rings/0009-stage-1-transition-approved.md)). Stage 0 completed with both
   exit criteria evidenced in [plan 0001](docs/plans/completed/0001-germination.md); the
   repository is public: [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
-- **Correct first action for a fresh agent right now:** execute
-  [plan 0002](docs/plans/active/0002-rooting.md) from its `Next actions` — all five scope
-  items are now implemented; what remains is capturing the scheduled workflow's first
-  hosted run, then closing the plan and proposing the Stage 1→2 transition. Scope items
-  1–5 landed 2026-07-04: `npm test` verifies the verifiers (E-007 + E-005), every commit
-  to `main` must trace to a plan or ring (E-003), the
-  [doc-gardener](skills/doc-gardener/SKILL.md) drift detector (`npm run garden`) reports
-  `drift_count` as an advisory signal (ring [0011](docs/rings/0011-drift-advisory.md)),
-  fitness v0 (`npm run fitness`, `.seed/checks/fitness.ts`) computes five of the six
-  SEED.md §6 metrics on every CI run with snapshots in
-  [docs/fitness/history/](docs/fitness/history/README.md), and cadence automation (E-008)
+- **Correct first action for a fresh agent right now:** Stage 1's self-maintenance organs
+  are all built and evidenced in [plan 0002](docs/plans/completed/0002-rooting.md)
+  (completed 2026-07-05), so the Stage 1 exit criterion — the seed detects its own drift
+  automatically, without being asked — is met. The live work is
+  [plan 0003](docs/plans/active/0003-growth.md): the **Stage 1→2 (Rooting → Growth)
+  transition proposal, awaiting Gardener approval** (SEED.md §4); on approval the seed cuts
+  the transition ring (the ring 0009 pattern) and Stage 2 (the skill garden) begins. What
+  Stage 1 shipped: `npm test` verifies the verifiers (E-007 + E-005), every commit to `main`
+  must trace to a plan or ring (E-003), the [doc-gardener](skills/doc-gardener/SKILL.md)
+  drift detector (`npm run garden`) reports `drift_count` as an advisory signal (ring
+  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`,
+  `.seed/checks/fitness.ts`) computes five of the six SEED.md §6 metrics on every CI run with
+  snapshots in [docs/fitness/history/](docs/fitness/history/README.md), cadence automation
   ships the automerge-scope gate and a weekly
-  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow that files a
-  gardening-pass issue when drift surfaces (mechanism: ring
-  [0012](docs/rings/0012-cadence-automation-mechanism.md)).
+  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow (mechanism: ring
+  [0012](docs/rings/0012-cadence-automation-mechanism.md)), and plan cross-references survive
+  the active/⇄completed/ move (ring [0013](docs/rings/0013-plan-links-resolve-across-active-completed.md)).
 
 ## Territory
 
