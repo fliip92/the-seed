@@ -68,9 +68,11 @@ export interface ReachabilityResult {
 
 /**
  * The map_reachability computation (SEED.md §6): shared by this check's CI-facing
- * summary and by fitness.ts, which needs the raw fraction, not a parsed summary string.
+ * summary and by the fitness engine (.seed/lib/fitness-metrics.ts), which needs the raw
+ * fraction, not a parsed summary string. `root` defaults to REPO_ROOT (this check's use);
+ * repo-fitness passes a foreign repo's root to run the identical analysis there (ring 0016).
  */
-export function analyzeReachability(files: string[]): ReachabilityResult {
+export function analyzeReachability(files: string[], root: string = REPO_ROOT): ReachabilityResult {
   const present = new Set(files);
   const violations: Violation[] = [];
 
@@ -81,10 +83,10 @@ export function analyzeReachability(files: string[]): ReachabilityResult {
 
   const checkLinksOf = (file: string): ReturnType<typeof extractLocalLinks> => {
     linksExtracted.add(file);
-    const links = extractLocalLinks(file);
+    const links = extractLocalLinks(file, root);
     for (const link of links) {
       if (resolveLinkTarget(link.target, present)) continue;
-      const abs = join(REPO_ROOT, link.target);
+      const abs = join(root, link.target);
       const isDir = existsSync(abs) && statSync(abs).isDirectory();
       violations.push({
         check: ID,
@@ -122,7 +124,7 @@ export function analyzeReachability(files: string[]): ReachabilityResult {
   // Link forms the parser cannot follow are forbidden everywhere.
   for (const file of files) {
     if (!file.endsWith('.md')) continue;
-    for (const { n, text } of visibleMarkdownLines(file)) {
+    for (const { n, text } of visibleMarkdownLines(file, root)) {
       for (const form of FORBIDDEN_LINK_FORMS) {
         if (form.re.test(text)) {
           violations.push({

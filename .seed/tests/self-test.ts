@@ -9,10 +9,11 @@
 // Each case copies the working tree (minus .git/node_modules) to a fresh temp dir,
 // mutates it, and asserts on the real end-to-end path CI runs — exit code included.
 // The append-only gate cases additionally `git init` the copy, so gate history is real.
-import { cpSync, mkdtempSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { REPO_ROOT } from '../lib/repo.ts';
 
 const ANATOMY = 'seed/validate-anatomy';
@@ -91,6 +92,7 @@ const runTraceGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/plan-traceability.ts', args);
 const runDrift = (root: string): RunResult => runNode(root, '.seed/checks/doc-drift.ts');
 const runFitness = (root: string, args: string[] = []): RunResult => runNode(root, '.seed/checks/fitness.ts', args);
+const runRepoFitness = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/repo-fitness.ts', args);
 const runAutomergeGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/automerge-scope.ts', args);
 const runReport = (root: string, args: string[] = []): RunResult =>
@@ -101,6 +103,12 @@ function git(root: string, ...args: string[]): void {
   if (res.status !== 0) {
     throw new Error(`git ${args.join(' ')} failed in ${root}:\n${res.stdout}${res.stderr}`);
   }
+}
+
+/** Read-only git query returning trimmed stdout — for the repo-fitness non-mutation proof
+ *  (capturing HEAD and `status --porcelain` before/after a run). */
+function gitCapture(root: string, ...args: string[]): string {
+  return `${spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' }).stdout ?? ''}`.trim();
 }
 
 // Commit with everything a host machine might inject (signing, hooks) disabled — the
@@ -1293,6 +1301,191 @@ inTempCopy((root) => {
       missingMd.length === 0,
     `expected has_findings true + drift_count 1 + a report naming the finding; json exit ${json.status}, md exit ${md.status}; missing in md: ${JSON.stringify(missingMd)}\n${json.output}\n---\n${md.output}`,
   );
+});
+
+// --- repo-fitness (plan 0003 scope item 2, ring 0016): the read-only §6 assessment of ANY
+// --- repository. It shares the metric engine with fitness.ts, so the seed measured through
+// --- repo-fitness must equal the seed measured through fitness.ts (self is the target=self
+// --- case); against a foreign repo the anatomy-dependent metrics degrade to null with a
+// --- reason while drift_count still computes; and a run must not mutate the target. These
+// --- cases run the seed COPY's repo-fitness.ts pointed at a SEPARATE foreign temp dir.
+
+// A deterministic hash of a directory tree (excluding .git — git-internal churn is caught
+// separately via HEAD + status). Independent of the code under test: a plain fs walk, so it
+// cannot be fooled by a bug in the engine's own file walker.
+function treeHash(dir: string): string {
+  const h = createHash('sha256');
+  const walk = (d: string, rel: string): void => {
+    for (const entry of readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (entry.name === '.git' || entry.name === 'node_modules') continue;
+      const r = rel ? `${rel}/${entry.name}` : entry.name;
+      if (entry.isDirectory()) {
+        h.update(`D:${r}\n`);
+        walk(join(d, entry.name), r);
+      } else {
+        h.update(`F:${r}\n`);
+        h.update(readFileSync(join(d, entry.name)));
+      }
+    }
+  };
+  walk(dir, '');
+  return h.digest('hex');
+}
+
+// A synthetic FOREIGN repo: no seed anatomy (no AGENTS.md, no docs/principles, no plan/ring
+// log, no ledger), but a top-level `lib/` so the backtick `lib/ghost.ts` in notes.md is a
+// concrete stale path claim doc-drift fires on (its first segment must be an existing
+// top-level entry). Optionally a git repo with one commit.
+function withForeignRepo(opts: { git: boolean }, fn: (dir: string) => void): void {
+  const dir = mkdtempSync(join(tmpdir(), 'seed-foreign-'));
+  try {
+    writeFileSync(join(dir, 'README.md'), '# Foreign project\n\nNo seed anatomy here.\n');
+    mkdirSync(join(dir, 'lib'));
+    writeFileSync(join(dir, 'lib', 'real.ts'), 'export const x = 1;\n');
+    writeFileSync(join(dir, 'notes.md'), 'The helper is `lib/ghost.ts` — which does not exist.\n');
+    if (opts.git) {
+      git(dir, 'init', '--quiet');
+      gitCommitAll(dir, 'initial import');
+    }
+    fn(dir);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+const repoFitnessMetrics = (output: string): Record<string, unknown> =>
+  (JSON.parse(output) as { metrics: Record<string, unknown> }).metrics;
+
+// Self-equivalence: repo-fitness pointed at the seed itself computes byte-identical metrics
+// to fitness.ts — the proof that generalizing the engine did not change the self case.
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: repo-fitness self-equivalence base`);
+  const rf = JSON.parse(runRepoFitness(root, [root, '--json']).output) as { stage: unknown; metrics: unknown };
+  const ft = JSON.parse(runFitness(root, ['--json']).output) as { stage: unknown; metrics: unknown };
+  report(
+    'repo-fitness <seed> computes the same metrics as fitness.ts (self is the target=self case)',
+    JSON.stringify(rf.metrics) === JSON.stringify(ft.metrics) && rf.stage === null && typeof ft.stage === 'number',
+    `expected identical metrics with repo-fitness stage null / fitness stage number;\n` +
+      `repo-fitness ${JSON.stringify(rf)}\nfitness      ${JSON.stringify(ft)}`,
+  );
+});
+
+// Foreign git repo, no seed anatomy: the anatomy-dependent metrics are null (with a reason),
+// drift_count still catches the seeded stale reference, and the --json envelope is well formed.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    const { status, output } = runRepoFitness(root, [foreign, '--json']);
+    let parsed: { date?: unknown; stage?: unknown; metrics?: Record<string, unknown>; notes?: Record<string, unknown> } | null;
+    try {
+      parsed = JSON.parse(output);
+    } catch {
+      parsed = null;
+    }
+    const m = parsed?.metrics ?? {};
+    const notes = (parsed?.notes ?? {}) as Record<string, string>;
+    const ok =
+      status === 0 &&
+      typeof parsed?.date === 'string' &&
+      parsed?.stage === null &&
+      m.map_reachability === null &&
+      m.enforcement_ratio === null &&
+      m.plan_traceability === null &&
+      m.ledger_trend === null &&
+      m.escalation_rate === null &&
+      m.drift_count === 1 &&
+      // every null names WHY — the reason is the finding, so a shape-only check is too weak.
+      String(notes.map_reachability).includes('no AGENTS.md') &&
+      String(notes.enforcement_ratio).includes('no docs/principles/') &&
+      String(notes.plan_traceability).includes('no plans or rings') &&
+      String(notes.ledger_trend).includes('no entropy ledger');
+    report(
+      'repo-fitness: a foreign git repo degrades anatomy metrics to null (each with its reason); drift_count still computes',
+      ok,
+      `expected nulls + drift_count 1 + a reason for each null + {date,stage:null,metrics,notes}, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Foreign NON-git dir: BOTH git-history metrics report the not-a-git-repository reason
+// (distinct from the git-but-no-plans / no-ledger reasons), proving the git-root guard fires
+// for plan_traceability and — since ledgerTrend now checks git-root before ledger presence —
+// for ledger_trend too, so that degrade branch is exercised.
+inTempCopy((root) => {
+  withForeignRepo({ git: false }, (foreign) => {
+    const { output } = runRepoFitness(root, [foreign, '--json']);
+    const notes = (JSON.parse(output) as { notes: Record<string, string> }).notes;
+    const m = repoFitnessMetrics(output);
+    report(
+      'repo-fitness: a non-git target reports plan_traceability AND ledger_trend null "not a git repository"',
+      m.plan_traceability === null &&
+        m.ledger_trend === null &&
+        String(notes.plan_traceability).includes('not a git repository') &&
+        String(notes.ledger_trend).includes('not a git repository'),
+      `expected both history metrics null with a not-a-git-repository reason, got:\n${output}`,
+    );
+  });
+});
+
+// Nested subdirectory of a git repo: the target is inside a git work tree but is NOT its
+// root, so the history metrics must refuse to measure the ENCLOSING repo (ring 0016 review).
+// `git rev-parse --git-dir` would say "yes, a repo"; only the --show-toplevel comparison
+// catches that the target is not the root.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (outer) => {
+    const sub = join(outer, 'nested');
+    mkdirSync(join(sub, 'docs', 'rings'), { recursive: true });
+    writeFileSync(join(sub, 'docs', 'rings', '0001-x.md'), '# Ring 0001\n');
+    gitCommitAll(outer, 'Ring 0001 fixture: nested subtree carrying its own ring');
+    const { output } = runRepoFitness(root, [sub, '--json']);
+    const notes = (JSON.parse(output) as { notes: Record<string, string> }).notes;
+    const m = repoFitnessMetrics(output);
+    report(
+      'repo-fitness: a git subdirectory target refuses history metrics (measures the target, not the enclosing repo)',
+      m.plan_traceability === null &&
+        m.ledger_trend === null &&
+        String(notes.plan_traceability).includes('not the git repository root'),
+      `expected history metrics null with a not-the-root reason, got:\n${output}`,
+    );
+  });
+});
+
+// A target carrying a broken .md symlink (dangling, and pointing at a directory) must still
+// produce an assessment: readFileSync would throw on both, so the engine skips symlinks
+// rather than crash (ring 0016 review). An AGENTS.md is present so the reachability read path
+// (which reads every .md) is exercised alongside the drift read path.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    writeFileSync(join(foreign, 'AGENTS.md'), '# Map\n\n[notes](notes.md) and [real](lib/real.ts).\n');
+    mkdirSync(join(foreign, 'adir'));
+    symlinkSync('does-not-exist.md', join(foreign, 'dangling.md')); // dangling → ENOENT on read
+    symlinkSync('adir', join(foreign, 'todir.md')); // → directory → EISDIR on read
+    const { status, output } = runRepoFitness(root, [foreign, '--json']);
+    report(
+      'repo-fitness: a target with a dangling / directory .md symlink still assesses (no uncaught fs crash)',
+      status === 0 && repoFitnessMetrics(output).drift_count === 1,
+      `expected exit 0 with drift_count 1 despite unreadable .md symlinks, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Read-only: a run leaves the target's working tree byte-identical and its git state (HEAD +
+// porcelain status) untouched. The Scout step modifies nothing (SEED.md §4, Stage 4 step 1).
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    const treeBefore = treeHash(foreign);
+    const headBefore = gitCapture(foreign, 'rev-parse', 'HEAD');
+    runRepoFitness(root, [foreign, '--json']);
+    runRepoFitness(root, [foreign]); // exercise the human path too
+    const treeAfter = treeHash(foreign);
+    const headAfter = gitCapture(foreign, 'rev-parse', 'HEAD');
+    const statusAfter = gitCapture(foreign, 'status', '--porcelain');
+    report(
+      'repo-fitness: a run does not mutate the target (tree hash, HEAD, and status unchanged)',
+      treeBefore === treeAfter && headBefore === headAfter && statusAfter === '',
+      `expected byte-identical target after a run; tree ${treeBefore === treeAfter}, head ${headBefore === headAfter}, status ${JSON.stringify(statusAfter)}`,
+    );
+  });
 });
 
 console.log(

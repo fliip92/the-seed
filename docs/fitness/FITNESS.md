@@ -9,8 +9,16 @@ trend.
 Fitness v0 landed in Stage 1 (Rooting), per SEED.md §4 (plan 0002 scope item 4):
 [`.seed/checks/fitness.ts`](../../.seed/checks/fitness.ts) (`npm run fitness`) computes
 five of the six metrics below on every CI run; `escalation_rate` stays null until a
-run-log instrument exists. Latest snapshot —
-[2026-07-04](history/2026-07-04.json), the first landed:
+run-log instrument exists.
+
+In Stage 2 the metric computation was generalized into one root-parameterized engine,
+[`.seed/lib/fitness-metrics.ts`](../../.seed/lib/fitness-metrics.ts) (plan 0003 scope item 2,
+ring [0016](../rings/0016-repo-fitness-generalizes-the-metric-engine.md)), so the same
+implementation assesses this repo (`fitness.ts`) and any foreign repo
+([`repo-fitness.ts`](../../.seed/checks/repo-fitness.ts), read-only) — one definition of each
+metric (LAW-3). Against a repo whose anatomy does not define a metric, that metric reads
+`null` with a stated reason (the null-when-absent contract `escalation_rate` uses). Latest
+self snapshot — [2026-07-04](history/2026-07-04.json), the first landed:
 
 | Metric | Value |
 |---|---|

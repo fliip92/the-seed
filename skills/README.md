@@ -17,10 +17,17 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   [architecture doc](../docs/architecture/README.md) its verification enforces (Stage 2, plan
   [0003](../docs/plans/active/0003-growth.md) scope item 1; ring
   [0015](../docs/rings/0015-grill-the-gardener-architecture-doc.md)).
+- [repo-fitness](repo-fitness/SKILL.md) — read-only fitness assessment of *any* repository:
+  the shared SEED.md §6 metric engine pointed at a target repo's root, degrading each metric
+  to `null` with a stated reason where the target's anatomy does not define it, proven not to
+  mutate the target. The seed's diagnostic instrument for hosts and the load-bearing organ of
+  the Stage 2 exit criterion (Stage 2, plan
+  [0003](../docs/plans/active/0003-growth.md) scope item 2; ring
+  [0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)).
 
 The garden grows by stage (SEED.md §4). Still to plant:
 
-- **Stage 2:** repo-fitness, postmortem, parallel-worktrees, onboard-human, feedback.
+- **Stage 2:** postmortem, parallel-worktrees, onboard-human, feedback.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.

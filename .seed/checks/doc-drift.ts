@@ -14,7 +14,8 @@
 // (stale-path-reference); new classes plug in without touching the runner. A class that
 // proves to be always-wrong-and-mechanically-fixable can be promoted to a hard invariant in
 // run-all.ts via a ring — the advisory/gate split is recorded in ring 0011.
-import { listRepoFiles, inlineCodeSpans, formatViolation } from '../lib/repo.ts';
+import { pathToFileURL } from 'node:url';
+import { listRepoFiles, inlineCodeSpans, formatViolation, REPO_ROOT } from '../lib/repo.ts';
 import type { Violation } from '../lib/repo.ts';
 
 const LAW = "LAW-2 — legible and enforceable, or it doesn't exist";
@@ -26,7 +27,7 @@ export interface Drift extends Violation {
 
 interface DriftClass {
   id: string;
-  detect(scan: string[], present: Set<string>): Drift[];
+  detect(scan: string[], present: Set<string>, root: string): Drift[];
 }
 
 // The current-state doc surface: documentation whose job is to describe the repository as
@@ -79,11 +80,11 @@ function pathClaims(code: string, topLevel: Set<string>): string[] {
 
 const stalePathReference: DriftClass = {
   id: 'stale-path-reference',
-  detect(scan, present): Drift[] {
+  detect(scan, present, root): Drift[] {
     const topLevel = new Set([...present].map((f) => f.split('/')[0]));
     const drifts: Drift[] = [];
     for (const file of scan) {
-      for (const { n, code } of inlineCodeSpans(file)) {
+      for (const { n, code } of inlineCodeSpans(file, root)) {
         for (const token of pathClaims(code, topLevel)) {
           if (present.has(token)) continue;
           drifts.push({
@@ -103,10 +104,15 @@ const stalePathReference: DriftClass = {
 
 const DRIFT_CLASSES: DriftClass[] = [stalePathReference];
 
-export function scanDrift(files: string[]): Drift[] {
+// `root` defaults to REPO_ROOT (the doc-gardener's use, scanning the seed itself). The
+// fitness engine passes a foreign repo's root so repo-fitness runs the identical drift scan
+// against any repository (ring 0016) — a doc naming a path that does not exist is drift in
+// any repo, so this class is universal; the seed-specific exclusions in isScanned() (rings,
+// completed plans, the ledger) simply match nothing in a repo that has no such organs.
+export function scanDrift(files: string[], root: string = REPO_ROOT): Drift[] {
   const present = new Set(files);
   const scan = files.filter(isScanned);
-  return DRIFT_CLASSES.flatMap((c) => c.detect(scan, present)).sort(
+  return DRIFT_CLASSES.flatMap((c) => c.detect(scan, present, root)).sort(
     (a, b) => a.file.localeCompare(b.file) || a.line - b.line,
   );
 }
@@ -139,4 +145,11 @@ function main(): void {
 
 // Advisory: report and exit 0 even with findings. A genuine crash (a thrown error) still
 // exits non-zero so CI notices a broken instrument.
-main();
+//
+// Run main() only when executed as a script (`node .seed/checks/doc-drift.ts`), not when
+// imported — the fitness engine imports `scanDrift` directly (ring 0016), and an
+// unconditional main() would print this report as an import side effect. This guard is what
+// let fitness.ts stop shelling out to a subprocess just to avoid that side effect. The
+// `process.argv[1] &&` clause matters: under `node -e` / REPL there is no argv[1], and
+// `pathToFileURL(undefined)` would throw during the import that pulls in `scanDrift`.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

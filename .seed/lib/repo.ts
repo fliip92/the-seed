@@ -1,7 +1,7 @@
 // Shared machinery helpers. Zero dependencies (ring 0002, LAW-7): the needed subset —
 // walking the repo, extracting markdown links, formatting violations — is small enough
 // to own outright.
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve, dirname, posix } from 'node:path';
 
 export const REPO_ROOT = resolve(import.meta.dirname, '..', '..');
@@ -30,8 +30,15 @@ export function toPosix(p: string): string {
   return p.split('\\').join('/');
 }
 
-/** All repo files as sorted repo-relative posix paths, minus .git/node_modules/OS noise. */
-export function listRepoFiles(): string[] {
+// Every file-reading helper below takes an optional `root`, defaulting to REPO_ROOT.
+// With the default, all existing callers (the run-all checks) see the seed's own tree,
+// unchanged. Passing a different root points the exact same analysis at any other
+// repository — the one capability repo-fitness needs (plan 0003 scope item 2, ring 0016):
+// the seed measures a foreign repo by running its own instruments against that repo's
+// root, so "what a metric means" has a single implementation (LAW-3).
+
+/** All files under `root` as sorted root-relative posix paths, minus .git/node_modules/OS noise. */
+export function listRepoFiles(root: string = REPO_ROOT): string[] {
   const out: string[] = [];
   const walk = (dir: string): void => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -39,16 +46,16 @@ export function listRepoFiles(): string[] {
       if (entry.isDirectory()) {
         if (!EXCLUDED_DIRS.has(entry.name)) walk(abs);
       } else if (!EXCLUDED_FILES.has(entry.name)) {
-        out.push(toPosix(relative(REPO_ROOT, abs)));
+        out.push(toPosix(relative(root, abs)));
       }
     }
   };
-  walk(REPO_ROOT);
+  walk(root);
   return out.sort();
 }
 
-export function readRepoFile(repoRelPath: string): string {
-  return readFileSync(join(REPO_ROOT, repoRelPath), 'utf8');
+export function readRepoFile(repoRelPath: string, root: string = REPO_ROOT): string {
+  return readFileSync(join(root, repoRelPath), 'utf8');
 }
 
 export interface MdLine {
@@ -61,8 +68,8 @@ export interface MdLine {
  * (fences close only on a matching marker — same character, at least the opening length)
  * and inline code spans (any backtick run) are blanked.
  */
-export function visibleMarkdownLines(repoRelPath: string): MdLine[] {
-  const lines = readRepoFile(repoRelPath).split('\n');
+export function visibleMarkdownLines(repoRelPath: string, root: string = REPO_ROOT): MdLine[] {
+  const lines = readRepoFile(repoRelPath, root).split('\n');
   const out: MdLine[] = [];
   let fence: { char: string; len: number } | null = null;
   lines.forEach((raw, i) => {
@@ -96,8 +103,8 @@ export interface InlineCode {
  * (`` `.seed/checks/run-all.ts` ``), so that is where stale references hide. Fence
  * tracking is identical to `visibleMarkdownLines` so the two agree on what is code.
  */
-export function inlineCodeSpans(repoRelPath: string): InlineCode[] {
-  const lines = readRepoFile(repoRelPath).split('\n');
+export function inlineCodeSpans(repoRelPath: string, root: string = REPO_ROOT): InlineCode[] {
+  const lines = readRepoFile(repoRelPath, root).split('\n');
   const out: InlineCode[] = [];
   let fence: { char: string; len: number } | null = null;
   lines.forEach((raw, i) => {
@@ -127,10 +134,10 @@ export interface MdLink {
  * `/` resolve from the repo root. Reference-style and HTML links are deliberately not
  * parsed — validate-map forbids them so this parser stays the single source of truth.
  */
-export function extractLocalLinks(repoRelPath: string): MdLink[] {
+export function extractLocalLinks(repoRelPath: string, root: string = REPO_ROOT): MdLink[] {
   const links: MdLink[] = [];
   const linkRe = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
-  for (const { n, text } of visibleMarkdownLines(repoRelPath)) {
+  for (const { n, text } of visibleMarkdownLines(repoRelPath, root)) {
     for (const match of text.matchAll(linkRe)) {
       const raw = match[1];
       if (/^(https?:|mailto:)/.test(raw) || raw.startsWith('#')) continue;
@@ -145,9 +152,13 @@ export function extractLocalLinks(repoRelPath: string): MdLink[] {
   return links;
 }
 
-/** Four-digit numbers prefixing filenames directly inside `dir` (rings, plans/active, plans/completed). */
-export function numberedFilenames(dir: string): string[] {
-  return readdirSync(join(REPO_ROOT, dir))
+/** Four-digit numbers prefixing filenames directly inside `dir` (rings, plans/active, plans/completed).
+ *  Returns [] when the directory does not exist under `root` — a foreign repo (repo-fitness) need
+ *  not carry the seed's anatomy, so its absence is data, not an error. */
+export function numberedFilenames(dir: string, root: string = REPO_ROOT): string[] {
+  const abs = join(root, dir);
+  if (!existsSync(abs)) return [];
+  return readdirSync(abs)
     .map((f) => f.match(/^(\d{4})-/)?.[1])
     .filter((n): n is string => n !== undefined);
 }

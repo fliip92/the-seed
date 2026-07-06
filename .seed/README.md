@@ -10,12 +10,14 @@ dependencies; ring [0002](../docs/rings/0002-germination-implementation-defaults
 npm run check          # the invariant checks (fast, no git needed)
 npm test               # the machinery self-tests (spawns the checks in temp copies)
 npm run garden         # the doc-gardener drift scan (advisory; reports drift_count)
-npm run fitness        # the fitness v0 snapshot (advisory; prints all SEED.md §6 metrics)
+npm run fitness        # the seed's own fitness v0 snapshot (advisory; all SEED.md §6 metrics)
+npm run repo-fitness -- <path>   # read-only §6 assessment of ANY repository (advisory)
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
 node .seed/checks/doc-drift.ts
 node .seed/checks/fitness.ts
+node .seed/checks/repo-fitness.ts <path>
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -78,26 +80,45 @@ the SEED.md §6 fitness metric it sources. Unlike the checks above it is **advis
 gate**: it always exits 0 on findings (ring
 [0011](../docs/rings/0011-drift-advisory.md)), because drift is a trend the gardening
 cadence digests continuously (LAW-8), not a merge blocker. It is therefore outside
-`run-all.ts`; its detection is verified by the self-tests. `--json` emits
-`{ drift_count, findings }` for the fitness computation (plan
-[0002](../docs/plans/completed/0002-rooting.md) scope item 4).
+`run-all.ts`; its detection is verified by the self-tests. Its `scanDrift` scan is exported
+and root-parameterized: the fitness engine imports it directly to compute `drift_count`
+against any repo (ring [0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)),
+and the gardening-report composer shells its `--json` (`{ drift_count, findings }`).
 
 ## Fitness
 
-[checks/fitness.ts](checks/fitness.ts) computes the SEED.md §6 fitness v0 metrics (plan
-[0002](../docs/plans/completed/0002-rooting.md) scope item 4) and prints a dated snapshot —
-`docs/fitness/history/*.json`, rendered in [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md).
-Five of six metrics are computable today: `map_reachability` (reuses
-`validate-map.ts`'s own computation), `enforcement_ratio` (scans `docs/principles/` for a
-non-empty Enforcement field, vacuously 1 while no principle is stated yet),
-`drift_count` (shells out to `doc-drift.ts --json`), `plan_traceability` (walks the
-repo's entire non-merge commit history for a resolvable plan/ring reference, sharing its
-reference grammar with `plan-traceability.ts` via `lib/repo.ts` so the gate and the trend
-cannot silently disagree on what "traces" means), and `ledger_trend` (net change in open
-ledger entries over a trailing 7-day git window). `escalation_rate` stays `null` — no
-run-log instrument exists yet. Like doc-drift, it is **advisory**: a CI step runs it for
-hosted evidence, but only a thrown error (a broken instrument) fails the run — the numbers
-themselves never gate. `--json` emits the exact `{ date, stage, metrics }` snapshot shape.
+The SEED.md §6 fitness v0 metrics are computed by one root-parameterized engine,
+[lib/fitness-metrics.ts](lib/fitness-metrics.ts) (ring
+[0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), so there is a
+single definition of what each metric means (LAW-3). Two thin CLIs call it:
+
+- [checks/fitness.ts](checks/fitness.ts) — the seed's **self**-assessment (plan
+  [0002](../docs/plans/completed/0002-rooting.md) scope item 4): the engine pointed at this
+  repository, printing a dated snapshot (`docs/fitness/history/*.json`, rendered in
+  [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md)). It carries the hand-bumped
+  `CURRENT_STAGE` (E-011).
+- [checks/repo-fitness.ts](checks/repo-fitness.ts) — the same engine pointed at **any**
+  repository (plan [0003](../docs/plans/active/0003-growth.md) scope item 2), the seed's
+  read-only diagnostic instrument for hosts (SEED.md §4, Stage 2). It is **strictly
+  read-only** — reads files and runs only read-only git subcommands against the target — and
+  its non-mutation is proven by the self-tests (LAW-6).
+
+The engine computes: `map_reachability` (reuses `validate-map.ts`'s own computation),
+`enforcement_ratio` (scans `docs/principles/` for a non-empty Enforcement field, vacuously 1
+while no principle is stated yet), `drift_count` (calls `doc-drift.ts`'s exported `scanDrift`
+directly), `plan_traceability` (walks the target's entire non-merge commit history for a
+resolvable plan/ring reference, sharing its reference grammar with `plan-traceability.ts` via
+`lib/repo.ts` so the gate and the trend cannot silently disagree on what "traces" means), and
+`ledger_trend` (net change in open ledger entries over a trailing 7-day git window).
+`escalation_rate` stays `null` — no run-log instrument exists yet. Against a **foreign**
+repository, any metric whose defining anatomy is absent (no `AGENTS.md`, no `docs/principles/`,
+no plan/ring log, no ledger, not a git repo) comes back `null` with a stated reason — the same
+null-when-absent contract `escalation_rate` uses, and that null IS the finding.
+
+Like doc-drift, both are **advisory**: a CI step runs `fitness.ts` for hosted evidence, but
+only a thrown error (a broken instrument) fails the run — the numbers never gate. `fitness.ts
+--json` emits the exact `{ date, stage, metrics }` snapshot shape; `repo-fitness.ts --json`
+emits `{ date, stage, metrics, notes }` (stage null, notes explaining each null).
 
 ## Self-tests
 
@@ -112,7 +133,13 @@ fail, merge commits exempt, unresolvable base skips; automerge-scope: marked-vs-
 fails, unknown class fails, unmarked passes, both README indices exempt, a non-ASCII-named
 protected add still fails, merge commit exempt, unresolvable base skips). The
 gardening-report composer is covered too (pristine → no findings + a valid date; a seeded
-stale reference flips has_findings and renders). Fixture numbers are derived from
+stale reference flips has_findings and renders). repo-fitness (ring
+[0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)) is pinned by three
+cases: self-equivalence (`repo-fitness <seed>` metrics byte-identical to `fitness.ts`),
+honest degradation against a synthetic foreign repo (anatomy metrics null with reasons,
+`drift_count` still catches a seeded stale reference; a non-git target reports the
+not-a-git-repository reason), and read-only (target tree hash, git HEAD, and status unchanged
+after a run). Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.
@@ -130,7 +157,7 @@ can't fill in the `fix` field doesn't understand its own rule yet.
 pass (ring [0007](../docs/rings/0007-gardening-cadence-automerge.md), converting ledger
 E-008 — the scheduled half of plan 0002 scope item 5). It shells to the two instruments
 above (`doc-drift.ts --json` for the drift findings, `fitness.ts --json` for the current
-snapshot — the same subprocess-composition fitness uses, so no check imports another) and
+snapshot) because it wants their rendered output, not their internals, and
 renders a markdown pass report plus the triage checklist. `--json` emits
 `{ date, has_findings, drift_count }`. Like the instruments it composes it is **advisory**:
 a sensing record, never a gate.

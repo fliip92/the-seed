@@ -8,11 +8,12 @@
 //
 // It is a COMPOSER, not a gate and not a metric source: it shells out to the two existing
 // instruments — doc-drift.ts and fitness.ts, each via its own documented --json contract —
-// and renders their output as a markdown pass report plus the triage checklist. Composing by
-// subprocess (rather than importing them) matches how fitness.ts already reuses doc-drift.ts:
-// both instruments run their own main() at module scope, so importing would print their
-// reports as a side effect, and "no check imports another" keeps the machinery decoupled. The
-// CI-specific glue — actually filing the issue — stays in the workflow YAML.
+// and renders their output as a markdown pass report plus the triage checklist. It composes
+// by subprocess because it wants each instrument's rendered --json output (drift findings,
+// the fitness snapshot), not their internals — and both still run main() at module scope. (The
+// metric engine, by contrast, now imports doc-drift's exported `scanDrift` directly, since
+// ring 0016 guarded that main() to run only on direct execution.) The CI-specific glue —
+// actually filing the issue — stays in the workflow YAML.
 //
 // It is ADVISORY, like the instruments it composes (ring 0011): the report is a sensing
 // record, never a gate. A thrown error (a broken instrument) still exits non-zero so CI
@@ -47,7 +48,10 @@ function fitnessSnapshot(): FitnessSnapshot {
 // does not, in v0, trigger the pass on its own (a metric moving is a trend to read, not a
 // discrete task); widening the trigger is a later, priced step, not a silent one.
 function composeMarkdown(drift: DriftReport, fitness: FitnessSnapshot): string {
-  const pct = (f: number): string => `${(f * 100).toFixed(1)}%`;
+  // The metric engine's type admits null (a foreign repo lacks some anatomy — ring 0016);
+  // this composer renders the seed's own snapshot, where the fraction metrics are never
+  // null, but it tolerates null so a future gap surfaces as "null" rather than "NaN%".
+  const pct = (f: number | null): string => (f === null ? 'null' : `${(f * 100).toFixed(1)}%`);
   const m = fitness.metrics;
   const out: string[] = [];
   out.push(`# Gardening pass — ${fitness.date}`);

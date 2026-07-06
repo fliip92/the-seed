@@ -107,6 +107,24 @@ carried its own decisions). The exit criterion governs completion, not the item 
   the `docs/architecture/` home, the 500-word one-page cap, and the choice not to hand-author
   the seed's own architecture doc (it would duplicate the genome into a drift-prone second
   source). `npm run check` + `npm test` green; `drift_count` 0.
+- **2026-07-05** — Scope item 2, **repo-fitness**, planted — the load-bearing organ of the
+  Stage 2 exit criterion. The SEED.md §6 metric computation was generalized into one
+  root-parameterized engine
+  ([`.seed/lib/fitness-metrics.ts`](../../../.seed/lib/fitness-metrics.ts)); the seed's own
+  self-assessment ([`fitness.ts`](../../../.seed/checks/fitness.ts)) became the `target=self`
+  case, and the new [`repo-fitness.ts`](../../../.seed/checks/repo-fitness.ts) (`npm run
+  repo-fitness -- <path>`) points the same engine at *any* repository — so what a metric means
+  has one implementation (LAW-3). Against a foreign repo, each metric whose defining anatomy is
+  absent reads `null` with a stated reason (the null IS the finding); `drift_count` is
+  universal. The instrument is **strictly read-only**. The [skill](../../../skills/repo-fitness/SKILL.md)
+  documents the Scout-step workflow. Verification (LAW-6):
+  [`.seed/tests/self-test.ts`](../../../.seed/tests/self-test.ts) pins self-equivalence
+  (`repo-fitness <seed>` metrics byte-identical to `fitness.ts`), honest degradation against a
+  synthetic foreign repo, and non-mutation (target tree hash + git HEAD + status unchanged).
+  Enabling refactor: `doc-drift.ts` now runs `main()` only when executed directly, so the
+  engine imports `scanDrift` instead of shelling out (the old subprocess wart is gone). Build
+  decision recorded as [ring 0016](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md).
+  `npm run check` (61/61 files, 100% reachable) + `npm test` (96 cases) green; `drift_count` 0.
 
 ## Next actions
 
@@ -116,9 +134,14 @@ carried its own decisions). The exit criterion governs completion, not the item 
 2. ✅ **Scope item 1 — grill-the-gardener planted** (2026-07-05): the elicitation skill plus
    its structural verification (`validate-architecture.ts`) and the `docs/architecture/` organ;
    build decision in [ring 0015](../../rings/0015-grill-the-gardener-architecture-doc.md).
-3. **Seed:** open scope item 2 — **repo-fitness**: read-only fitness assessment of *any*
-   repository, computing the SEED.md §6 metrics without mutating the target (and against this
-   repo). It is the load-bearing organ for the Stage 2 exit criterion, now that
-   grill-the-gardener supplies the target architecture a fitness verdict is judged against. Ship
-   it with its verification (LAW-6), cut a ring for each build decision, and log progress here —
-   the plan 0002 rhythm.
+3. ✅ **Scope item 2 — repo-fitness planted** (2026-07-05): the read-only §6 assessment of any
+   repository, built as one root-parameterized engine shared by self- and foreign-assessment
+   (LAW-3), degrading absent-anatomy metrics to `null` with reasons and proven not to mutate the
+   target; build decision in [ring 0016](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md).
+4. **Seed:** open scope item 3 — **postmortem**: a failure yields three artifacts, never one —
+   the fix, the invariant that prevents recurrence, and the ring recording the decision trail;
+   with a structural check that a postmortem entry links all three (SEED.md §4, Stage 2). The
+   remaining Stage 2 items (parallel-worktrees, onboard-human, feedback) follow; the exit
+   criterion — assess a foreign repo read-only and produce an evidence-judgeable proposal — is
+   now within reach, its two load-bearing organs (grill-the-gardener + repo-fitness) planted.
+   Ship each with its verification (LAW-6), cut a ring per build decision, log progress here.
