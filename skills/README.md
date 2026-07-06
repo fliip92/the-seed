@@ -37,10 +37,17 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   creates, isolates, boots, and tears down N worktrees and asserts isolation plus cleanup (Stage
   2, plan [0003](../docs/plans/active/0003-growth.md) scope item 4; ring
   [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)).
+- [onboard-human](onboard-human/SKILL.md) — brief a new human, current state → goal, as
+  conversation plus a generated artifact. The briefing
+  ([docs/generated/onboarding.md](../docs/generated/onboarding.md)) is generated from the map
+  and the active plan it links, not hand-written, so it cannot drift from the truth; it lands
+  the generation manifest and the regeneration check that convert ledger E-001 (Stage 2, plan
+  [0003](../docs/plans/active/0003-growth.md) scope item 5; ring
+  [0020](../docs/rings/0020-onboard-human-generated-briefing.md)).
 
 The garden grows by stage (SEED.md §4). Still to plant:
 
-- **Stage 2:** onboard-human, feedback.
+- **Stage 2:** feedback.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.

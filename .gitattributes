@@ -1,0 +1,7 @@
+# The Seed is a text-only repository. Pin every text file to LF on checkout so byte-exact
+# machinery holds on any platform — notably the generated-artifact gate
+# (.seed/checks/validate-generated.ts), which compares a committed docs/generated/ artifact
+# byte-for-byte against an LF-only regeneration. Without this, a Windows checkout with
+# core.autocrlf=true would materialize the artifact as CRLF and fail the gate on a pristine
+# tree, with `npm run generate` unable to fix it. Ring 0020.
+* text=auto eol=lf

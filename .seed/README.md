@@ -13,6 +13,7 @@ npm run garden         # the doc-gardener drift scan (advisory; reports drift_co
 npm run fitness        # the seed's own fitness v0 snapshot (advisory; all SEED.md §6 metrics)
 npm run repo-fitness -- <path>   # read-only §6 assessment of ANY repository (advisory)
 npm run worktrees -- dry-run     # self-verifying dry-run of the parallel-worktrees lifecycle
+npm run generate                 # rewrite every generated artifact from its sources
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
@@ -20,6 +21,7 @@ node .seed/checks/doc-drift.ts
 node .seed/checks/fitness.ts
 node .seed/checks/repo-fitness.ts <path>
 node .seed/checks/worktrees.ts dry-run
+node .seed/checks/generate.ts
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -35,6 +37,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-plans.ts](checks/validate-plans.ts) | Plan filenames, sequence, format; ledger entry format | LAW-5, LAW-8 |
 | [checks/validate-architecture.ts](checks/validate-architecture.ts) | Architecture-doc format (grill-the-gardener): one page, lintable rules each naming an enforcement, explicit human/agent ownership split (SEED.md §4) | LAW-2 |
 | [checks/validate-postmortems.ts](checks/validate-postmortems.ts) | Postmortem-entry format (postmortem): a failure links all three artifacts — fix, invariant (naming a mechanism + linking its enforcer), and an existing ring (SEED.md §4) | LAW-2 |
+| [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -143,6 +146,25 @@ repository it runs from. Unlike the advisory instruments it is **self-asserting*
 isolation and cleanup held, exit 1 on a defect. `--json` emits `{ mode, count, scratch, ok,
 checks }`.
 
+## Generation
+
+[lib/generated.ts](lib/generated.ts) is the **generation manifest** (converting ledger E-001,
+ring [0020](../docs/rings/0020-onboard-human-generated-briefing.md)) behind the
+[onboard-human](../skills/onboard-human/SKILL.md) skill: a typed registry where every
+[docs/generated/](../docs/generated/README.md) artifact names its sources, its regeneration
+command, and a **pure** `generate(root)` function — the single definition of what the artifact is
+(LAW-3), shared by the generator and its check. Generators take no wall-clock and no environment,
+so an artifact regenerates byte-identically.
+
+[checks/generate.ts](checks/generate.ts) (`npm run generate`) rewrites every manifest artifact
+from its sources. [checks/validate-generated.ts](checks/validate-generated.ts) is the gate that
+makes the discipline real: part of `run-all.ts`, it re-runs each generator and fails when a
+committed artifact differs from its regeneration (a hand-edit, or a source changed without
+regenerating), when a `docs/generated/` file is registered by no manifest entry, or when a
+generator cannot run (e.g. a source it reads is gone). It is a `run-all.ts` gate rather than an advisory instrument
+because the generator is a pure function of the working tree (no git, no filesystem side effects)
+and a stale generated artifact is a correctness defect, not a trend.
+
 ## Self-tests
 
 [tests/self-test.ts](tests/self-test.ts) (`npm test`) verifies the verifiers (converted
@@ -172,7 +194,12 @@ bad filename, and a duplicate and a gap in numbering each fire. The parallel-wor
 assertion can be silently dropped), its assertions have teeth (an injected leak fires the isolation
 leak-check; a skipped teardown fires the cleanup checks and the teardown-dispatch check; both
 exit 1), and it is hermetic and caller-invariant (the scratch repo it reports is gone after the
-run, and running it from inside a git repo leaves that repo byte-identical). Fixture numbers are derived from
+run, and running it from inside a git repo leaves that repo byte-identical). The generated-artifact
+check (ring [0020](../docs/rings/0020-onboard-human-generated-briefing.md)) is pinned too: the
+pristine artifact matches its regeneration, regeneration is a deterministic fixpoint (regenerate →
+the bytes are identical and the tree stays green), and a hand-edited artifact, a source changed
+without regenerating, a moved source anchor, an unregistered file in `docs/generated/`, and a
+missing artifact each fire. Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.
@@ -216,3 +243,7 @@ declare the Node 24 runtime (E-010). Hosted since
 - [package.json](../package.json) — machinery manifest: `npm run check`, Node engine
   floor, `private: true`, zero dependencies.
 - [.gitignore](../.gitignore) — `node_modules/` and OS noise only.
+- [.gitattributes](../.gitattributes) — pins every text file to LF on checkout, so the
+  byte-exact generated-artifact gate ([checks/validate-generated.ts](checks/validate-generated.ts))
+  holds on any platform, including a Windows checkout with `core.autocrlf=true` (ring
+  [0020](../docs/rings/0020-onboard-human-generated-briefing.md)).

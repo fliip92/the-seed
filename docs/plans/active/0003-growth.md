@@ -172,6 +172,28 @@ carried its own decisions). The exit criterion governs completion, not the item 
   byte-identical). Build decision recorded as
   [ring 0019](../../rings/0019-parallel-worktrees-host-agnostic-lifecycle.md). `npm run check` +
   `npm test` green; `drift_count` 0.
+- **2026-07-05** — Scope item 5, **onboard-human**, planted — brief a new human, current state →
+  goal, as conversation plus a generated artifact (SEED.md §4, Stage 2). The skill
+  ([skills/onboard-human/SKILL.md](../../../skills/onboard-human/SKILL.md)) briefs from the map;
+  its durable output is [docs/generated/onboarding.md](../../generated/onboarding.md) — the
+  **first** artifact in `docs/generated/`, so this item also built E-001's conversion path. The
+  generation manifest ([`.seed/lib/generated.ts`](../../../.seed/lib/generated.ts)) registers each
+  artifact with its sources, regeneration command, and a **pure** `generate(root)` — the single
+  definition of what the artifact is (LAW-3), shared by the generator
+  ([`.seed/checks/generate.ts`](../../../.seed/checks/generate.ts), `npm run generate`) and the
+  gate. The briefing sources from AGENTS.md (the stage line + the active plans it links), not a
+  directory listing, so it stays anchored to the map (LAW-4) and deterministic against stray files;
+  it embeds no wall-clock, so it regenerates byte-identically. Verification (LAW-6):
+  [`.seed/checks/validate-generated.ts`](../../../.seed/checks/validate-generated.ts) (in
+  `run-all.ts`) re-runs each generator and fails on a hand-edit, a source changed without
+  regenerating, an unregistered file in `docs/generated/`, or a missing artifact — a `run-all`
+  gate, not an advisory number, because a stale generated artifact is a correctness defect, not a
+  trend. [`.seed/tests/self-test.ts`](../../../.seed/tests/self-test.ts) pins the pristine match, a
+  deterministic fixpoint (regenerate → byte-identical, tree green), and each fire (hand-edit,
+  changed source, moved anchor, unregistered file, missing artifact). This converts
+  **[E-001](../entropy-ledger.md)** to Paid. Build decision recorded as
+  [ring 0020](../../rings/0020-onboard-human-generated-briefing.md). `npm run check` + `npm test`
+  green; `drift_count` 0.
 
 ## Next actions
 
@@ -195,11 +217,14 @@ carried its own decisions). The exit criterion governs completion, not the item 
    `HostAdapter` boot contract (host-specific boot mechanics live in adapters outside the genome,
    the SEED.md §4 line) and its hermetic self-verifying dry-run; build decision in
    [ring 0019](../../rings/0019-parallel-worktrees-host-agnostic-lifecycle.md).
-6. **Seed:** open scope item 5 — **onboard-human**: brief a new human, current state → goal, as
-   conversation plus a generated md/html artifact. Verification (LAW-6): the artifact regenerates
-   deterministically from repo state (the [docs/generated/](../../generated/README.md) discipline).
-   Then scope item 6 — **feedback** (open a well-formed upstream issue without posting, LAW-11) —
-   closes the Stage 2 menu. The exit criterion — assess a foreign repo read-only and produce an
-   evidence-judgeable proposal — is in reach: its two load-bearing organs (grill-the-gardener +
-   repo-fitness) are planted. Ship each with its verification, cut a ring per build decision, log
-   progress here.
+6. ✅ **Scope item 5 — onboard-human planted** (2026-07-05): brief a new human, current state →
+   goal, as conversation plus [docs/generated/onboarding.md](../../generated/onboarding.md), the
+   first `docs/generated/` artifact — generated from the map, verified by deterministic
+   regeneration ([`validate-generated.ts`](../../../.seed/checks/validate-generated.ts)), landing
+   the generation manifest that converts **E-001** to Paid; build decision in
+   [ring 0020](../../rings/0020-onboard-human-generated-briefing.md).
+7. **Seed:** open scope item 6 — **feedback** (open a well-formed upstream issue against the mother
+   seed without posting, LAW-11) — the last item on the Stage 2 menu. Then the exit criterion —
+   assess a foreign repo read-only and produce an evidence-judgeable proposal — is in reach: its two
+   load-bearing organs (grill-the-gardener + repo-fitness) are planted. Ship each with its
+   verification, cut a ring per build decision, log progress here.

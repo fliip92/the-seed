@@ -25,6 +25,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0017 — postmortem is a numbered entry that must link all three artifacts, enforced structurally](0017-postmortem-three-artifacts-linked.md)
 - [0018 — the map's current-state prose drift is handled doc-only until the drift instrument grows the class](0018-map-current-state-drift-doc-only.md)
 - [0019 — parallel-worktrees ships the host-agnostic worktree lifecycle; boot lives in host adapters, verified by a hermetic dry-run](0019-parallel-worktrees-host-agnostic-lifecycle.md)
+- [0020 — onboard-human generates a deterministic briefing; the generation manifest + regeneration check land with it, converting E-001](0020-onboard-human-generated-briefing.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

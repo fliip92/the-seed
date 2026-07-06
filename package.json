@@ -14,6 +14,7 @@
     "garden": "node .seed/checks/doc-drift.ts",
     "fitness": "node .seed/checks/fitness.ts",
     "repo-fitness": "node .seed/checks/repo-fitness.ts",
-    "worktrees": "node .seed/checks/worktrees.ts"
+    "worktrees": "node .seed/checks/worktrees.ts",
+    "generate": "node .seed/checks/generate.ts"
   }
 }

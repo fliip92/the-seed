@@ -7,18 +7,6 @@ ledger is also a record of digestion.
 
 ## Open
 
-## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
-
-- First observed: 2026-07-04, during germination
-- Where: [docs/generated/README.md](../generated/README.md) declares hand-editing a lint
-  error; no lint exists
-- Interest rate: low (the directory is empty; compounds only once generators exist)
-- Price: small — a generation manifest (source → artifact) plus a CI check that artifacts
-  match regeneration
-- Conversion path: invariant — build the manifest + check alongside the first generated
-  artifact (Stage 1 closed with none; the directory is still empty); until then the rule is
-  doc-only, which violates LAW-2 and is why this entry exists
-
 ## E-004 — "Seed" is an uncleared working codename
 
 - First observed: 2026-07-03, planted in SEED.md §8
@@ -84,6 +72,29 @@ ledger is also a record of digestion.
   while closing the LAW-2 gap. Fold into the next change touching either
 
 ## Paid
+
+## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
+
+- First observed: 2026-07-04, during germination
+- Where: [docs/generated/README.md](../generated/README.md) declared hand-editing a lint
+  error; no lint existed
+- Interest rate: low (the directory was empty; compounded only once generators existed)
+- Price: small — a generation manifest (source → artifact) plus a CI check that artifacts
+  match regeneration
+- Conversion path: invariant — build the manifest + check alongside the first generated
+  artifact (Stage 1 closed with none; the directory stayed empty until Stage 2)
+- Paid: 2026-07-05 (plan [0003](active/0003-growth.md) scope item 5, onboard-human; ring
+  [0020](../rings/0020-onboard-human-generated-briefing.md)). The first generated artifact —
+  [docs/generated/onboarding.md](../generated/onboarding.md), the onboard-human briefing —
+  landed with its infrastructure: the generation manifest
+  [.seed/lib/generated.ts](../../.seed/lib/generated.ts) (artifact → sources + a pure
+  `generate(root)`) and the gate
+  [.seed/checks/validate-generated.ts](../../.seed/checks/validate-generated.ts) (in `npm run
+  check`), which re-runs each generator from the working tree and fails on a hand-edit, a
+  source changed without regenerating, an unregistered file in `docs/generated/`, or a missing
+  artifact. Generators are pure functions of repo files (no wall-clock), so an artifact
+  regenerates byte-identically; determinism and each fire pinned by the self-tests (the E-007
+  harness). `npm run generate` rewrites the artifacts.
 
 ## E-002 — CI is proven locally but not on a hosted runner
 

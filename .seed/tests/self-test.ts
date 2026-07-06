@@ -22,6 +22,7 @@ const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const ARCH = 'seed/validate-architecture';
 const POSTMORTEM = 'seed/validate-postmortems';
+const GENERATED = 'seed/validate-generated';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
@@ -671,6 +672,44 @@ const CASES: ViolationCase[] = [
     seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: Reviews happen — Enforcement: we will be careful — [the dep-direction lint](../../.seed/checks/validate-postmortems.ts).' })),
     expect: { check: POSTMORTEM, law: LAW2, contains: ["Invariant's enforcement names no mechanism"] },
   },
+  // --- generated-artifact discipline (onboard-human, ring 0020). validate-generated re-runs each
+  // --- manifest generator and fails when a committed docs/generated/ artifact differs from its
+  // --- regeneration (a hand-edit, or a source changed without regenerating), when the generator
+  // --- cannot run (a source it reads is gone), or when a docs/generated/ file is unregistered. A
+  // --- couple of these ALSO trip validate-map (an unreachable stray file, or a README link to a
+  // --- removed artifact) — harmless, since each assertion only requires the GENERATED marker +
+  // --- message. The valid pristine artifact passing is covered by the pristine case; the
+  // --- generate-CLI fixpoint runs as a standalone exit-0 block below.
+  {
+    name: 'generated: a hand-edited artifact no longer matches its source',
+    seed: (r) => append(r, 'docs/generated/onboarding.md', '\nA sneaky hand-edit.\n'),
+    expect: { check: GENERATED, law: LAW2, contains: ['does not match its regeneration', 'docs/generated/onboarding.md'] },
+  },
+  {
+    // The teeth case: a SOURCE changed without regenerating. It proves the check re-derives from
+    // source, not merely re-reads the artifact — editing the map's stage line changes the
+    // briefing's "Where the Seed is now" and nothing else a run-all check inspects.
+    name: 'generated: a source changed without regenerating is caught (the check re-derives from source)',
+    seed: (r) => edit(r, 'AGENTS.md', (c) => c.replace('**Stage:** 2 — Growth', '**Stage:** 9 — Fixture')),
+    expect: { check: GENERATED, law: LAW2, contains: ['does not match its regeneration', 'docs/generated/onboarding.md'] },
+  },
+  {
+    // The generator's source anchor is gone (the `**Stage:**` token renamed): generate() throws,
+    // and the check must convert that into a legible violation, not an uncaught crash.
+    name: 'generated: a moved source anchor yields a "could not regenerate" violation, not a crash',
+    seed: (r) => edit(r, 'AGENTS.md', (c) => c.replace('- **Stage:**', '- **Phase:**')),
+    expect: { check: GENERATED, law: LAW2, contains: ['could not regenerate', 'docs/generated/onboarding.md'] },
+  },
+  {
+    name: 'generated: an unregistered file in docs/generated/ is caught',
+    seed: (r) => write(r, 'docs/generated/stray.md', '# Stray\n\nHand-authored where only generators may write.\n'),
+    expect: { check: GENERATED, law: LAW2, contains: ['is not a registered generated artifact', 'docs/generated/stray.md'] },
+  },
+  {
+    name: 'generated: a missing registered artifact is caught',
+    seed: (r) => rmSync(join(r, 'docs/generated/onboarding.md')),
+    expect: { check: GENERATED, law: LAW2, contains: ['registered generated artifact is missing', 'docs/generated/onboarding.md'] },
+  },
 ];
 
 // --- runner ---
@@ -844,6 +883,28 @@ for (const mech of [
     );
   });
 }
+
+// --- generated-artifact discipline, the exit-0 side (onboard-human, ring 0020): `npm run
+// --- generate` actually rewrites the artifact, deterministically, to the committed bytes.
+// --- CORRUPT the artifact first so the regeneration WRITE is observable (a no-op or crashing CLI
+// --- can no longer pass by leaving the already-correct file untouched), assert the CLI exits 0,
+// --- assert the file is restored byte-for-byte to the committed content (determinism: the
+// --- generator reproduces exactly what is committed — no wall-clock, no environment), and assert
+// --- run-all is green after. This is the ONLY test that runs generate.ts, so it must prove the
+// --- CLI runs, writes, and is a stable fixpoint — not merely "if it wrote, it wrote identically".
+inTempCopy((root) => {
+  const artifact = join(root, 'docs/generated/onboarding.md');
+  const committed = readFileSync(artifact, 'utf8');
+  writeFileSync(artifact, committed + '\nHAND-EDIT that regeneration must overwrite.\n');
+  const gen = runNode(root, '.seed/checks/generate.ts');
+  const restored = readFileSync(artifact, 'utf8');
+  const { status, output } = runChecks(root);
+  report(
+    'generated: `npm run generate` runs, deterministically rewrites the artifact to the committed bytes, and leaves the tree green',
+    gen.status === 0 && restored === committed && status === 0 && output.includes('all checks passed'),
+    `expected generate exit 0 + artifact restored to committed bytes + run-all green; genStatus ${gen.status}, restored ${restored === committed}, checkExit ${status}:\n${gen.output}\n---\n${output}`,
+  );
+});
 
 // --- ring append-only gate (E-005): needs real git history, so these cases init a
 // --- scratch repo inside the temp copy.
