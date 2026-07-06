@@ -26,6 +26,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0018 — the map's current-state prose drift is handled doc-only until the drift instrument grows the class](0018-map-current-state-drift-doc-only.md)
 - [0019 — parallel-worktrees ships the host-agnostic worktree lifecycle; boot lives in host adapters, verified by a hermetic dry-run](0019-parallel-worktrees-host-agnostic-lifecycle.md)
 - [0020 — onboard-human generates a deterministic briefing; the generation manifest + regeneration check land with it, converting E-001](0020-onboard-human-generated-briefing.md)
+- [0021 — feedback ships the upstream-issue composer; posting is a Gardener-gated host act outside the genome, verified by a side-effect-free dry-run](0021-feedback-composes-upstream-issue.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

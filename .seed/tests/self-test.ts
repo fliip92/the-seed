@@ -1855,6 +1855,290 @@ inTempCopy((root) => {
   });
 });
 
+// --- feedback (plan 0003 scope item 6, ring 0021): compose a well-formed UPSTREAM issue against
+// --- the mother seed from ANY repository (LAW-11), WITHOUT posting. These run the seed COPY's
+// --- feedback.ts against a synthetic DESCENDANT temp dir (carrying pollen/lineage.json) and
+// --- against the seed copy itself (a root seed → refuse). Same three-binding shape as repo-fitness
+// --- / worktrees: it works (composes a well-formed issue, the exact ordered section set pinned so
+// --- none can be silently dropped), its validation has teeth (a missing field / an unknown kind /
+// --- an unknown conversion / a rootless seed each exit 1 with a legible message), and composing is
+// --- side-effect-free (the target is byte-identical after a run — nothing is posted).
+
+const runFeedback = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/feedback.ts', args);
+
+interface FeedbackReport {
+  ok?: unknown;
+  target?: unknown;
+  title?: unknown;
+  body?: unknown;
+  command?: unknown;
+  violations?: unknown;
+}
+function parseFeedback(output: string): FeedbackReport | null {
+  try {
+    return JSON.parse(output) as FeedbackReport;
+  } catch {
+    return null;
+  }
+}
+const feedbackViolations = (parsed: FeedbackReport | null): string[] =>
+  Array.isArray(parsed?.violations) ? (parsed.violations as string[]) : [];
+
+// A synthetic DESCENDANT repo: carries pollen/lineage.json naming its parent (the mother seed),
+// like a host whose lineage was recorded at Independence (SEED.md §4 step 6). Optionally a git
+// repo, so the non-mutation proof can also check HEAD/status.
+function withDescendantRepo(opts: { git: boolean }, fn: (dir: string) => void): void {
+  const dir = mkdtempSync(join(tmpdir(), 'seed-descendant-'));
+  try {
+    mkdirSync(join(dir, 'pollen'));
+    writeFileSync(
+      join(dir, 'pollen', 'lineage.json'),
+      JSON.stringify({ parent: 'fliip92/the-seed', seedVersion: '0.1.0', planted: '2026-07-05', repo: 'acme-app' }),
+    );
+    writeFileSync(join(dir, 'README.md'), '# Acme app\n\nA descendant carrying the seed.\n');
+    if (opts.git) {
+      git(dir, 'init', '--quiet');
+      gitCommitAll(dir, 'initial import');
+    }
+    fn(dir);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// A complete, well-formed learning — each teeth case below drops or corrupts exactly one part of it.
+const COMPLETE_LEARNING = [
+  '--kind', 'capability-gap',
+  '--title', 'Grill step needs a timeout',
+  '--observation', 'The interview never terminated on an evasive owner.',
+  '--generalizes', 'Any host grilling a distracted owner hits this — a method gap, not our app.',
+  '--conversion', 'ring',
+];
+
+// The exact ORDERED set of body sections a well-formed issue carries — pinned so a section cannot
+// be silently dropped, reordered, or renamed (the worktrees exact-check-set anti-costume guard),
+// even though no bad-input case forces the happy-path structure red on its own. Keep in lockstep
+// with feedback.ts's REQUIRED_SECTIONS.
+const EXPECTED_FEEDBACK_SECTIONS = ['## Lineage', '## Kind', '## What happened', '## Why this is upstream', '## Proposed conversion'];
+
+// It works: a descendant's complete learning composes a well-formed issue addressed to its parent,
+// with the EXACT ordered section set, the [seed-feedback] title, the descendant's lineage, the
+// not-auto-posted footer, and a post command naming the parent.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const { status, output } = runFeedback(root, ['dry-run', desc, ...COMPLETE_LEARNING, '--json']);
+    const parsed = parseFeedback(output);
+    const body = typeof parsed?.body === 'string' ? parsed.body : '';
+    const headers = body.split('\n').filter((l) => l.startsWith('## '));
+    const setPinned = JSON.stringify(headers) === JSON.stringify(EXPECTED_FEEDBACK_SECTIONS);
+    const ok =
+      status === 0 &&
+      parsed?.ok === true &&
+      parsed?.target === 'fliip92/the-seed' &&
+      parsed?.title === '[seed-feedback] Grill step needs a timeout' &&
+      setPinned &&
+      body.includes('- From: acme-app') &&
+      body.includes('- Parent (mother seed): fliip92/the-seed') &&
+      body.includes('Not auto-posted') &&
+      typeof parsed?.command === 'string' &&
+      (parsed.command as string).includes('gh issue create --repo fliip92/the-seed') &&
+      feedbackViolations(parsed).length === 0;
+    report(
+      'feedback: composes a well-formed upstream issue from a descendant (exact ordered section set, target = parent, not auto-posted)',
+      ok,
+      `expected exit 0 + a well-formed issue to the parent with the exact section set (setPinned=${setPinned}), got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Deterministic (the ring 0020 no-wall-clock discipline): the same learning composes byte-identical
+// body + command + title across two runs, so a compose can be trusted and diffed.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const a = parseFeedback(runFeedback(root, ['dry-run', desc, ...COMPLETE_LEARNING, '--json']).output);
+    const b = parseFeedback(runFeedback(root, ['dry-run', desc, ...COMPLETE_LEARNING, '--json']).output);
+    report(
+      'feedback: composition is deterministic — the same learning composes byte-identically',
+      !!a && !!b && a.body === b.body && a.command === b.command && a.title === b.title && a.ok === true,
+      `expected identical composition across two runs`,
+    );
+  });
+});
+
+// Teeth (required field): a learning missing --generalizes is rejected — exit 1, a legible reason
+// naming the missing flag. A composer that accepts an incomplete learning composes an ill-formed
+// issue, the exact "well-formed" the verification exists to guarantee.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const args = ['dry-run', desc, '--kind', 'defect', '--title', 't', '--observation', 'o', '--conversion', 'ring', '--json'];
+    const { status, output } = runFeedback(root, args);
+    const parsed = parseFeedback(output);
+    report(
+      'feedback: a learning missing a required field is rejected (teeth) — exit 1, legible reason',
+      status === 1 && parsed?.ok === false && parsed?.body === null && feedbackViolations(parsed).some((s) => s.includes('--generalizes')),
+      `expected exit 1 + a violation naming --generalizes, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Teeth (kind vocabulary): an out-of-vocabulary --kind is rejected (the automerge unknown-class
+// precedent) — a closed vocabulary the mother seed can triage on, not free text.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const args = ['dry-run', desc, '--kind', 'bogus', '--title', 't', '--observation', 'o', '--generalizes', 'g', '--conversion', 'ring', '--json'];
+    const { status, output } = runFeedback(root, args);
+    const parsed = parseFeedback(output);
+    report(
+      'feedback: an unknown --kind is rejected (teeth) — the vocabulary is closed',
+      status === 1 && parsed?.ok === false && feedbackViolations(parsed).some((s) => s.includes('is not a feedback kind')),
+      `expected exit 1 + a violation that "bogus" is not a feedback kind, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Teeth (conversion vocabulary): the proposed product must be one of SEED.md §0's four — an
+// out-of-vocabulary --conversion is rejected.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const args = ['dry-run', desc, '--kind', 'defect', '--title', 't', '--observation', 'o', '--generalizes', 'g', '--conversion', 'whatever', '--json'];
+    const { status, output } = runFeedback(root, args);
+    const parsed = parseFeedback(output);
+    report(
+      'feedback: an unknown --conversion is rejected (teeth) — it must be one of SEED.md §0\'s four products',
+      status === 1 && parsed?.ok === false && feedbackViolations(parsed).some((s) => s.includes('is not one of SEED.md')),
+      `expected exit 1 + a violation that "whatever" is not one of the four products, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Teeth (no upstream to itself): the seed COPY is a root seed (SEED.md present) with no recorded
+// parent — it must REFUSE, because feedback flows UPSTREAM (LAW-11) and a learning at the root is a
+// ring or a ledger entry, not an issue to yourself. This is the run-against-the-seed-itself case.
+inTempCopy((root) => {
+  const { status, output } = runFeedback(root, ['dry-run', '.', ...COMPLETE_LEARNING, '--json']);
+  const parsed = parseFeedback(output);
+  report(
+    'feedback: a root seed with no recorded parent refuses (feedback flows upstream — a ring, not an upstream issue)',
+    status === 1 &&
+      parsed?.ok === false &&
+      parsed?.target === null &&
+      feedbackViolations(parsed).some((s) => s.includes('root of its lineage') && s.includes('UPSTREAM')),
+    `expected exit 1 + a refusal (root of its lineage / flows UPSTREAM), got exit ${status}:\n${output}`,
+  );
+});
+
+// --parent addresses an upstream for a repo carrying NO recorded lineage (a pre-Flowering host, or
+// an ad-hoc run): the lineage fields degrade honestly to "unrecorded" — stated, never fabricated.
+inTempCopy((root) => {
+  const plain = mkdtempSync(join(tmpdir(), 'seed-plain-'));
+  try {
+    writeFileSync(join(plain, 'README.md'), '# Plain project\n\nNo seed anatomy, no lineage.\n');
+    const { status, output } = runFeedback(root, ['dry-run', plain, ...COMPLETE_LEARNING, '--parent', 'someone/seed', '--json']);
+    const parsed = parseFeedback(output);
+    const body = typeof parsed?.body === 'string' ? parsed.body : '';
+    report(
+      'feedback: --parent addresses an upstream for a repo with no recorded lineage (fields degrade to "unrecorded")',
+      status === 0 &&
+        parsed?.ok === true &&
+        parsed?.target === 'someone/seed' &&
+        body.includes('- Seed version: unrecorded') &&
+        body.includes('- Planted: unrecorded'),
+      `expected exit 0 + target someone/seed + unrecorded lineage, got exit ${status}:\n${output}`,
+    );
+  } finally {
+    rmSync(plain, { recursive: true, force: true });
+  }
+});
+
+// A malformed pollen/lineage.json yields a legible violation, not an uncaught crash (the
+// repo-fitness dangling-symlink crash-guard discipline).
+inTempCopy((root) => {
+  const bad = mkdtempSync(join(tmpdir(), 'seed-badlineage-'));
+  try {
+    mkdirSync(join(bad, 'pollen'));
+    writeFileSync(join(bad, 'pollen', 'lineage.json'), 'not json{');
+    writeFileSync(join(bad, 'README.md'), '# x\n');
+    const { status, output } = runFeedback(root, ['dry-run', bad, ...COMPLETE_LEARNING, '--json']);
+    const parsed = parseFeedback(output);
+    report(
+      'feedback: a malformed pollen/lineage.json yields a legible violation, not a crash',
+      status === 1 && parsed?.ok === false && feedbackViolations(parsed).some((s) => s.includes('not valid JSON')),
+      `expected exit 1 + a "not valid JSON" violation, got exit ${status}:\n${output}`,
+    );
+  } finally {
+    rmSync(bad, { recursive: true, force: true });
+  }
+});
+
+// Side-effect-free (the sharp point of "without posting"): composing against a git descendant
+// leaves it byte-identical (tree hash + HEAD + porcelain status — the repo-fitness non-mutation
+// proof) and posts nothing — the post command is EMITTED as text, never run. If the tool had
+// executed `gh` against this parent it would not exit 0 cleanly here (no gh/auth/upstream); a clean
+// exit 0 with the command present as a string is the proof it composed and did not post.
+inTempCopy((root) => {
+  withDescendantRepo({ git: true }, (desc) => {
+    const treeBefore = treeHash(desc);
+    const headBefore = gitCapture(desc, 'rev-parse', 'HEAD');
+    const { status, output } = runFeedback(root, ['dry-run', desc, ...COMPLETE_LEARNING, '--json']);
+    runFeedback(root, ['dry-run', desc, ...COMPLETE_LEARNING]); // exercise the human path too
+    const parsed = parseFeedback(output);
+    const treeAfter = treeHash(desc);
+    const headAfter = gitCapture(desc, 'rev-parse', 'HEAD');
+    const statusAfter = gitCapture(desc, 'status', '--porcelain');
+    const cmdEmitted = typeof parsed?.command === 'string' && (parsed.command as string).includes('gh issue create');
+    report(
+      'feedback: composing is side-effect-free — the target is byte-identical and nothing is posted (the command is emitted, not run)',
+      status === 0 && cmdEmitted && treeBefore === treeAfter && headBefore === headAfter && statusAfter === '',
+      `expected the target unchanged (tree ${treeBefore === treeAfter}, head ${headBefore === headAfter}, status ${JSON.stringify(statusAfter)}) with the command emitted as text, got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Teeth (the emitted command must be shell-safe): a title with an apostrophe is POSIX
+// single-quote-escaped in the emitted `gh issue create` command, so the command the tool hands the
+// Gardener is not broken — or injectable — by an ordinary English title ("doesn't", "owner's"). The
+// escaped form closes-escapes-reopens each quote (`'` → `'\''`); the unescaped bug would leave the
+// title's apostrophe terminating the single-quoted word early. No such title existed in the suite
+// before, so this closes a LAW-6 gap around the composer's own stated deliverable.
+inTempCopy((root) => {
+  withDescendantRepo({ git: false }, (desc) => {
+    const args = ['dry-run', desc, '--kind', 'defect', '--title', "Owner's grill won't stop", '--observation', 'o', '--generalizes', 'g', '--conversion', 'ring', '--json'];
+    const { status, output } = runFeedback(root, args);
+    const parsed = parseFeedback(output);
+    const cmd = typeof parsed?.command === 'string' ? parsed.command : '';
+    const escaped = cmd.includes("Owner'\\''s") && cmd.includes("won'\\''t");
+    report(
+      'feedback: the emitted gh command POSIX-escapes an apostrophe in the title (shell-safe, not injectable)',
+      status === 0 && parsed?.ok === true && escaped,
+      `expected the emitted command to escape apostrophes (' -> '\\''), got exit ${status}:\n${output}`,
+    );
+  });
+});
+
+// Teeth (legibility): a seed whose pollen/lineage.json is PRESENT but records no parent must refuse
+// with a message stating the file records no parent — not that it is absent. The rootless-seed
+// branch fires for both absence and a parentless file, so the diagnosed cause must be the true one
+// (LAW-2). This also exercises readLineage returning an object with parent undefined.
+inTempCopy((root) => {
+  const seedish = mkdtempSync(join(tmpdir(), 'seed-rootish-'));
+  try {
+    writeFileSync(join(seedish, 'SEED.md'), '# genome\n');
+    mkdirSync(join(seedish, 'pollen'));
+    writeFileSync(join(seedish, 'pollen', 'lineage.json'), JSON.stringify({ seedVersion: '0.1.0' }));
+    const { status, output } = runFeedback(root, ['dry-run', seedish, ...COMPLETE_LEARNING, '--json']);
+    const parsed = parseFeedback(output);
+    report(
+      'feedback: a seed with a parentless lineage file refuses with an accurate cause ("records no parent", not "absent")',
+      status === 1 &&
+        parsed?.ok === false &&
+        feedbackViolations(parsed).some((s) => s.includes('records no parent') && !s.includes('no pollen/lineage.json')),
+      `expected a refusal naming "records no parent" (not "no pollen/lineage.json"), got exit ${status}:\n${output}`,
+    );
+  } finally {
+    rmSync(seedish, { recursive: true, force: true });
+  }
+});
+
 console.log(
   failures > 0
     ? `\n${failures}/${ran} self-test(s) failed. A validator that does not fire on its violation class is doc-only enforcement wearing a costume (LAW-2).`

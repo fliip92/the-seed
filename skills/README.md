@@ -44,10 +44,17 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   the generation manifest and the regeneration check that convert ledger E-001 (Stage 2, plan
   [0003](../docs/plans/active/0003-growth.md) scope item 5; ring
   [0020](../docs/rings/0020-onboard-human-generated-briefing.md)).
+- [feedback](feedback/SKILL.md) — open an issue upstream against the mother seed from any repository
+  (LAW-11; SEED.md §7). The genome ships the composer — a well-formed upstream issue (title + a fixed
+  Lineage / Kind / What happened / Why this is upstream / Proposed conversion body), addressed to the
+  descendant's recorded parent; it never posts, emitting the `gh issue create` command a human runs
+  once the Gardener approves. A root seed with no parent is refused (feedback flows upstream).
+  Verified by a side-effect-free dry-run that composes well-formed, has teeth, and mutates nothing
+  (Stage 2, plan [0003](../docs/plans/active/0003-growth.md) scope item 6; ring
+  [0021](../docs/rings/0021-feedback-composes-upstream-issue.md)).
 
-The garden grows by stage (SEED.md §4). Still to plant:
-
-- **Stage 2:** feedback.
+Every Stage 2 skill on the SEED.md §4 menu is planted. The garden grows by stage (SEED.md §4); the
+next growth is the Stage 2 exit criterion, then the Stage 2 → 3 transition.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.

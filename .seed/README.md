@@ -14,6 +14,7 @@ npm run fitness        # the seed's own fitness v0 snapshot (advisory; all SEED.
 npm run repo-fitness -- <path>   # read-only §6 assessment of ANY repository (advisory)
 npm run worktrees -- dry-run     # self-verifying dry-run of the parallel-worktrees lifecycle
 npm run generate                 # rewrite every generated artifact from its sources
+npm run feedback -- dry-run <path> ...   # compose (never post) a well-formed upstream issue (LAW-11)
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
@@ -22,6 +23,7 @@ node .seed/checks/fitness.ts
 node .seed/checks/repo-fitness.ts <path>
 node .seed/checks/worktrees.ts dry-run
 node .seed/checks/generate.ts
+node .seed/checks/feedback.ts dry-run <path> ...
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -146,6 +148,25 @@ repository it runs from. Unlike the advisory instruments it is **self-asserting*
 isolation and cleanup held, exit 1 on a defect. `--json` emits `{ mode, count, scratch, ok,
 checks }`.
 
+## Feedback
+
+[checks/feedback.ts](checks/feedback.ts) owns the upstream-issue **composer** for the
+[feedback](../skills/feedback/SKILL.md) skill (plan [0003](../docs/plans/active/0003-growth.md)
+scope item 6, ring [0021](../docs/rings/0021-feedback-composes-upstream-issue.md)): from any
+repository it composes a well-formed issue to send upstream against the mother seed (LAW-11;
+SEED.md §7) — a `[seed-feedback]` title and a fixed body (Lineage / Kind / What happened / Why this
+is upstream / Proposed conversion), addressed to the descendant's `parent`. **It never posts** —
+there is no network path in it; it emits the exact `gh issue create` command a human runs to post,
+once the Gardener approves (an outward act, LAW-1). The parent comes from the target's
+`lineage.json` (in `pollen/`; SEED.md §7's `seed version, parent, date planted`) or `--parent`; a **root
+seed** with no recorded parent is refused (feedback flows *upstream* — a learning at the root is a
+ring or a ledger entry). Like [repo-fitness](checks/repo-fitness.ts) and [worktrees](checks/worktrees.ts)
+it reads arbitrary targets and is not a per-commit invariant, so it stays out of `run-all.ts` and is
+reached through the map. `--json` emits `{ mode, ok, target, title, body, command, violations }`;
+exit 0 = a well-formed issue composed, 1 = it could not be (ill-formed learning, or no upstream),
+2 = usage. Its self-verification (composes well-formed, has teeth, side-effect-free) is the
+self-tests (below).
+
 ## Generation
 
 [lib/generated.ts](lib/generated.ts) is the **generation manifest** (converting ledger E-001,
@@ -199,7 +220,13 @@ check (ring [0020](../docs/rings/0020-onboard-human-generated-briefing.md)) is p
 pristine artifact matches its regeneration, regeneration is a deterministic fixpoint (regenerate →
 the bytes are identical and the tree stays green), and a hand-edited artifact, a source changed
 without regenerating, a moved source anchor, an unregistered file in `docs/generated/`, and a
-missing artifact each fire. Fixture numbers are derived from
+missing artifact each fire. The feedback composer (ring
+[0021](../docs/rings/0021-feedback-composes-upstream-issue.md)) is pinned the same three-binding way:
+it works (a descendant composes a well-formed upstream issue with the exact ordered section set, all
+green, and deterministically), its validation has teeth (a missing field, an unknown kind, an unknown
+conversion, a malformed lineage file, and a root seed with no parent each exit 1 with a legible
+message), and it is side-effect-free (composing leaves the target byte-identical and posts nothing —
+the `gh` command emitted as text). Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.

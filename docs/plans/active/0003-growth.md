@@ -194,6 +194,34 @@ carried its own decisions). The exit criterion governs completion, not the item 
   **[E-001](../entropy-ledger.md)** to Paid. Build decision recorded as
   [ring 0020](../../rings/0020-onboard-human-generated-briefing.md). `npm run check` + `npm test`
   green; `drift_count` 0.
+- **2026-07-05** — Scope item 6, **feedback**, planted — open an issue upstream against the mother
+  seed from any repository (LAW-11; SEED.md §7), the last item on the Stage 2 menu. The skill
+  ([skills/feedback/SKILL.md](../../../skills/feedback/SKILL.md)) drives sense-an-upstream-learning →
+  compose → human-posts; [`.seed/checks/feedback.ts`](../../../.seed/checks/feedback.ts) (`npm run
+  feedback -- dry-run <repo> …`) owns the **composer**. The genome ships composition, not posting:
+  the tool has no network path at all — "without posting" is a capability it does not contain, not a
+  flag it declines — and it emits the exact `gh issue create` command a human runs once the Gardener
+  approves (an outward act, LAW-1; posting a real upstream needs network + auth + a live upstream, the
+  host-specific mechanics SEED.md §4 keeps out, the ring 0019 boot-in-adapters line). It runs against
+  any repository (the repo-fitness shape): the parent it addresses comes from the target's recorded
+  lineage (SEED.md §7's seed version, parent, date planted) or `--parent`, and a **root seed** with no
+  parent is refused (feedback flows upstream — a learning at the root is a ring or a ledger entry). A
+  well-formed issue is a fixed five-section body (Lineage / Kind / What happened / Why this is
+  upstream / Proposed conversion) with closed `kind`/`conversion` vocabularies (the latter exactly
+  SEED.md §0's four products); it carries no wall-clock, so a learning composes byte-identically (the
+  ring 0020 discipline). Verification (LAW-6): a side-effect-free dry-run pinned by
+  [`.seed/tests/self-test.ts`](../../../.seed/tests/self-test.ts) with the repo-fitness/worktrees
+  three-binding shape — it works (a descendant composes a well-formed issue, the exact ordered section
+  set pinned so none can be silently dropped, and deterministically), its validation has teeth (a
+  missing field, an unknown kind, an unknown conversion, a malformed lineage file, and a rootless seed
+  each exit 1 with a legible message), and it is side-effect-free (composing leaves the target
+  byte-identical and posts nothing — the command emitted as text). A top-tier adversarial review pass
+  hardened three defects it surfaced before landing: the emitted `gh` command now POSIX-escapes an
+  apostrophe in the title (a shell-safety teeth gap), the body is built from the `REQUIRED_SECTIONS`
+  constant so that pin is load-bearing (not a costume), and the rootless-seed refusal states its true
+  cause (absent vs. parentless lineage file). Build decision recorded as
+  [ring 0021](../../rings/0021-feedback-composes-upstream-issue.md). `npm run check` + `npm test`
+  (137 cases) green; `drift_count` 0.
 
 ## Next actions
 
@@ -223,8 +251,18 @@ carried its own decisions). The exit criterion governs completion, not the item 
    regeneration ([`validate-generated.ts`](../../../.seed/checks/validate-generated.ts)), landing
    the generation manifest that converts **E-001** to Paid; build decision in
    [ring 0020](../../rings/0020-onboard-human-generated-briefing.md).
-7. **Seed:** open scope item 6 — **feedback** (open a well-formed upstream issue against the mother
-   seed without posting, LAW-11) — the last item on the Stage 2 menu. Then the exit criterion —
-   assess a foreign repo read-only and produce an evidence-judgeable proposal — is in reach: its two
-   load-bearing organs (grill-the-gardener + repo-fitness) are planted. Ship each with its
-   verification, cut a ring per build decision, log progress here.
+7. ✅ **Scope item 6 — feedback planted** (2026-07-05): the upstream-issue composer
+   ([`.seed/checks/feedback.ts`](../../../.seed/checks/feedback.ts)) — compose (never post) a
+   well-formed issue against the mother seed from any repository (LAW-11), addressed to the
+   descendant's recorded parent and refused at a root seed; the genome ships composition, posting is a
+   Gardener-gated host act outside it, verified by a side-effect-free dry-run; build decision in
+   [ring 0021](../../rings/0021-feedback-composes-upstream-issue.md).
+8. **Seed:** the Stage 2 skill-garden menu is fully planted (grill-the-gardener, repo-fitness,
+   postmortem, parallel-worktrees, onboard-human, feedback), each with its verification (LAW-6). The
+   remaining Stage 2 work is the **exit criterion** (SEED.md §4): assess a foreign repository
+   read-only and produce an evidence-judgeable proposal — its two load-bearing organs
+   (grill-the-gardener + repo-fitness) are planted, so the next work is to exercise them end-to-end on
+   a real foreign repo and produce that proposal. Once evidenced, propose the Stage 2 → 3 (Growth →
+   Flowering) transition as a plan for Gardener approval (the SEED.md §4 stage-transition protocol;
+   the [ring 0009](../../rings/0009-stage-1-transition-approved.md)/[0014](../../rings/0014-stage-2-transition-approved.md)
+   precedent).

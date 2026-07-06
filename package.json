@@ -15,6 +15,7 @@
     "fitness": "node .seed/checks/fitness.ts",
     "repo-fitness": "node .seed/checks/repo-fitness.ts",
     "worktrees": "node .seed/checks/worktrees.ts",
-    "generate": "node .seed/checks/generate.ts"
+    "generate": "node .seed/checks/generate.ts",
+    "feedback": "node .seed/checks/feedback.ts"
   }
 }
