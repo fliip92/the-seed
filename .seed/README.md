@@ -12,12 +12,14 @@ npm test               # the machinery self-tests (spawns the checks in temp cop
 npm run garden         # the doc-gardener drift scan (advisory; reports drift_count)
 npm run fitness        # the seed's own fitness v0 snapshot (advisory; all SEED.md §6 metrics)
 npm run repo-fitness -- <path>   # read-only §6 assessment of ANY repository (advisory)
+npm run worktrees -- dry-run     # self-verifying dry-run of the parallel-worktrees lifecycle
 # equivalently:
 node .seed/checks/run-all.ts
 node .seed/tests/self-test.ts
 node .seed/checks/doc-drift.ts
 node .seed/checks/fitness.ts
 node .seed/checks/repo-fitness.ts <path>
+node .seed/checks/worktrees.ts dry-run
 ```
 
 Exit code 0 means the repository holds its own invariants. Any violation exits non-zero.
@@ -121,6 +123,26 @@ only a thrown error (a broken instrument) fails the run — the numbers never ga
 --json` emits the exact `{ date, stage, metrics }` snapshot shape; `repo-fitness.ts --json`
 emits `{ date, stage, metrics, notes }` (stage null, notes explaining each null).
 
+## Parallel worktrees
+
+[checks/worktrees.ts](checks/worktrees.ts) owns the host-agnostic worktree lifecycle for the
+[parallel-worktrees](../skills/parallel-worktrees/SKILL.md) skill (plan
+[0003](../docs/plans/active/0003-growth.md) scope item 4, ring
+[0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)): create N isolated
+worktrees, boot an instance per worktree through a `HostAdapter` contract (`boot` / `teardown`),
+tear them all down, and prove isolation + cleanup held. Host-specific boot mechanics (simulators,
+dev-build caches, Metro/Orbit fast boot) implement that contract and live in host adapters, not
+here (SEED.md §4). It is neither a `run-all.ts` gate (it needs git and touches the filesystem)
+nor a per-commit metric, so — like `repo-fitness.ts` — it stays out of the CI shim and is reached
+through the map rather than added to `validate-anatomy`'s `REQUIRED_FILES`.
+
+Its own `dry-run` is its verification: `node .seed/checks/worktrees.ts dry-run [--count N]
+[--json]` runs the whole lifecycle against a **hermetic scratch repo** it creates and owns under
+the OS temp dir and removes at the end, so a run never creates a worktree, branch, or file in the
+repository it runs from. Unlike the advisory instruments it is **self-asserting**: exit 0 when
+isolation and cleanup held, exit 1 on a defect. `--json` emits `{ mode, count, scratch, ok,
+checks }`.
+
 ## Self-tests
 
 [tests/self-test.ts](tests/self-test.ts) (`npm test`) verifies the verifiers (converted
@@ -144,7 +166,13 @@ after a run). The postmortem-entry check (ring
 [0017](../docs/rings/0017-postmortem-three-artifacts-linked.md)) is pinned the same way — a
 valid three-artifact entry passes, and an unlinked fix, a prose invariant (no mechanism), an
 invariant with no link, a non-ring `Ring` link, a missing field, a title/number mismatch, a
-bad filename, and a duplicate and a gap in numbering each fire. Fixture numbers are derived from
+bad filename, and a duplicate and a gap in numbering each fire. The parallel-worktrees dry-run
+(ring [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)) is pinned: it works
+(the full lifecycle passes, exit 0, with the exact ordered check-set present and all green so no
+assertion can be silently dropped), its assertions have teeth (an injected leak fires the isolation
+leak-check; a skipped teardown fires the cleanup checks and the teardown-dispatch check; both
+exit 1), and it is hermetic and caller-invariant (the scratch repo it reports is gone after the
+run, and running it from inside a git repo leaves that repo byte-identical). Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.

@@ -30,10 +30,17 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   verification binds to link all three (Stage 2, plan
   [0003](../docs/plans/active/0003-growth.md) scope item 3; ring
   [0017](../docs/rings/0017-postmortem-three-artifacts-linked.md)).
+- [parallel-worktrees](parallel-worktrees/SKILL.md) — decompose a large task across isolated git
+  worktrees, one booted instance per worktree, torn down at task end. The genome ships the
+  host-agnostic worktree lifecycle plus a host-adapter boot contract; host-specific boot
+  mechanics live in adapters, not the genome (SEED.md §4). Verified by a hermetic dry-run that
+  creates, isolates, boots, and tears down N worktrees and asserts isolation plus cleanup (Stage
+  2, plan [0003](../docs/plans/active/0003-growth.md) scope item 4; ring
+  [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)).
 
 The garden grows by stage (SEED.md §4). Still to plant:
 
-- **Stage 2:** parallel-worktrees, onboard-human, feedback.
+- **Stage 2:** onboard-human, feedback.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.

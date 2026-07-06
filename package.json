@@ -13,6 +13,7 @@
     "test": "node .seed/tests/self-test.ts",
     "garden": "node .seed/checks/doc-drift.ts",
     "fitness": "node .seed/checks/fitness.ts",
-    "repo-fitness": "node .seed/checks/repo-fitness.ts"
+    "repo-fitness": "node .seed/checks/repo-fitness.ts",
+    "worktrees": "node .seed/checks/worktrees.ts"
   }
 }

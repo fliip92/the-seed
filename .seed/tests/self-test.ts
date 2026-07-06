@@ -9,7 +9,7 @@
 // Each case copies the working tree (minus .git/node_modules) to a fresh temp dir,
 // mutates it, and asserts on the real end-to-end path CI runs — exit code included.
 // The append-only gate cases additionally `git init` the copy, so gate history is real.
-import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -94,6 +94,14 @@ function runNode(root: string, script: string, args: string[] = []): RunResult {
   return { status: res.status, output: `${res.stdout ?? ''}${res.stderr ?? ''}` };
 }
 
+// Like runNode but with an explicit cwd and an absolute script path — for the worktrees
+// caller-invariance case, which runs the seed copy's tool from INSIDE a separate git repo to prove
+// the run does not touch the repository it is invoked from.
+function runNodeIn(cwd: string, script: string, args: string[] = []): RunResult {
+  const res = spawnSync(process.execPath, [script, ...args], { cwd, encoding: 'utf8' });
+  return { status: res.status, output: `${res.stdout ?? ''}${res.stderr ?? ''}` };
+}
+
 const runChecks = (root: string): RunResult => runNode(root, '.seed/checks/run-all.ts');
 const runGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/ring-append-only.ts', args);
@@ -106,6 +114,7 @@ const runAutomergeGate = (root: string, args: string[]): RunResult =>
   runNode(root, '.seed/checks/automerge-scope.ts', args);
 const runReport = (root: string, args: string[] = []): RunResult =>
   runNode(root, '.seed/checks/gardening-report.ts', args);
+const runWorktrees = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/worktrees.ts', args);
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -1653,6 +1662,134 @@ inTempCopy((root) => {
       'repo-fitness: a run does not mutate the target (tree hash, HEAD, and status unchanged)',
       treeBefore === treeAfter && headBefore === headAfter && statusAfter === '',
       `expected byte-identical target after a run; tree ${treeBefore === treeAfter}, head ${headBefore === headAfter}, status ${JSON.stringify(statusAfter)}`,
+    );
+  });
+});
+
+// --- parallel-worktrees (plan 0003 scope item 4, ring 0019): the dry-run creates N ISOLATED
+// --- git worktrees, boots an instance per worktree through the host-adapter contract, tears
+// --- them all down, and asserts isolation + cleanup — all inside a HERMETIC scratch repo it
+// --- owns under the OS temp dir and removes at the end, so a run never touches the caller's
+// --- tree. These run the seed COPY's worktrees.ts (its scratch lives in tmpdir, not under the
+// --- copy), with the same three-binding shape as repo-fitness: it works, its assertions have
+// --- teeth, and it is hermetic.
+
+interface WorktreeCheck {
+  name: string;
+  ok: boolean;
+}
+interface WorktreeReport {
+  ok?: unknown;
+  count?: unknown;
+  scratch?: unknown;
+  checks?: WorktreeCheck[];
+}
+function parseWorktrees(output: string): WorktreeReport | null {
+  try {
+    return JSON.parse(output) as WorktreeReport;
+  } catch {
+    return null;
+  }
+}
+const firedChecks = (parsed: WorktreeReport | null): string[] =>
+  (parsed?.checks ?? []).filter((c) => !c.ok).map((c) => c.name);
+
+// The exact ordered set of checks the dry-run emits at --count 3. Pinning the WHOLE set (not just
+// "every check ok") is the anti-costume guard the git-guaranteed isolation checks need: no
+// assertion can be silently deleted, renamed, or made vacuously-true without turning this red,
+// since no --inject fault can force own-branch / distinct-content / unmoved-base-HEAD red on its
+// own. Keep this in lockstep with worktrees.ts's record() calls — that lockstep is the point.
+const EXPECTED_WORKTREE_CHECKS = [
+  'worktree count rose to 4 (base + 3)',
+  'each worktree is checked out on its own branch',
+  'each worktree holds distinct working-tree content',
+  "no worktree's work leaked into the base tree",
+  'the base branch HEAD is unchanged (per-branch commit isolation)',
+  'all 3 instances booted with a queryable handle',
+  'boot dispatched once per worktree (3)',
+  'worktree count returned to baseline after teardown',
+  'no seed/wt-* branches remain',
+  'every worktree directory was removed',
+  'teardown dispatched once per booted instance (3)',
+];
+
+// It works: the full lifecycle passes (exit 0, ok true), the EXACT check-set is present and all
+// green (so no assertion can be silently dropped or stubbed), AND the tool removed its own scratch
+// repo — the hermetic property proven externally (the reported scratch path is gone), the same way
+// repo-fitness's non-mutation is proven by an external tree hash.
+inTempCopy((root) => {
+  const { status, output } = runWorktrees(root, ['dry-run', '--count', '3', '--json']);
+  const parsed = parseWorktrees(output);
+  const names = (parsed?.checks ?? []).map((c) => c.name);
+  const setPinned = JSON.stringify(names) === JSON.stringify(EXPECTED_WORKTREE_CHECKS);
+  const allOk = (parsed?.checks ?? []).length > 0 && (parsed?.checks ?? []).every((c) => c.ok);
+  const scratchGone = typeof parsed?.scratch === 'string' && !existsSync(parsed.scratch);
+  report(
+    'worktrees: dry-run runs the full lifecycle, the exact 11-check set is present and all green, and it is hermetic',
+    status === 0 && parsed?.ok === true && parsed?.count === 3 && setPinned && allOk && scratchGone,
+    `expected exit 0 + ok:true + the exact 11-check set all green + scratch removed (setPinned=${setPinned}), got exit ${status}:\n${output}`,
+  );
+});
+
+// Teeth (isolation): an injected cross-worktree leak into the base tree must make the isolation
+// assertion fire and the run exit 1. A dry-run whose isolation check can never go red proves
+// nothing (LAW-2). Still hermetic — the scratch is removed even on failure.
+inTempCopy((root) => {
+  const { status, output } = runWorktrees(root, ['dry-run', '--count', '3', '--inject', 'leak', '--json']);
+  const parsed = parseWorktrees(output);
+  const fired = firedChecks(parsed);
+  const scratchGone = typeof parsed?.scratch === 'string' && !existsSync(parsed.scratch);
+  report(
+    'worktrees: an injected cross-worktree leak fires the isolation assertion (exit 1) — the dry-run has teeth',
+    status === 1 && parsed?.ok === false && fired.some((n) => n.includes('leaked into the base')) && scratchGone,
+    `expected exit 1 + ok:false + a fired isolation check + scratch removed, got exit ${status}:\n${output}`,
+  );
+});
+
+// Teeth (cleanup + teardown dispatch): skipping teardown must make the cleanup assertions fire
+// (count not back to baseline, branches survive, directories survive) AND the teardown-dispatch
+// assertion fire (the adapter's teardown was not called per instance) and exit 1 — so both the git
+// removal and the host-adapter teardown half of the contract are really checked, not just prose.
+inTempCopy((root) => {
+  const { status, output } = runWorktrees(root, ['dry-run', '--count', '3', '--inject', 'skip-teardown', '--json']);
+  const parsed = parseWorktrees(output);
+  const fired = firedChecks(parsed);
+  const scratchGone = typeof parsed?.scratch === 'string' && !existsSync(parsed.scratch);
+  report(
+    'worktrees: skipping teardown fires the cleanup AND teardown-dispatch assertions (exit 1) — both halves checked',
+    status === 1 &&
+      parsed?.ok === false &&
+      fired.some((n) => n.includes('returned to baseline')) &&
+      fired.some((n) => n.includes('branches remain')) &&
+      fired.some((n) => n.includes('directory was removed')) &&
+      fired.some((n) => n.includes('teardown dispatched')) &&
+      scratchGone,
+    `expected exit 1 + ok:false + fired cleanup + teardown-dispatch checks + scratch removed, got exit ${status}:\n${output}`,
+  );
+});
+
+// Caller-invariance: run the tool from INSIDE a git repo and prove that repo is byte-identical
+// afterward — tree hash + `git worktree list` + porcelain status all unchanged. This is the
+// read-only-of-the-caller property the tool header and SKILL claim, proven the same before/after
+// way repo-fitness proves non-mutation; the dry-run's scratch lives in tmpdir, so a correct run
+// touches this caller repo not at all.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (caller) => {
+    const treeBefore = treeHash(caller);
+    const worktreesBefore = gitCapture(caller, 'worktree', 'list', '--porcelain');
+    const { status, output } = runNodeIn(caller, join(root, '.seed/checks/worktrees.ts'), ['dry-run', '--count', '3', '--json']);
+    const parsed = parseWorktrees(output);
+    const treeAfter = treeHash(caller);
+    const worktreesAfter = gitCapture(caller, 'worktree', 'list', '--porcelain');
+    const statusAfter = gitCapture(caller, 'status', '--porcelain');
+    report(
+      'worktrees: running the dry-run from inside a git repo leaves it byte-identical (caller-invariance, like repo-fitness)',
+      status === 0 &&
+        parsed?.ok === true &&
+        treeBefore === treeAfter &&
+        worktreesBefore === worktreesAfter &&
+        statusAfter === '',
+      `expected the caller repo unchanged (tree ${treeBefore === treeAfter}, worktrees ${worktreesBefore === worktreesAfter}, status ${JSON.stringify(statusAfter)}), got exit ${status}:\n${output}`,
     );
   });
 });

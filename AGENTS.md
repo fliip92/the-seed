@@ -26,13 +26,15 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   (transition approved 2026-07-05, ring
   [0014](docs/rings/0014-stage-2-transition-approved.md)). The governing plan is
   [plan 0003](docs/plans/active/0003-growth.md) — continue from its `Next actions`: scope items
-  1–3 are planted — **grill-the-gardener** (architecture elicitation, ring
+  1–4 are planted — **grill-the-gardener** (architecture elicitation, ring
   [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)), **repo-fitness** (read-only
   assessment of any repository, ring
-  [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), and **postmortem**
+  [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), **postmortem**
   (a failure yields fix + invariant + ring, ring
-  [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)); the next work is scope item 4,
-  **parallel-worktrees**. Stage 2 grows the skill garden (grill-the-gardener, repo-fitness,
+  [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)), and **parallel-worktrees**
+  (decompose a task across isolated git worktrees, one booted instance per worktree via a host
+  adapter, ring [0019](docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)); the next
+  work is scope item 5, **onboard-human**. Stage 2 grows the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification
   (LAW-6); the exit criterion is assessing a foreign repository read-only and producing an
   evidence-judgeable proposal (SEED.md §4). Stage 1's self-maintenance organs — all built and evidenced in

@@ -151,6 +151,27 @@ carried its own decisions). The exit criterion governs completion, not the item 
   as E-011), and the ring ([0018](../../rings/0018-map-current-state-drift-doc-only.md)). Proves
   `validate-postmortems.ts` binds on a genuine entry, not only self-test fixtures. `npm run
   check` + `npm test` green; `drift_count` 0.
+- **2026-07-05** — Scope item 4, **parallel-worktrees**, planted — decompose a large task across
+  isolated git worktrees, one booted instance per worktree, torn down at task end (SEED.md §4,
+  Stage 2). The skill ([skills/parallel-worktrees/SKILL.md](../../../skills/parallel-worktrees/SKILL.md))
+  drives the decompose → create → boot → consolidate → teardown lifecycle;
+  [`.seed/checks/worktrees.ts`](../../../.seed/checks/worktrees.ts) (`npm run worktrees -- dry-run`)
+  owns the **host-agnostic** git lifecycle and a `HostAdapter` boot/teardown contract — host-specific
+  boot mechanics (simulators, dev-build caches, Metro/Orbit fast boot) implement the contract and
+  live in adapters *outside* the genome (the SEED.md §4 line), so the genome's default adapter is a
+  no-op that treats the isolated checkout itself as the instance. Verification (LAW-6): the tool's
+  own `dry-run` runs the whole cycle against a **hermetic scratch repo** it owns under the OS temp
+  dir and removes at the end (so a run never touches the caller's tree), asserting isolation and
+  cleanup and exiting non-zero on a defect;
+  [`.seed/tests/self-test.ts`](../../../.seed/tests/self-test.ts) pins it — it works (the full
+  lifecycle passes with the exact ordered check-set pinned so none can be silently dropped), its
+  assertions have teeth (an injected leak fires the isolation leak-check; a skipped teardown fires
+  the cleanup *and* teardown-dispatch checks — the host-adapter teardown half is observable, not
+  just the git removal; both proven to bite by mutation), it is hermetic (the reported scratch repo
+  is gone), and it is caller-invariant (running it from inside a git repo leaves that repo
+  byte-identical). Build decision recorded as
+  [ring 0019](../../rings/0019-parallel-worktrees-host-agnostic-lifecycle.md). `npm run check` +
+  `npm test` green; `drift_count` 0.
 
 ## Next actions
 
@@ -169,11 +190,16 @@ carried its own decisions). The exit criterion governs completion, not the item 
    ([`validate-postmortems.ts`](../../../.seed/checks/validate-postmortems.ts)) binding every
    entry to link all three artifacts — fix, enforceable invariant, and an existing ring; build
    decision in [ring 0017](../../rings/0017-postmortem-three-artifacts-linked.md).
-5. **Seed:** open scope item 4 — **parallel-worktrees**: decompose a large task across isolated
-   git worktrees, one booted instance per worktree, torn down at task end; host-specific boot
-   mechanics live in host adapters, not the genome. Verification (LAW-6): a dry-run that creates
-   and tears down N worktrees and asserts isolation plus cleanup (SEED.md §4, Stage 2). The
-   remaining Stage 2 items (onboard-human, feedback) follow; the exit criterion — assess a
-   foreign repo read-only and produce an evidence-judgeable proposal — is within reach, its two
-   load-bearing organs (grill-the-gardener + repo-fitness) planted. Ship each with its
-   verification, cut a ring per build decision, log progress here.
+5. ✅ **Scope item 4 — parallel-worktrees planted** (2026-07-05): the decompose-across-isolated-
+   worktrees lifecycle ([`.seed/checks/worktrees.ts`](../../../.seed/checks/worktrees.ts)) plus its
+   `HostAdapter` boot contract (host-specific boot mechanics live in adapters outside the genome,
+   the SEED.md §4 line) and its hermetic self-verifying dry-run; build decision in
+   [ring 0019](../../rings/0019-parallel-worktrees-host-agnostic-lifecycle.md).
+6. **Seed:** open scope item 5 — **onboard-human**: brief a new human, current state → goal, as
+   conversation plus a generated md/html artifact. Verification (LAW-6): the artifact regenerates
+   deterministically from repo state (the [docs/generated/](../../generated/README.md) discipline).
+   Then scope item 6 — **feedback** (open a well-formed upstream issue without posting, LAW-11) —
+   closes the Stage 2 menu. The exit criterion — assess a foreign repo read-only and produce an
+   evidence-judgeable proposal — is in reach: its two load-bearing organs (grill-the-gardener +
+   repo-fitness) are planted. Ship each with its verification, cut a ring per build decision, log
+   progress here.
