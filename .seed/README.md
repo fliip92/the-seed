@@ -32,6 +32,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-rings.ts](checks/validate-rings.ts) | Ring filenames, sequence, and format (SEED.md §2) | LAW-10 |
 | [checks/validate-plans.ts](checks/validate-plans.ts) | Plan filenames, sequence, format; ledger entry format | LAW-5, LAW-8 |
 | [checks/validate-architecture.ts](checks/validate-architecture.ts) | Architecture-doc format (grill-the-gardener): one page, lintable rules each naming an enforcement, explicit human/agent ownership split (SEED.md §4) | LAW-2 |
+| [checks/validate-postmortems.ts](checks/validate-postmortems.ts) | Postmortem-entry format (postmortem): a failure links all three artifacts — fix, invariant (naming a mechanism + linking its enforcer), and an existing ring (SEED.md §4) | LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -139,7 +140,11 @@ cases: self-equivalence (`repo-fitness <seed>` metrics byte-identical to `fitnes
 honest degradation against a synthetic foreign repo (anatomy metrics null with reasons,
 `drift_count` still catches a seeded stale reference; a non-git target reports the
 not-a-git-repository reason), and read-only (target tree hash, git HEAD, and status unchanged
-after a run). Fixture numbers are derived from
+after a run). The postmortem-entry check (ring
+[0017](../docs/rings/0017-postmortem-three-artifacts-linked.md)) is pinned the same way — a
+valid three-artifact entry passes, and an unlinked fix, a prose invariant (no mechanism), an
+invariant with no link, a non-ring `Ring` link, a missing field, a title/number mismatch, a
+bad filename, and a duplicate and a gap in numbering each fire. Fixture numbers are derived from
 the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.

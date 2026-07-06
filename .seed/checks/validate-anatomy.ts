@@ -25,6 +25,7 @@ const REQUIRED_FILES: Array<{ path: string; purpose: string }> = [
   { path: 'docs/plans/entropy-ledger.md', purpose: 'priced debt' },
   { path: 'docs/principles/README.md', purpose: 'principle format + index' },
   { path: 'docs/architecture/README.md', purpose: 'architecture-doc format + index (grill-the-gardener, plan 0003)' },
+  { path: 'docs/postmortems/README.md', purpose: 'postmortem-entry format + index (postmortem, plan 0003)' },
   { path: 'docs/fitness/FITNESS.md', purpose: 'current fitness + metric definitions' },
   { path: 'docs/fitness/history/README.md', purpose: 'snapshot rules' },
   { path: 'docs/references/README.md', purpose: 'distilled external docs index' },

@@ -7,8 +7,9 @@ import { check as map } from './validate-map.ts';
 import { check as rings } from './validate-rings.ts';
 import { check as plans } from './validate-plans.ts';
 import { check as architecture } from './validate-architecture.ts';
+import { check as postmortems } from './validate-postmortems.ts';
 
-const CHECKS: Check[] = [anatomy, map, rings, plans, architecture];
+const CHECKS: Check[] = [anatomy, map, rings, plans, architecture, postmortems];
 
 const files = listRepoFiles();
 let failed = 0;

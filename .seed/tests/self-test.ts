@@ -21,6 +21,7 @@ const MAP = 'seed/validate-map';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const ARCH = 'seed/validate-architecture';
+const POSTMORTEM = 'seed/validate-postmortems';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
@@ -65,6 +66,14 @@ const PLAN_GAP = pad4(planMax + 2);
 const LEDGER_DUP = pad3(ledgerMax);
 const LEDGER_NEXT = pad3(ledgerMax + 1);
 const LEDGER_GAP = pad3(ledgerMax + 2);
+
+// Postmortems (ring 0017) are numbered like rings but the organ starts empty (max 0), so a
+// duplicate is seeded as two files both at NEXT — no pre-existing entry to collide with —
+// while a gap seeds one file at GAP (leaving NEXT missing). Both stay valid as real
+// postmortems land: [1..M, M+1, M+1] duplicates, [1..M, M+2] gaps.
+const postmortemMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/postmortems')), /^(\d{4})-/);
+const POSTMORTEM_NEXT = pad4(postmortemMax + 1);
+const POSTMORTEM_GAP = pad4(postmortemMax + 2);
 
 function copyRepo(): string {
   const root = mkdtempSync(join(tmpdir(), 'seed-selftest-'));
@@ -246,6 +255,31 @@ function validArchitecture(opts: {
     '',
   ];
   return sections.filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection)).join('\n');
+}
+
+// A valid postmortem entry (ring 0017): title, the six fields, and the three artifacts each
+// LINKED — Fix links a change, Invariant names a mechanism in an Enforcement clause and links
+// its enforcer, Ring links an existing ring. Every default link points at a file that exists
+// in the temp copy (the check file itself, and ring 0001), so a valid fixture resolves and
+// each opt breaks exactly one completion condition. Written to docs/postmortems/<num>-*.md,
+// so `../../` reaches the repo root and `../rings/` reaches the ring log.
+function validPostmortem(num: string, opts: {
+  title?: string;
+  drop?: string;
+  fix?: string;
+  invariant?: string;
+  ring?: string;
+} = {}): string {
+  const fields = [
+    '- Date: 2026-07-05',
+    '- Stage: 2 — Growth',
+    '- Failure: A self-test fixture failure that exists only inside a temp copy.',
+    opts.fix ?? '- Fix: Added the check — [the check](../../.seed/checks/validate-postmortems.ts).',
+    opts.invariant ??
+      '- Invariant: The format is enforced — Enforcement: structural test — [validate-postmortems](../../.seed/checks/validate-postmortems.ts).',
+    opts.ring ?? '- Ring: The decision trail — [ring 0001](../rings/0001-founding-defaults.md).',
+  ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
+  return [`# Postmortem ${opts.title ?? `${num} — Self-test fixture`}`, '', ...fields, ''].join('\n');
 }
 
 // A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
@@ -535,6 +569,99 @@ const CASES: ViolationCase[] = [
       write(r, 'docs/architecture/fixture.md', validArchitecture({ filler: Array(90).fill('x').join('\n') })),
     expect: { check: ARCH, law: LAW2, contains: ['over the one-page line budget of 80'] },
   },
+  // --- postmortem-entry format (postmortem, ring 0017). These write an unreachable entry into
+  // --- docs/postmortems/, so validate-map also fires — the assertion only requires the
+  // --- postmortem marker + message, so that noise is harmless. The valid-entry-passes and
+  // --- mechanism-accepted paths need reachability and so run as standalone exit-0 blocks below.
+  {
+    name: 'postmortem: invalid title line',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { title: 'without the required shape' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['first line is not a valid postmortem title'] },
+  },
+  {
+    name: 'postmortem: bad filename',
+    seed: (r) => write(r, 'docs/postmortems/not-a-postmortem.md', validPostmortem(POSTMORTEM_NEXT)),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['does not match the postmortem filename format'] },
+  },
+  {
+    name: 'postmortem: title number != filename number',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { title: `${POSTMORTEM_GAP} — Self-test fixture` })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: [`title number ${POSTMORTEM_GAP} does not match filename number ${POSTMORTEM_NEXT}`] },
+  },
+  {
+    name: 'postmortem: missing required field',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { drop: 'Failure' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['missing required field: Failure'] },
+  },
+  {
+    name: 'postmortem: Fix names no link to the fix',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { fix: '- Fix: We changed the code to handle it.' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Fix field links no fix'] },
+  },
+  {
+    // No `Enforcement:` clause at all: the invariant is only prose — the "try harder" non-fix.
+    name: 'postmortem: an invariant with no Enforcement clause is caught',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: We will review more carefully — [notes](../../.seed/checks/validate-postmortems.ts).' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Invariant does not name an enforcement'] },
+  },
+  {
+    // A clause is present but names no mechanism — pins that the vocabulary is required, not
+    // merely the word "Enforcement:".
+    name: "postmortem: an invariant's Enforcement clause names no mechanism",
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: Reviews happen — Enforcement: we will be careful — [notes](../../.seed/checks/validate-postmortems.ts).' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ["Invariant's enforcement names no mechanism"] },
+  },
+  {
+    // A mechanism is named but nothing is linked: the invariant claims enforcement with no
+    // enforcing artifact to point at.
+    name: 'postmortem: an invariant naming a mechanism but linking nothing is caught',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: The format is enforced — Enforcement: structural test.' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Invariant links no enforcing artifact'] },
+  },
+  {
+    // A link that is not a ring: the decision trail must point at docs/rings/NNNN-slug.md.
+    name: 'postmortem: a Ring field linking a non-ring is caught',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { ring: '- Ring: The decision trail — [the genome](../../SEED.md).' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Ring field links no ring'] },
+  },
+  {
+    // A ring-shaped link to a ring that does not exist — the other Ring branch (hasShape).
+    name: 'postmortem: a Ring field linking a nonexistent ring is caught',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { ring: '- Ring: The decision trail — [ring 9999](../rings/9999-ghost.md).' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Ring field links a ring that does not exist'] },
+  },
+  {
+    // Two entries at the same number — the organ starts empty, so a duplicate is two files at NEXT.
+    name: 'postmortem: duplicate number',
+    seed: (r) => {
+      write(r, `docs/postmortems/${POSTMORTEM_NEXT}-a.md`, validPostmortem(POSTMORTEM_NEXT));
+      write(r, `docs/postmortems/${POSTMORTEM_NEXT}-b.md`, validPostmortem(POSTMORTEM_NEXT));
+    },
+    expect: { check: POSTMORTEM, law: LAW2, contains: [`duplicate postmortem number ${POSTMORTEM_NEXT}`] },
+  },
+  {
+    name: 'postmortem: numbering gap',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_GAP}-fixture.md`, validPostmortem(POSTMORTEM_GAP)),
+    expect: { check: POSTMORTEM, law: LAW2, contains: [`postmortem numbering gap: found ${POSTMORTEM_GAP} where ${POSTMORTEM_NEXT} was expected`] },
+  },
+  {
+    // A present-but-malformed Date pins the Date-format branch, distinct from the missing-field
+    // branch — `July 5` keeps the field present (fieldRanges still resolves Date) while failing
+    // DATE_RE. Without this case, deleting that branch or loosening DATE_RE would ship green.
+    name: 'postmortem: a present-but-malformed Date is caught',
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT).replace('- Date: 2026-07-05', '- Date: July 5')),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ['Date field is not a YYYY-MM-DD date'] },
+  },
+  {
+    // The mechanism must be named in the Enforcement PROSE, not smuggled in via the required
+    // enforcing-artifact link's text: `[the dep-direction lint](...)` after a prose that names
+    // no mechanism ("we will be careful") must still fail. Pins the link-stripping in the
+    // mechanism test — without it, the 'lint' inside the link waves this prose-only invariant
+    // through, the exact "try harder" non-fix the rule exists to reject.
+    name: "postmortem: a mechanism word only in the Invariant's link does not satisfy it",
+    seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: Reviews happen — Enforcement: we will be careful — [the dep-direction lint](../../.seed/checks/validate-postmortems.ts).' })),
+    expect: { check: POSTMORTEM, law: LAW2, contains: ["Invariant's enforcement names no mechanism"] },
+  },
 ];
 
 // --- runner ---
@@ -661,6 +788,48 @@ for (const mech of [
     const { status, output } = runChecks(root);
     report(
       `architecture: a rule enforced by "${mech.split(/[ ,(]/)[0]}" passes`,
+      status === 0 && output.includes('all checks passed'),
+      `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+    );
+  });
+}
+
+// --- postmortem-entry format, the exit-0 side (ring 0017): a valid three-artifact entry must
+// --- pass all checks, so it is linked from the docs/postmortems/ README (reachability) and its
+// --- three artifacts all resolve. The pristine copy already proves the check is vacuous with
+// --- zero entries (docs/postmortems/ holds only its README).
+
+inTempCopy((root) => {
+  write(root, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT));
+  append(root, 'docs/postmortems/README.md', `\n- [fixture](${POSTMORTEM_NEXT}-fixture.md) — self-test fixture postmortem.\n`);
+  const { status, output } = runChecks(root);
+  report(
+    'postmortem: a valid, linked three-artifact entry passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// Every enforcement mechanism in the vocabulary must be accepted for an invariant — pins
+// MECHANISM_RE against a regression that narrows it and wrongly rejects a real invariant.
+// doc-only especially: an entry may name it when the host has no CI yet, pricing the residual.
+for (const mech of [
+  'doc-only, justified: the host has no CI yet, priced as debt.',
+  'CI gate (the hosted workflow)',
+  'lint (seed/some-rule)',
+]) {
+  inTempCopy((root) => {
+    write(
+      root,
+      `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`,
+      validPostmortem(POSTMORTEM_NEXT, {
+        invariant: `- Invariant: The rule holds — Enforcement: ${mech} — [enforcer](../../.seed/checks/validate-postmortems.ts).`,
+      }),
+    );
+    append(root, 'docs/postmortems/README.md', `\n- [fixture](${POSTMORTEM_NEXT}-fixture.md) — self-test fixture postmortem.\n`);
+    const { status, output } = runChecks(root);
+    report(
+      `postmortem: an invariant enforced by "${mech.split(/[ ,(]/)[0]}" passes`,
       status === 0 && output.includes('all checks passed'),
       `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
     );

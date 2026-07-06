@@ -125,6 +125,22 @@ carried its own decisions). The exit criterion governs completion, not the item 
   engine imports `scanDrift` instead of shelling out (the old subprocess wart is gone). Build
   decision recorded as [ring 0016](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md).
   `npm run check` (61/61 files, 100% reachable) + `npm test` (96 cases) green; `drift_count` 0.
+- **2026-07-05** — Scope item 3, **postmortem**, planted — the discipline that a failure yields
+  three artifacts, never one. The skill
+  ([skills/postmortem/SKILL.md](../../../skills/postmortem/SKILL.md)) drives a failure into a
+  fix, an enforceable invariant, and a decision-trail ring; its output is a numbered
+  **postmortem entry** in the new [docs/postmortems/](../../postmortems/README.md) organ.
+  Verification (LAW-6): [`.seed/checks/validate-postmortems.ts`](../../../.seed/checks/validate-postmortems.ts)
+  (in `run-all.ts`) binds every entry to link all three — the `Fix` links a change, the
+  `Invariant` names an enforcement mechanism *and* links its enforcer (the sharp LAW-2 point: a
+  prose "invariant" is the "try harder" non-fix), and the `Ring` links an existing ring — plus
+  the ring-numbering hygiene (filename, sequence, title, fields, a real date). The organ is
+  **vacuous while empty** and binds when the first entry lands; no incident is fabricated (the
+  ring 0015 precedent). Build decision recorded as
+  [ring 0017](../../rings/0017-postmortem-three-artifacts-linked.md): numbered like a ring (a
+  dated sequential incident), the three artifacts as local links held live by the map's
+  dead-link gate, not append-only-gated (a living record that can be repointed when its
+  machinery is refactored). `npm run check` + `npm test` green; `drift_count` 0.
 
 ## Next actions
 
@@ -138,10 +154,16 @@ carried its own decisions). The exit criterion governs completion, not the item 
    repository, built as one root-parameterized engine shared by self- and foreign-assessment
    (LAW-3), degrading absent-anatomy metrics to `null` with reasons and proven not to mutate the
    target; build decision in [ring 0016](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md).
-4. **Seed:** open scope item 3 — **postmortem**: a failure yields three artifacts, never one —
-   the fix, the invariant that prevents recurrence, and the ring recording the decision trail;
-   with a structural check that a postmortem entry links all three (SEED.md §4, Stage 2). The
-   remaining Stage 2 items (parallel-worktrees, onboard-human, feedback) follow; the exit
-   criterion — assess a foreign repo read-only and produce an evidence-judgeable proposal — is
-   now within reach, its two load-bearing organs (grill-the-gardener + repo-fitness) planted.
-   Ship each with its verification (LAW-6), cut a ring per build decision, log progress here.
+4. ✅ **Scope item 3 — postmortem planted** (2026-07-05): the numbered
+   [postmortem entry](../../postmortems/README.md) and its structural verification
+   ([`validate-postmortems.ts`](../../../.seed/checks/validate-postmortems.ts)) binding every
+   entry to link all three artifacts — fix, enforceable invariant, and an existing ring; build
+   decision in [ring 0017](../../rings/0017-postmortem-three-artifacts-linked.md).
+5. **Seed:** open scope item 4 — **parallel-worktrees**: decompose a large task across isolated
+   git worktrees, one booted instance per worktree, torn down at task end; host-specific boot
+   mechanics live in host adapters, not the genome. Verification (LAW-6): a dry-run that creates
+   and tears down N worktrees and asserts isolation plus cleanup (SEED.md §4, Stage 2). The
+   remaining Stage 2 items (onboard-human, feedback) follow; the exit criterion — assess a
+   foreign repo read-only and produce an evidence-judgeable proposal — is within reach, its two
+   load-bearing organs (grill-the-gardener + repo-fitness) planted. Ship each with its
+   verification, cut a ring per build decision, log progress here.
