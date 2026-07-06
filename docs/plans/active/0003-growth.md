@@ -141,6 +141,16 @@ carried its own decisions). The exit criterion governs completion, not the item 
   dated sequential incident), the three artifacts as local links held live by the map's
   dead-link gate, not append-only-gated (a living record that can be repointed when its
   machinery is refactored). `npm run check` + `npm test` green; `drift_count` 0.
+- **2026-07-05** — First exercise of the postmortem discipline (dogfooding scope item 3):
+  [postmortem 0001](../../postmortems/0001-agents-current-state-drift.md) metabolizes a real
+  failure this plan's own work surfaced — the map's ([AGENTS.md](../../../AGENTS.md)) "Current
+  state" named an already-landed scope item (repo-fitness) as "next work". Three artifacts,
+  linked: the fix (the map correction in the scope-item-3 commit), the invariant (doc-only —
+  prose-state agreement is not cheaply mechanizable; residual priced as
+  [E-009](../entropy-ledger.md)'s first recurrence, with the mechanizable stage sibling tracked
+  as E-011), and the ring ([0018](../../rings/0018-map-current-state-drift-doc-only.md)). Proves
+  `validate-postmortems.ts` binds on a genuine entry, not only self-test fixtures. `npm run
+  check` + `npm test` green; `drift_count` 0.
 
 ## Next actions
 

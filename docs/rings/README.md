@@ -23,6 +23,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0015 — grill-the-gardener produces a one-page architecture doc, enforced structurally](0015-grill-the-gardener-architecture-doc.md)
 - [0016 — repo-fitness generalizes the metric engine; self-fitness is the target=self case](0016-repo-fitness-generalizes-the-metric-engine.md)
 - [0017 — postmortem is a numbered entry that must link all three artifacts, enforced structurally](0017-postmortem-three-artifacts-linked.md)
+- [0018 — the map's current-state prose drift is handled doc-only until the drift instrument grows the class](0018-map-current-state-drift-doc-only.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

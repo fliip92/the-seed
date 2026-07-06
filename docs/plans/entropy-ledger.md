@@ -61,7 +61,11 @@ ledger is also a record of digestion.
 - Conversion path: invariant — add a drift class to the registry when a divergence shape
   proves to recur (the registry exists precisely so this needs no rework); the
   advisory/gate split is settled by ring
-  [0011](../rings/0011-drift-advisory.md)
+  [0011](../rings/0011-drift-advisory.md). First recurrence observed 2026-07-05 — the map's
+  "Current state" named an already-landed scope item as next work, written up as
+  [postmortem 0001](../postmortems/0001-agents-current-state-drift.md) (ring
+  [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
+  prose-state shape is the trigger to build the class
 
 ## E-011 — The current growth stage is stated in two places, unchecked
 

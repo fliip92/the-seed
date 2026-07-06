@@ -46,5 +46,7 @@ binds the moment `postmortem` lands an entry.
 
 ## Postmortems
 
-None yet. The first is written when a real failure occurs — the fix, the invariant, and the
-ring, linked together (SEED.md §3: *when you struggle, that is data* — feed it back).
+- [0001 — the map's "Current state" named an already-landed scope item as next work](0001-agents-current-state-drift.md)
+  (fix: the map correction under plan 0003; invariant: doc-only, priced as E-009's first
+  recurrence; ring [0018](../rings/0018-map-current-state-drift-doc-only.md)) — the first
+  exercise of the discipline, on a failure this repo's own work surfaced.
