@@ -1,6 +1,6 @@
 # Plan 0004 — Intake: metabolizing external knowledge into the seed
 
-- Status: active
+- Status: completed 2026-07-08
 
 ## Goal
 
@@ -145,7 +145,7 @@ when intake's engine is proven.
   double-quoted span in a grounded claim must appear verbatim in the cited saved source) and
   **completeness** (every corpus entry cited or `discard`-ed-with-reason — no silent truncation). It
   passes on the all-external [harness-engineering.md](../../references/harness-engineering.md) (its
-  teeth vacuous there — no saved corpus to enumerate or quote-check) and is pinned by eleven
+  teeth vacuous there — no saved corpus to enumerate or quote-check) and is pinned by ten
   self-test cases: each structural guard and each tooth fires on a fixture breaking exactly it, and a
   valid external-corpus reference *and* a valid in-repo-corpus reference (teeth active) both pass. No
   new ring: the load-bearing call (pin-not-mirror → the teeth bind in-repo only) was settled in ring
@@ -162,8 +162,8 @@ when intake's engine is proven.
 
 1. **Close plan 0004 and open the transition.** All buildable scope is landed (items 1–3); item 4
    (the inferential faithfulness judge, [E-013](../entropy-ledger.md)) is deferred by design — named,
-   not dropped. Mark this plan completed and return to [plan 0003](0003-growth.md) Next actions item
-   9: propose the Stage 2 → 3 (Growth → Flowering) transition — approved by the Gardener, recorded as
+   not dropped. Mark this plan completed and return to [plan 0003](../active/0003-growth.md) Next
+   actions item 9: propose the Stage 2 → 3 (Growth → Flowering) transition — approved by the Gardener, recorded as
    a ring (the ring [0009](../../rings/0009-stage-1-transition-approved.md) /
    [0014](../../rings/0014-stage-2-transition-approved.md) precedent) — now with intake in the garden.
 

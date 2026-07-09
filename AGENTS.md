@@ -47,33 +47,27 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   products, and the target's architecture left to a **grill agenda** rather than guessed (SEED.md
   §5), with the target proven byte-identical before and after (ring
   [0022](docs/rings/0022-assessment-organ-exit-criterion.md), the new
-  [docs/assessments/](docs/assessments/README.md) organ). **Correct next action:** both Stage 2
-  exit conditions are met — the skill garden grown *and* a foreign repo assessed read-only on
-  evidence — but the Gardener has elected to grow one more organ before Flowering, so the **live
-  work is [plan 0004](docs/plans/active/0004-intake.md)**: the **intake** skill (metabolize external
-  knowledge from the field into the four products, under the **grounded-or-ask** discipline — cite
-  or ask, never silently assume) plus the seed's first stated principle. Scope items 1–2 are
-  **done**: [grounded-or-ask](docs/principles/grounded-or-ask.md) is the seed's first stated
-  principle, enforced by `validate-principles` (ring
+  [docs/assessments/](docs/assessments/README.md) organ). Both Stage 2 exit conditions are met — the
+  skill garden grown *and* a foreign repo assessed read-only on evidence — and the Gardener grew one
+  more organ before Flowering: [plan 0004](docs/plans/completed/0004-intake.md) (intake), **now
+  complete**. It grew the **intake** skill (metabolize external knowledge from the field into the
+  four products, under **grounded-or-ask** — cite or ask, never silently assume) plus the seed's
+  first stated principle. All three buildable scope items landed: [grounded-or-ask](docs/principles/grounded-or-ask.md)
+  is the seed's first stated principle, enforced by `validate-principles` (ring
   [0023](docs/rings/0023-grounded-or-ask-first-principle.md)), so `enforcement_ratio` (SEED.md §6)
-  now carries its first real datum; and the [intake](skills/intake/SKILL.md) skill itself is
-  planted — the parse → classify → compose → ratify → land procedure, network-free, scouted by the
-  first external-corpus intake
-  ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)) and recorded in
-  ring [0024](docs/rings/0024-intake-network-free-metabolizer.md) (its name, pin-not-mirror
-  provenance, and closed outcome vocabulary). Scope item 3 is **done** too:
-  [validate-references](.seed/checks/validate-references.ts) (a new `run-all` check) binds every
-  `docs/references/*.md` — provenance (a Source line with a retrieval date + a commit pin for a
-  GitHub-pinnable repo) + per-claim citation + the grounded/inference split — its teeth being
-  completeness and quote-match where the corpus is saved in-repo (ring 0024's pin-not-mirror),
-  passing the all-external harness-engineering.md (teeth vacuous there) and pinned by eleven
-  self-tests; [grounded-or-ask](docs/principles/grounded-or-ask.md)'s Enforcement now links it (the
-  ring 0023 forward-reference discharged). That was plan 0004's **last buildable scope item** —
-  item 4 (the inferential faithfulness judge, E-013) is deferred by design. **Correct next action:**
-  plan 0004's buildable scope is complete — close it and take up the Stage 2 →
-  3 (Growth → Flowering) transition ([plan 0003](docs/plans/active/0003-growth.md) Next actions
-  item 9), no longer queued behind plan 0004: proposed as a plan, approved by the Gardener, recorded
-  as a ring (the [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
+  now carries its first real datum; the [intake](skills/intake/SKILL.md) skill is planted — the
+  network-free parse → classify → compose → ratify → land loop (ring
+  [0024](docs/rings/0024-intake-network-free-metabolizer.md): its name, pin-not-mirror provenance,
+  and closed outcome vocabulary), scouted by the first external-corpus intake
+  ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)); and
+  [validate-references](.seed/checks/validate-references.ts) (a `run-all` check) binds every
+  `docs/references/*.md` — provenance + per-claim citation + the grounded/inference split, with
+  completeness + quote-match teeth where the corpus is saved in-repo — passing the all-external
+  harness-engineering.md and pinned by ten self-tests. Item 4 (the inferential faithfulness judge,
+  E-013) is deferred by design. **Correct next action:** with intake in the garden, the **live work
+  is the Stage 2 → 3 (Growth → Flowering) transition** — [plan 0003](docs/plans/active/0003-growth.md)
+  Next actions item 9: proposed as a plan, approved by the Gardener, recorded as a ring (the
+  [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
   precedent); no transition ring is cut before approval. Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification
   (LAW-6). Stage 1's self-maintenance organs — all built and evidenced in
