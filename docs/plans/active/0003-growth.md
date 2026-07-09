@@ -249,6 +249,18 @@ carried its own decisions). The exit criterion governs completion, not the item 
   `drift_count` 0. **Both Stage 2 exit conditions are now met** — the skill garden grown and a foreign
   repo assessed read-only on evidence — so the next work is to propose the Stage 2 → 3 (Growth →
   Flowering) transition as a plan for Gardener approval.
+- **2026-07-08** — **Stage 2 → 3 (Growth → Flowering) transition proposed** (Next actions item 9).
+  [Plan 0005](0005-flowering.md) is opened as the transition proposal (SEED.md §4): both Stage 2
+  exit conditions evidenced (the skill garden grown, items 1–7, plus intake; a foreign repo
+  assessed read-only, item 8 — [assessment 0001](../../assessments/0001-mottainapp.md),
+  [ring 0022](../../rings/0022-assessment-organ-exit-criterion.md)), the Stage 3 pollen scope laid
+  out, and the release/upgrade design worked out with the Gardener (2026-07-06) formalized at the
+  transition as [E-015](../entropy-ledger.md) — a Stage-3-gated debt priced ahead, the E-004
+  precedent. Awaiting Gardener approval; no transition ring is cut before approval (the
+  [ring 0009](../../rings/0009-stage-1-transition-approved.md) /
+  [0014](../../rings/0014-stage-2-transition-approved.md) precedent). On approval Stage 3 is
+  entered, plan 0005 governs, and this plan completes and moves to `completed/`. `npm run check` +
+  `npm test` green; `drift_count` 0.
 
 ## Next actions
 
@@ -292,9 +304,12 @@ carried its own decisions). The exit criterion governs completion, not the item 
    findings, grill agenda, and ownership split enforced by
    [`validate-assessments.ts`](../../../.seed/checks/validate-assessments.ts); build decision in
    [ring 0022](../../rings/0022-assessment-organ-exit-criterion.md).
-9. **Seed:** both Stage 2 exit conditions are met — the skill garden grown (items 1–7) and a foreign
-   repo assessed read-only on evidence (item 8). The next work is to **propose the Stage 2 → 3
-   (Growth → Flowering) transition** as an execution plan for Gardener approval — the SEED.md §4
-   stage-transition protocol (proposed as a plan, approved by the Gardener, recorded as a ring; the
-   [ring 0009](../../rings/0009-stage-1-transition-approved.md)/[0014](../../rings/0014-stage-2-transition-approved.md)
-   precedent). No transition ring is cut before approval.
+9. **Stage 2 → 3 transition proposed** (2026-07-08): with both Stage 2 exit conditions met — the
+   skill garden grown (items 1–7) and a foreign repo assessed read-only on evidence (item 8) —
+   [plan 0005](0005-flowering.md) is opened as the Growth → Flowering transition proposal (SEED.md
+   §4), evidencing both conditions, laying out the Stage 3 pollen scope, and pricing the parked
+   release/upgrade design at the transition as [E-015](../entropy-ledger.md). **Awaiting Gardener
+   approval** — the live work is now the Gardener's decision; on approval a transition ring is cut
+   (the [ring 0009](../../rings/0009-stage-1-transition-approved.md) /
+   [0014](../../rings/0014-stage-2-transition-approved.md) precedent), Stage 3 is entered, plan
+   0005 governs, and this plan completes. No transition ring is cut before approval.

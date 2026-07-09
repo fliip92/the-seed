@@ -134,6 +134,31 @@ ledger is also a record of digestion.
   the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
   first principles
 
+## E-015 — the release / pollen-upgrade mechanism is designed but unbuilt
+
+- First observed: 2026-07-06, worked out with the Gardener as the Stage 3 release/upgrade
+  process; formalized into the ledger 2026-07-08 at the Stage 2 → 3 transition proposal
+  ([plan 0005](active/0005-flowering.md))
+- Where: no artifact yet — the design lived only in agent memory, and tribal knowledge is
+  entropy (SEED.md §0). [pollen/](../../pollen/README.md) is empty and there is no release tool,
+  so the seed cannot cut a versioned pollen release, record a descendant's lineage, or let a
+  descendant adopt an upstream improvement
+- Interest rate: low now, spikes to high at Stage 3 (Flowering's pollen work cannot begin
+  without it) — the [E-004](entropy-ledger.md) shape
+- Price: medium — a thin `.seed/` release/graft CLI, owned not imported (LAW-7: every mainstream
+  release tool fails on commit grammar, [ring 0020](../rings/0020-onboard-human-generated-briefing.md)
+  determinism, artifact shape, LAW-2 legibility, and the zero-dep clause), verbs
+  `sense`/`graft`/`verify`/`feedback`/`uninstall`, self-carrying inside pollen; plus the
+  determinism split (pure in-`run-all` pending notes, an append-only dated release history, a
+  git-aware side-effecting cut-release out of `run-all`)
+- Conversion path: ring then invariant — a founding release-process ring decides the open forks
+  (the semver/migration trigger; improvement granularity, ring vs skill vs pollen-version; the
+  framework/local ownership boundary), then the CLI and its verification land as
+  [plan 0005](active/0005-flowering.md) scope (items 1–2). Propagation is re-metabolization, not
+  `npm update`: an adopted upstream change becomes the descendant's own ring (its
+  `plan-traceability` gate already refuses ringless changes), so "propose, never force" falls out
+  for free
+
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced

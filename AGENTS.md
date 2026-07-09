@@ -64,11 +64,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   `docs/references/*.md` — provenance + per-claim citation + the grounded/inference split, with
   completeness + quote-match teeth where the corpus is saved in-repo — passing the all-external
   harness-engineering.md and pinned by ten self-tests. Item 4 (the inferential faithfulness judge,
-  E-013) is deferred by design. **Correct next action:** with intake in the garden, the **live work
-  is the Stage 2 → 3 (Growth → Flowering) transition** — [plan 0003](docs/plans/active/0003-growth.md)
-  Next actions item 9: proposed as a plan, approved by the Gardener, recorded as a ring (the
+  E-013) is deferred by design. **Correct next action:** the Stage 2 → 3 (Growth → Flowering)
+  transition is now **proposed** — [plan 0005](docs/plans/active/0005-flowering.md), opened on
+  [plan 0003](docs/plans/active/0003-growth.md) Next actions item 9 as the transition proposal
+  (SEED.md §4), evidences both Stage 2 exit conditions and lays out the Stage 3 pollen scope
+  (package the portable subset as versioned [`pollen/`](pollen/README.md); the recursive
+  self-upgrade test, fitness measured before/after), with the parked release/upgrade design priced
+  at the transition as [E-015](docs/plans/entropy-ledger.md). The **live work is Gardener
+  approval**: on approval a transition ring is cut (the
   [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
-  precedent); no transition ring is cut before approval. Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
+  precedent), Stage 3 is entered, plan 0005 becomes governing, `Current state` + `fitness.ts` flip
+  to Stage 3, and plan 0003 completes; no transition ring is cut before approval. Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification
   (LAW-6). Stage 1's self-maintenance organs — all built and evidenced in
   [plan 0002](docs/plans/completed/0002-rooting.md) — remain live: the self-tests
