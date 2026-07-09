@@ -10,8 +10,9 @@ repository's own state, `npm run check` fails the moment this page drifts from t
 ## Where the Seed is now
 
 - **Stage:** 2 — Growth.
-- **Active plan — where it is going:**
+- **Active plans — where it is going:**
   - [Plan 0003 — Growth (Stage 2)](../plans/active/0003-growth.md) — Advance from Stage 1 (Rooting) to Stage 2 (Growth): grow the skill garden (SEED.md §4, Stage 2) — the skills that make the seed useful beyond maintaining itself — until it can assess a foreign repository without modifying it and produce a proposal its owners could judge on evidence (the Stage 2 exit criterion).
+  - [Plan 0004 — Intake: metabolizing external knowledge into the seed](../plans/active/0004-intake.md) — Grow a new Stage 2 skill — **intake** — that metabolizes external knowledge (curated link lists, blog posts, papers, community write-ups) *already saved into the repository* into the seed's four products (SEED.md §0), under a discipline that never lets inference masquerade as fact: **grounded-or-ask** — every claim is either cited to a source or raised as a question; a silent assumption is a defect (SEED.md §5). This extends the seed's food supply from the entropy it senses *inside* a repo to knowledge *from the field* — the step the Gardener judged highest-leverage before Flowering: a seed that keeps learning from the field goes out into the world sturdier than one frozen at its planting-day knowledge.
 
 ## How to get oriented
 

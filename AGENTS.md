@@ -48,12 +48,18 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   §5), with the target proven byte-identical before and after (ring
   [0022](docs/rings/0022-assessment-organ-exit-criterion.md), the new
   [docs/assessments/](docs/assessments/README.md) organ). **Correct next action:** both Stage 2
-  exit conditions are now met — the skill garden grown *and* a foreign repo assessed read-only on
-  evidence — so propose the Stage 2 → 3 (Growth → Flowering) transition as an execution plan for
-  Gardener approval (the SEED.md §4 stage-transition protocol; the
-  [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
-  precedent — proposed as a plan, approved by the Gardener, recorded as a ring; no transition ring
-  is cut before approval). Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
+  exit conditions are met — the skill garden grown *and* a foreign repo assessed read-only on
+  evidence — but the Gardener has elected to grow one more organ before Flowering, so the **live
+  work is [plan 0004](docs/plans/active/0004-intake.md)**: the **intake** skill (metabolize external
+  knowledge from the field into the four products, under the **grounded-or-ask** discipline — cite
+  or ask, never silently assume) plus the seed's first stated principle. Continue from its
+  `Next actions` — scope item 1 is the grounded-or-ask principle + its `validate-principles` check.
+  It was scouted by the first external-corpus intake
+  ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)). The Stage 2 →
+  3 (Growth → Flowering) transition ([plan 0003](docs/plans/active/0003-growth.md) Next actions
+  item 9) stays **queued behind plan 0004**: proposed as a plan, approved by the Gardener, recorded
+  as a ring (the [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
+  precedent); no transition ring is cut before approval. Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification
   (LAW-6). Stage 1's self-maintenance organs — all built and evidenced in
   [plan 0002](docs/plans/completed/0002-rooting.md) — remain live: the self-tests
