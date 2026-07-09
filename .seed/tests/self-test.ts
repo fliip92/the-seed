@@ -23,6 +23,7 @@ const PLANS = 'seed/validate-plans';
 const ARCH = 'seed/validate-architecture';
 const POSTMORTEM = 'seed/validate-postmortems';
 const ASSESS = 'seed/validate-assessments';
+const PRINCIPLES = 'seed/validate-principles';
 const GENERATED = 'seed/validate-generated';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
@@ -223,16 +224,35 @@ function validPlan(num: string, opts: { title?: string; status?: string | null; 
     .join('\n');
 }
 
-function validPrinciple(name: string, opts: { enforcement?: string | null } = {}): string {
-  const lines = [
-    `# ${name}`,
-    '',
+// A valid principle (ring 0023): an H1 title, the four §2 fields, and an Enforcement clause that
+// names a mechanism AND links an enforcer that exists in the temp copy (the check file itself, so
+// a valid fixture passes validate-principles' enforcer-exists teeth). Each opt breaks exactly one
+// completion condition: `title` rewrites the H1, `drop` removes a required field, `enforcement`
+// overrides the Enforcement VALUE (null drops the whole line — the enforcement_ratio fixture's
+// "missing field" case). Written to docs/principles/<name>.md, so `../../` reaches the repo root.
+function validPrinciple(name: string, opts: { title?: string; drop?: string; enforcement?: string | null } = {}): string {
+  const enforcement =
+    opts.enforcement === undefined
+      ? 'structural test — [the principle check](../../.seed/checks/validate-principles.ts) binds this format.'
+      : opts.enforcement;
+  const fields = [
     '- Statement: Self-test fixture principle.',
     '- Rationale: Exists only inside a self-test temp copy.',
-  ];
-  if (opts.enforcement !== null) lines.push(`- Enforcement: ${opts.enforcement ?? 'structural test — fixture'}`);
-  lines.push('- Exceptions: none', '');
-  return lines.join('\n');
+    ...(enforcement === null ? [] : [`- Enforcement: ${enforcement}`]),
+    '- Exceptions: none',
+  ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
+  return [`# ${opts.title ?? name}`, '', ...fields, ''].join('\n');
+}
+
+// Remove every stated principle from a temp copy (keeping the README), so a fitness fixture
+// controls the exact principle set it measures. The real organ now ships grounded-or-ask (ring
+// 0023), which a copy inherits — a test asserting a specific enforcement_ratio must start from a
+// known-empty organ, not the seed's current one.
+function clearPrinciples(root: string): void {
+  const dir = join(root, 'docs/principles');
+  for (const f of readdirSync(dir)) {
+    if (f !== 'README.md') rmSync(join(dir, f));
+  }
 }
 
 // A valid architecture doc (ring 0015): title, the three required sections, one rule naming
@@ -850,6 +870,64 @@ const CASES: ViolationCase[] = [
     seed: (r) => write(r, `docs/assessments/${ASSESS_GAP}-fixture.md`, validAssessment(ASSESS_GAP)),
     expect: { check: ASSESS, law: LAW2, contains: [`assessment numbering gap: found ${ASSESS_GAP} where ${ASSESS_NEXT} was expected`] },
   },
+  // --- principle format (plan 0004 scope item 1, ring 0023 — the seed's first principle). Each
+  // --- writes an unreachable principle into docs/principles/, so validate-map also fires — the
+  // --- assertion only requires the principle marker + message, so that noise is harmless. The
+  // --- valid-principle-passes path needs reachability and runs as a standalone exit-0 block below.
+  {
+    name: 'principle: invalid title line',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture').replace('# Fixture', 'Fixture without a hash')),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['first line is not a valid principle title'] },
+  },
+  {
+    name: 'principle: bad filename',
+    seed: (r) => write(r, 'docs/principles/Not_A_Principle.md', validPrinciple('Fixture')),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['does not match the principle filename format'] },
+  },
+  {
+    name: 'principle: missing Statement field',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { drop: 'Statement' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['missing required field: Statement'] },
+  },
+  {
+    // The load-bearing field: an unenforced principle is entropy (LAW-2, SEED.md §2) — it belongs
+    // in the ledger, not the organ.
+    name: 'principle: missing Enforcement field',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { drop: 'Enforcement' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['missing required field: Enforcement'] },
+  },
+  {
+    name: 'principle: missing Exceptions field',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { drop: 'Exceptions' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['missing required field: Exceptions'] },
+  },
+  {
+    // Names no mechanism, but DOES link a real enforcer — so only the mechanism test fires,
+    // isolating it from the enforcer-exists test.
+    name: 'principle: Enforcement names no mechanism',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { enforcement: 'we will be careful — [the check](../../.seed/checks/validate-principles.ts).' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['Enforcement names no mechanism'] },
+  },
+  {
+    // A mechanism word ('lint') only in the link TEXT must not satisfy the requirement — pins the
+    // link-stripping (the same teeth validate-postmortems has for its Enforcement clause).
+    name: 'principle: a mechanism word only in the Enforcement link does not satisfy it',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { enforcement: 'we will be careful — [the dep-direction lint](../../.seed/checks/validate-principles.ts).' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['Enforcement names no mechanism'] },
+  },
+  {
+    // Names a mechanism but links no enforcer at all — the enforcer-exists test's no-link branch.
+    name: 'principle: Enforcement names a mechanism but links no enforcer',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { enforcement: 'structural test — the format is checked.' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['Enforcement links no enforcer'] },
+  },
+  {
+    // A mechanism and a link, but the link points at a file that does not exist — the phantom
+    // enforcer that would inflate enforcement_ratio (SEED.md §6) with a claim CI cannot back.
+    name: 'principle: Enforcement links an enforcer that does not exist',
+    seed: (r) => write(r, 'docs/principles/fixture.md', validPrinciple('Fixture', { enforcement: 'structural test — [ghost](../../.seed/checks/ghost.ts).' })),
+    expect: { check: PRINCIPLES, law: LAW2, contains: ['links an enforcer that does not exist'] },
+  },
   // --- generated-artifact discipline (onboard-human, ring 0020). validate-generated re-runs each
   // --- manifest generator and fails when a committed docs/generated/ artifact differs from its
   // --- regeneration (a hand-edit, or a source changed without regenerating), when the generator
@@ -1095,6 +1173,21 @@ for (const product of ['invariant', 'ring', 'priced debt', 'priced-debt', 'delet
     );
   });
 }
+
+// --- principle format, the exit-0 side (plan 0004 scope item 1, ring 0023): a valid principle
+// --- must pass all checks, so it is linked from the docs/principles/ README (reachability) and its
+// --- Enforcement names a mechanism + links an enforcer that exists. The pristine copy already
+// --- proves the REAL first principle (grounded-or-ask) passes; this pins a synthetic fixture.
+inTempCopy((root) => {
+  write(root, 'docs/principles/fixture.md', validPrinciple('Fixture principle'));
+  append(root, 'docs/principles/README.md', '\n- [fixture](fixture.md) — self-test fixture principle.\n');
+  const { status, output } = runChecks(root);
+  report(
+    'principle: a valid, linked principle passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
 
 // --- generated-artifact discipline, the exit-0 side (onboard-human, ring 0020): `npm run
 // --- generate` actually rewrites the artifact, deterministically, to the committed bytes.
@@ -1414,6 +1507,7 @@ inTempCopy((root) => {
 
 inTempCopy((root) => {
   git(root, 'init', '--quiet');
+  clearPrinciples(root); // the real organ now ships grounded-or-ask; this case measures zero
   gitCommitAll(root, `Plan ${PLAN_DUP} fixture: base, no principles stated`);
   const { output } = runFitness(root, ['--json']);
   const m = fitnessMetrics(output);
@@ -1426,6 +1520,7 @@ inTempCopy((root) => {
 
 inTempCopy((root) => {
   git(root, 'init', '--quiet');
+  clearPrinciples(root); // drop the inherited grounded-or-ask so this case measures exactly three
   write(root, 'docs/principles/enforced-example.md', validPrinciple('Enforced example'));
   write(root, 'docs/principles/missing-field-example.md', validPrinciple('Missing field example', { enforcement: null }));
   write(root, 'docs/principles/explicit-none-example.md', validPrinciple('Explicit none example', { enforcement: 'none' }));

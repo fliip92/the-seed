@@ -52,9 +52,13 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   evidence — but the Gardener has elected to grow one more organ before Flowering, so the **live
   work is [plan 0004](docs/plans/active/0004-intake.md)**: the **intake** skill (metabolize external
   knowledge from the field into the four products, under the **grounded-or-ask** discipline — cite
-  or ask, never silently assume) plus the seed's first stated principle. Continue from its
-  `Next actions` — scope item 1 is the grounded-or-ask principle + its `validate-principles` check.
-  It was scouted by the first external-corpus intake
+  or ask, never silently assume) plus the seed's first stated principle. Scope item 1 is **done**:
+  [grounded-or-ask](docs/principles/grounded-or-ask.md) is the seed's first stated principle,
+  enforced by `validate-principles` (ring [0023](docs/rings/0023-grounded-or-ask-first-principle.md)),
+  so `enforcement_ratio` (SEED.md §6) now carries its first real datum. **Correct next action:**
+  scope item 2 — the **intake** skill itself: the parse → classify → compose → ratify → land
+  procedure, network-free, landed as a new skill in the garden. It was scouted by the first
+  external-corpus intake
   ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)). The Stage 2 →
   3 (Growth → Flowering) transition ([plan 0003](docs/plans/active/0003-growth.md) Next actions
   item 9) stays **queued behind plan 0004**: proposed as a plan, approved by the Gardener, recorded

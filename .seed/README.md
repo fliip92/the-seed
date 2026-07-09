@@ -39,6 +39,8 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-plans.ts](checks/validate-plans.ts) | Plan filenames, sequence, format; ledger entry format | LAW-5, LAW-8 |
 | [checks/validate-architecture.ts](checks/validate-architecture.ts) | Architecture-doc format (grill-the-gardener): one page, lintable rules each naming an enforcement, explicit human/agent ownership split (SEED.md §4) | LAW-2 |
 | [checks/validate-postmortems.ts](checks/validate-postmortems.ts) | Postmortem-entry format (postmortem): a failure links all three artifacts — fix, invariant (naming a mechanism + linking its enforcer), and an existing ring (SEED.md §4) | LAW-2 |
+| [checks/validate-assessments.ts](checks/validate-assessments.ts) | Assessment format (Stage 2 exit criterion): a read-only Scout carrying all six §6 metrics, each finding converted to one of the four products, an un-elicited-architecture grill agenda, and an explicit ownership split (ring 0022) | LAW-2 |
+| [checks/validate-principles.ts](checks/validate-principles.ts) | Principle format (SEED.md §2): the four fields, and an Enforcement clause naming a mechanism whose enforcer is linked and **exists** — so a principle is anchored taste, not a wish that inflates `enforcement_ratio` (ring 0023) | LAW-2 |
 | [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
@@ -112,8 +114,9 @@ single definition of what each metric means (LAW-3). Two thin CLIs call it:
   its non-mutation is proven by the self-tests (LAW-6).
 
 The engine computes: `map_reachability` (reuses `validate-map.ts`'s own computation),
-`enforcement_ratio` (scans `docs/principles/` for a non-empty Enforcement field, vacuously 1
-while no principle is stated yet), `drift_count` (calls `doc-drift.ts`'s exported `scanDrift`
+`enforcement_ratio` (scans `docs/principles/` for a non-empty Enforcement field; the first stated
+principle, grounded-or-ask, is enforced, so this now reads 1/1 — vacuously 1 only when the organ
+holds just its README), `drift_count` (calls `doc-drift.ts`'s exported `scanDrift`
 directly), `plan_traceability` (walks the target's entire non-merge commit history for a
 resolvable plan/ring reference, sharing its reference grammar with `plan-traceability.ts` via
 `lib/repo.ts` so the gate and the trend cannot silently disagree on what "traces" means), and
@@ -209,7 +212,11 @@ after a run). The postmortem-entry check (ring
 [0017](../docs/rings/0017-postmortem-three-artifacts-linked.md)) is pinned the same way — a
 valid three-artifact entry passes, and an unlinked fix, a prose invariant (no mechanism), an
 invariant with no link, a non-ring `Ring` link, a missing field, a title/number mismatch, a
-bad filename, and a duplicate and a gap in numbering each fire. The parallel-worktrees dry-run
+bad filename, and a duplicate and a gap in numbering each fire. The principle-format check (ring
+[0023](../docs/rings/0023-grounded-or-ask-first-principle.md)) is pinned the same way — a valid,
+linked principle passes, and an invalid title, a bad filename, a missing field, an Enforcement
+naming no mechanism (including a mechanism word that appears only in a link), and an Enforcement
+that links no enforcer or a nonexistent one each fire. The parallel-worktrees dry-run
 (ring [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)) is pinned: it works
 (the full lifecycle passes, exit 0, with the exact ordered check-set present and all green so no
 assertion can be silently dropped), its assertions have teeth (an injected leak fires the isolation

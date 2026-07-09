@@ -111,16 +111,27 @@ when intake's engine is proven.
   The proof is the scout; this plan formalizes the loop into a skill + its principle + its
   verification. Next: scope item 1 (the grounded-or-ask principle + its validator), unless the
   Gardener first wants to reshape the reference-output format — it is the skill's output contract.
+- **2026-07-08** — Scope item 1 landed (ring [0023](../../rings/0023-grounded-or-ask-first-principle.md)).
+  [grounded-or-ask](../../principles/grounded-or-ask.md) is the seed's first stated principle
+  (SEED.md §2 format), and [validate-principles](../../../.seed/checks/validate-principles.ts) (in
+  `run-all`) binds every `docs/principles/*.md` to the four fields with the load-bearing teeth: the
+  Enforcement clause must name a mechanism whose enforcer is **linked and exists** (the
+  validate-postmortems Invariant discipline). The interim enforcer named is
+  [validate-generated](../../../.seed/checks/validate-generated.ts) (the generated-artifact family:
+  no claim survives that is not regenerable from a named source); `validate-references` is added to
+  the principle's Enforcement when scope item 3 lands. Ten self-test cases pin it (nine failure
+  classes + a valid-principle-passes block); `enforcement_ratio` (SEED.md §6) now reads 1/1. Also
+  fixed sensed drift found in passing: the `.seed/README.md` Checks table was missing its
+  validate-assessments row. Next: scope item 2, the intake skill.
 
 ## Next actions
 
-1. **Scope item 1 — grounded-or-ask principle + validate-principles.** Write
-   `docs/principles/grounded-or-ask.md` (SEED.md §2 format) and `.seed/checks/validate-principles.ts`
-   binding the principle format, pinned by self-tests.
-2. **Scope item 2 — intake skill.** `skills/intake/SKILL.md` — the parse → classify → compose →
+1. **Scope item 2 — intake skill.** `skills/intake/SKILL.md` — the parse → classify → compose →
    ratify → land procedure, network-free; build-ring records the name, corpus-staging, and outcome
-   vocabulary.
-3. **Scope item 3 — validate-references.** `.seed/checks/validate-references.ts` with completeness +
-   quote-match teeth, passing the landed `harness-engineering.md`, pinned by self-tests.
-4. **Then** — return to plan 0003 Next actions item 9: propose the Stage 2 → 3 (Growth → Flowering)
+   vocabulary. (Scope item 1 landed 2026-07-08: grounded-or-ask + validate-principles, ring 0023.)
+2. **Scope item 3 — validate-references.** `.seed/checks/validate-references.ts` with completeness +
+   quote-match teeth, passing the landed `harness-engineering.md`, pinned by self-tests. When it
+   lands, add its link to grounded-or-ask's Enforcement clause — the interim-enforcer note there
+   names it as pending (ring 0023).
+3. **Then** — return to plan 0003 Next actions item 9: propose the Stage 2 → 3 (Growth → Flowering)
    transition, now with intake in the garden.
