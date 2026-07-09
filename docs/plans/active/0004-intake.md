@@ -123,15 +123,29 @@ when intake's engine is proven.
   classes + a valid-principle-passes block); `enforcement_ratio` (SEED.md §6) now reads 1/1. Also
   fixed sensed drift found in passing: the `.seed/README.md` Checks table was missing its
   validate-assessments row. Next: scope item 2, the intake skill.
+- **2026-07-08** — Scope item 2 landed (ring [0024](../../rings/0024-intake-network-free-metabolizer.md)).
+  The [intake](../../../skills/intake/SKILL.md) skill is planted: parse a repo-saved corpus →
+  classify every entry into one closed outcome (`reference` / `ledger` / `ring` / `skill-seed` /
+  `discard`-with-reason — no silent drop) → compose a distillation carrying the grounded/inference
+  split (**Seed reading:**) → the Gardener ratifies → land, network-free. Ring 0024 settled the three
+  build-time questions: the name (`intake`); provenance (**pin, don't mirror** — cite by link +
+  retrieval-date + commit-pin; quote-match binds only where a cited source is an already-committed
+  in-repo file, so saving a fetched corpus defers to phase 2 alongside fetching); and the
+  five-outcome vocabulary. The skill's structural enforcer, `validate-references`, is named-pending
+  (scope item 3, the ring-0023 forward-reference discipline); its live control today is
+  grounded-or-ask's compose-not-commit + Gardener ratification, with the committed scout
+  ([harness-engineering.md](../../references/harness-engineering.md)) as standing evidence the loop
+  produces a faithful artifact. Next: scope item 3, validate-references.
 
 ## Next actions
 
-1. **Scope item 2 — intake skill.** `skills/intake/SKILL.md` — the parse → classify → compose →
-   ratify → land procedure, network-free; build-ring records the name, corpus-staging, and outcome
-   vocabulary. (Scope item 1 landed 2026-07-08: grounded-or-ask + validate-principles, ring 0023.)
-2. **Scope item 3 — validate-references.** `.seed/checks/validate-references.ts` with completeness +
-   quote-match teeth, passing the landed `harness-engineering.md`, pinned by self-tests. When it
-   lands, add its link to grounded-or-ask's Enforcement clause — the interim-enforcer note there
+1. **Scope item 3 — validate-references.** `.seed/checks/validate-references.ts` with completeness +
+   quote-match teeth (the latter binding where a cited source is saved in-repo, per ring 0024's
+   pin-not-mirror decision), passing the landed `harness-engineering.md`, pinned by self-tests. When
+   it lands, add its link to grounded-or-ask's Enforcement clause — the interim-enforcer note there
    names it as pending (ring 0023).
-3. **Then** — return to plan 0003 Next actions item 9: propose the Stage 2 → 3 (Growth → Flowering)
+2. **Then** — return to plan 0003 Next actions item 9: propose the Stage 2 → 3 (Growth → Flowering)
    transition, now with intake in the garden.
+
+(Scope item 1 landed 2026-07-08: grounded-or-ask + validate-principles, ring 0023. Scope item 2
+landed 2026-07-08: the intake skill, ring 0024.)

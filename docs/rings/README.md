@@ -29,6 +29,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0021 — feedback ships the upstream-issue composer; posting is a Gardener-gated host act outside the genome, verified by a side-effect-free dry-run](0021-feedback-composes-upstream-issue.md)
 - [0022 — the assessment organ is the Stage 2 exit criterion's artifact: a read-only Scout converted to four-products findings with the un-elicited architecture left to a grill agenda, enforced structurally](0022-assessment-organ-exit-criterion.md)
 - [0023 — grounded-or-ask is the seed's first stated principle; validate-principles binds every principle to name a mechanism whose enforcer exists](0023-grounded-or-ask-first-principle.md)
+- [0024 — intake metabolizes a repo-saved corpus network-free; pin-not-mirror provenance and a closed outcome vocabulary](0024-intake-network-free-metabolizer.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

@@ -52,9 +52,24 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   Verified by a side-effect-free dry-run that composes well-formed, has teeth, and mutates nothing
   (Stage 2, plan [0003](../docs/plans/active/0003-growth.md) scope item 6; ring
   [0021](../docs/rings/0021-feedback-composes-upstream-issue.md)).
+- [intake](intake/SKILL.md) — metabolize external knowledge already saved in-repo (curated link
+  lists, papers, write-ups) into the seed's four products, under **grounded-or-ask** (cite or ask,
+  never silently assume). Parse a saved corpus → classify every entry into one closed outcome
+  (`reference` / `ledger` / `ring` / `skill-seed` / `discard`-with-reason — no silent drop) →
+  compose a distillation carrying the grounded/inference split (**Seed reading:**) → the Gardener
+  ratifies → land. Network-free in v0 (pins sources by link + date + commit, does not mirror or
+  fetch); the [references](../docs/references/README.md) organ is its primary output. Scouted by the
+  first external-corpus intake ([harness-engineering.md](../docs/references/harness-engineering.md))
+  (Stage 2, plan [0004](../docs/plans/active/0004-intake.md) scope item 2; ring
+  [0024](../docs/rings/0024-intake-network-free-metabolizer.md)).
 
-Every Stage 2 skill on the SEED.md §4 menu is planted. The garden grows by stage (SEED.md §4); the
-next growth is the Stage 2 exit criterion, then the Stage 2 → 3 transition.
+Every Stage 2 skill on the SEED.md §4 menu is planted (grill-the-gardener, repo-fitness, postmortem,
+parallel-worktrees, onboard-human, feedback), and the Stage 2 exit criterion is evidenced
+([assessment 0001](../docs/assessments/0001-mottainapp.md), ring
+[0022](../docs/rings/0022-assessment-organ-exit-criterion.md)). **intake** is one organ more, grown
+before Flowering by Gardener election (plan [0004](../docs/plans/active/0004-intake.md)), not a menu
+item. The garden grows by stage (SEED.md §4); next is the Stage 2 → 3 transition, queued behind plan
+0004.
 
 Every skill ships with its own verification (LAW-6): a skill that cannot prove it worked
 is a claim, not a capability.
