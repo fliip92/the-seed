@@ -11,8 +11,9 @@ import { check as postmortems } from './validate-postmortems.ts';
 import { check as assessments } from './validate-assessments.ts';
 import { check as principles } from './validate-principles.ts';
 import { check as generated } from './validate-generated.ts';
+import { check as references } from './validate-references.ts';
 
-const CHECKS: Check[] = [anatomy, map, rings, plans, architecture, postmortems, assessments, principles, generated];
+const CHECKS: Check[] = [anatomy, map, rings, plans, architecture, postmortems, assessments, principles, generated, references];
 
 const files = listRepoFiles();
 let failed = 0;

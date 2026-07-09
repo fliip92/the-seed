@@ -25,6 +25,7 @@ const POSTMORTEM = 'seed/validate-postmortems';
 const ASSESS = 'seed/validate-assessments';
 const PRINCIPLES = 'seed/validate-principles';
 const GENERATED = 'seed/validate-generated';
+const REFERENCES = 'seed/validate-references';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
@@ -379,6 +380,47 @@ function validAssessment(num: string, opts: {
   ];
   return sections.filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection)).join('\n');
 }
+
+// A valid distilled reference (intake, plan 0004 scope item 3, ring 0024). By default an
+// EXTERNAL-corpus reference in the shape of harness-engineering.md: a **Source** with a retrieval
+// date AND a commit pin (its github link makes the pin required), one cited claim, and a
+// **Seed reading:** split — so the in-repo teeth stay vacuous and each opt breaks exactly one
+// structural guard. `source: null` drops the Source line; `source` overrides it (e.g. to a LOCAL
+// corpus link, which turns the teeth ON); `claims` overrides the claim bullets; `seedReading:
+// false` drops the appended split marker (a claim may still carry one inline). Written to
+// docs/references/<name>.md, so `../` reaches docs/ and a `../refs-corpus-fixture.md` source links
+// a sibling corpus staged loose under docs/ (which validate-references does not scan as a reference).
+function validReference(opts: {
+  title?: string;
+  source?: string | null;
+  claims?: string[];
+  seedReading?: boolean;
+} = {}): string {
+  const source =
+    opts.source === undefined
+      ? '- **Source:** [ai-boost/awesome](https://github.com/ai-boost/awesome), pinned at commit `a28cc8e` — retrieved 2026-07-08.'
+      : opts.source;
+  const claims = opts.claims ?? ['- A grounded claim, cited to its source ([Fowler](https://martinfowler.com/x)).'];
+  const seedReading = opts.seedReading === false ? [] : ['  - **Seed reading:** this connects the source to the seed.'];
+  const lines = [
+    `# ${opts.title ?? 'Reference fixture'}`,
+    '',
+    ...(source === null ? [] : [source, '']),
+    '## What it says',
+    '',
+    ...claims,
+    ...seedReading,
+    '',
+  ];
+  return lines.join('\n');
+}
+
+// A tiny curated corpus saved loose under docs/ — the in-repo case the teeth bind on (ring 0024:
+// a quoted span is machine-verifiable only against an already-committed in-repo file). It carries
+// two link entries and a quotable annotation, so a reference over it can exercise quote-match
+// (does a quoted span appear here?) and completeness (is every entry cited or discarded?).
+const CORPUS_FIXTURE =
+  '# Corpus fixture\n\n- [entry A](https://example.com/a) — the seed is a harness.\n- [entry B](https://example.com/b) — a second entry.\n';
 
 // A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
 // ledgerCounts() parses matters here, not validate-plans.ts's full field set (these cases
@@ -966,6 +1008,94 @@ const CASES: ViolationCase[] = [
     seed: (r) => rmSync(join(r, 'docs/generated/onboarding.md')),
     expect: { check: GENERATED, law: LAW2, contains: ['registered generated artifact is missing', 'docs/generated/onboarding.md'] },
   },
+  // --- distilled-reference format (intake, plan 0004 scope item 3, ring 0024). Each writes an
+  // --- unreachable reference into docs/references/, so validate-map also fires — the assertion
+  // --- only requires the reference marker + message, so that noise is harmless. The valid-external
+  // --- and valid-in-repo paths need reachability and so run as standalone exit-0 blocks below. The
+  // --- teeth cases also stage a loose corpus at docs/refs-corpus-fixture.md so the Source's local
+  // --- link resolves to an in-repo file (which is what turns the teeth on).
+  {
+    // The Source line is the provenance anchor; without it a distillation has no traceable origin.
+    name: 'reference: a missing Source line is caught',
+    seed: (r) => write(r, 'docs/references/fixture.md', validReference({ source: null })),
+    expect: { check: REFERENCES, law: LAW2, contains: ['has no Source line'] },
+  },
+  {
+    // A Source with a commit pin but no retrieval date — an undated distillation rots silently.
+    name: 'reference: a Source line with no retrieval date is caught',
+    seed: (r) =>
+      write(r, 'docs/references/fixture.md', validReference({
+        source: '- **Source:** [ai-boost/awesome](https://github.com/ai-boost/awesome), pinned at commit `a28cc8e`.',
+      })),
+    expect: { check: REFERENCES, law: LAW2, contains: ['carries no retrieval date'] },
+  },
+  {
+    // A github.com Source (pinnable) with a date but no commit pin — network-free intake stays
+    // verifiable only via the pin (ring 0024, pin-not-mirror).
+    name: 'reference: a pinnable (github) Source with no commit pin is caught',
+    seed: (r) =>
+      write(r, 'docs/references/fixture.md', validReference({
+        source: '- **Source:** [ai-boost/awesome](https://github.com/ai-boost/awesome) — retrieved 2026-07-08.',
+      })),
+    expect: { check: REFERENCES, law: LAW2, contains: ['carries no commit pin'] },
+  },
+  {
+    // A claim bullet whose grounded head carries no link — the uncited claim grounded-or-ask forbids.
+    name: 'reference: a claim citing no source is caught',
+    seed: (r) => write(r, 'docs/references/fixture.md', validReference({ claims: ['- A claim with no citation whatsoever.'] })),
+    expect: { check: REFERENCES, law: LAW2, contains: ['claim cites no source'] },
+  },
+  {
+    // No **Seed reading:** marker anywhere — the grounded/inference split is not structurally present.
+    name: 'reference: a missing grounded/inference split is caught',
+    seed: (r) => write(r, 'docs/references/fixture.md', validReference({ seedReading: false })),
+    expect: { check: REFERENCES, law: LAW2, contains: ['the grounded/inference split is not structurally present'] },
+  },
+  {
+    // Teeth (quote-match): the Source links an in-repo corpus, and a grounded claim quotes a span
+    // that corpus does not contain — a fabricated quote. Corpus has exactly the one entry the claim
+    // cites, so completeness stays satisfied and only quote-match fires.
+    name: 'reference: a quoted span absent from the cited in-repo corpus is caught (quote-match tooth)',
+    seed: (r) => {
+      write(r, 'docs/refs-corpus-fixture.md', '# Corpus fixture\n\n- [entry A](https://example.com/a) — the seed is a harness.\n');
+      write(r, 'docs/references/fixture.md', validReference({
+        source: '- **Source:** [the corpus](../refs-corpus-fixture.md) — retrieved 2026-07-08.',
+        claims: ['- The corpus says "the seed is a spaceship" ([entry A](https://example.com/a)).'],
+      }));
+    },
+    expect: { check: REFERENCES, law: LAW2, contains: ['quotes a span not found in the cited in-repo source', 'the seed is a spaceship'] },
+  },
+  {
+    // Teeth (completeness): entry B of the in-repo corpus is neither cited nor discarded — a silent
+    // truncation. The claim quotes only text present in the corpus, so quote-match stays satisfied.
+    name: 'reference: a silently-dropped in-repo corpus entry is caught (completeness tooth)',
+    seed: (r) => {
+      write(r, 'docs/refs-corpus-fixture.md', CORPUS_FIXTURE);
+      write(r, 'docs/references/fixture.md', validReference({
+        source: '- **Source:** [the corpus](../refs-corpus-fixture.md) — retrieved 2026-07-08.',
+        claims: ['- The corpus says "the seed is a harness" ([entry A](https://example.com/a)).'],
+      }));
+    },
+    expect: { check: REFERENCES, law: LAW2, contains: ['silently drops a source entry', 'https://example.com/b'] },
+  },
+  {
+    // Teeth (anti-drop): entry B IS accounted for (a discard bullet links it, so completeness
+    // passes) but the discard states no reason — a silent drop wearing a label. The **Seed reading:**
+    // is inlined under the FIRST claim so it does not fold into the discard bullet and supply a reason.
+    name: 'reference: a discard with no stated reason is caught (anti-drop teeth)',
+    seed: (r) => {
+      write(r, 'docs/refs-corpus-fixture.md', CORPUS_FIXTURE);
+      write(r, 'docs/references/fixture.md', validReference({
+        source: '- **Source:** [the corpus](../refs-corpus-fixture.md) — retrieved 2026-07-08.',
+        seedReading: false,
+        claims: [
+          '- The corpus says "the seed is a harness" ([entry A](https://example.com/a)).\n  - **Seed reading:** the seed is such a harness.',
+          '- Discarded [entry B](https://example.com/b).',
+        ],
+      }));
+    },
+    expect: { check: REFERENCES, law: LAW2, contains: ['discards a source entry with no stated reason'] },
+  },
 ];
 
 // --- runner ---
@@ -1184,6 +1314,46 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'principle: a valid, linked principle passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- distilled-reference format, the exit-0 side (intake, plan 0004 scope item 3, ring 0024): a
+// --- valid reference must pass all checks, so it is linked from the docs/references/ README
+// --- (reachability). The pristine copy already proves the REAL first reference
+// --- (harness-engineering.md, all-external corpus) passes; these pin a synthetic external-corpus
+// --- fixture AND — the sharp one — an in-repo-corpus reference whose teeth are ACTIVE, so the
+// --- teeth are shown not to false-fire on a well-formed distillation.
+inTempCopy((root) => {
+  write(root, 'docs/references/fixture.md', validReference());
+  append(root, 'docs/references/README.md', '\n- [fixture](fixture.md) — self-test fixture reference.\n');
+  const { status, output } = runChecks(root);
+  report(
+    'reference: a valid external-corpus reference passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  // The in-repo case: the Source links a loose corpus, so quote-match and completeness both bind.
+  // The claim quotes text the corpus contains (quote-match satisfied), entry A is cited and entry
+  // B is discarded with a reason (completeness satisfied), and the split is inlined — so a
+  // well-formed in-repo distillation passes with the teeth fully active.
+  write(root, 'docs/refs-corpus-fixture.md', CORPUS_FIXTURE);
+  write(root, 'docs/references/fixture.md', validReference({
+    source: '- **Source:** [the corpus](../refs-corpus-fixture.md) — retrieved 2026-07-08.',
+    seedReading: false,
+    claims: [
+      '- The corpus says "the seed is a harness" ([entry A](https://example.com/a)).\n  - **Seed reading:** the seed is such a harness.',
+      '- Discarded [entry B](https://example.com/b) — out of scope for this fixture.',
+    ],
+  }));
+  append(root, 'docs/references/README.md', '\n- [fixture](fixture.md) — self-test fixture reference (in-repo corpus).\n');
+  const { status, output } = runChecks(root);
+  report(
+    'reference: a valid in-repo-corpus reference passes with the teeth active (no false positive)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );

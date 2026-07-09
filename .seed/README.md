@@ -42,6 +42,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-assessments.ts](checks/validate-assessments.ts) | Assessment format (Stage 2 exit criterion): a read-only Scout carrying all six §6 metrics, each finding converted to one of the four products, an un-elicited-architecture grill agenda, and an explicit ownership split (ring 0022) | LAW-2 |
 | [checks/validate-principles.ts](checks/validate-principles.ts) | Principle format (SEED.md §2): the four fields, and an Enforcement clause naming a mechanism whose enforcer is linked and **exists** — so a principle is anchored taste, not a wish that inflates `enforcement_ratio` (ring 0023) | LAW-2 |
 | [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
+| [checks/validate-references.ts](checks/validate-references.ts) | The distilled-reference format (intake): a **Source** with a retrieval date + commit pin (for a pinnable repo), every claim cited, the `**Seed reading:**` grounded/inference split present — with quote-match + completeness teeth where the cited corpus is saved in-repo (plan 0004, ring 0024's pin-not-mirror) | LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -216,7 +217,14 @@ bad filename, and a duplicate and a gap in numbering each fire. The principle-fo
 [0023](../docs/rings/0023-grounded-or-ask-first-principle.md)) is pinned the same way — a valid,
 linked principle passes, and an invalid title, a bad filename, a missing field, an Enforcement
 naming no mechanism (including a mechanism word that appears only in a link), and an Enforcement
-that links no enforcer or a nonexistent one each fire. The parallel-worktrees dry-run
+that links no enforcer or a nonexistent one each fire. The reference-format check (plan
+[0004](../docs/plans/active/0004-intake.md) scope item 3, ring
+[0024](../docs/rings/0024-intake-network-free-metabolizer.md)) is pinned the same way — a valid
+external-corpus reference and a valid in-repo-corpus one both pass, while a missing Source line, a
+Source with no retrieval date, a pinnable (github.com) Source with no commit pin, an uncited claim,
+and a missing `**Seed reading:**` split each fire; and its in-repo teeth have teeth — a quoted span
+absent from the cited saved corpus, a silently-dropped corpus entry, and a reasonless discard each
+fire, staying vacuous on the all-external harness-engineering.md. The parallel-worktrees dry-run
 (ring [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)) is pinned: it works
 (the full lifecycle passes, exit 0, with the exact ordered check-set present and all green so no
 assertion can be silently dropped), its assertions have teeth (an injected leak fires the isolation

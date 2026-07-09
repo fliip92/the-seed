@@ -102,15 +102,16 @@ A skill that cannot prove it worked is a claim, not a capability. intake's outpu
 on two surfaces:
 
 - **Fabrication (structural).** The distilled-reference format is bound by
-  `validate-references` — a `run-all` check landing in
-  [plan 0004](../../docs/plans/active/0004-intake.md) scope item 3 (named here as pending, the
-  ring [0023](../../docs/rings/0023-grounded-or-ask-first-principle.md) forward-reference
-  discipline): each source line carries a retrieval date and, where pinnable, a commit; every
-  distilled claim cites a source; the grounded/inference split is structurally present; and its
-  teeth, where the corpus is saved in-repo, are **completeness** (every entry classified or
-  discarded-with-reason — no silent truncation) and **quote-match** (a quoted span must appear
-  in the cited saved source). It must pass on the already-landed
-  [harness-engineering.md](../../docs/references/harness-engineering.md).
+  [validate-references](../../.seed/checks/validate-references.ts) — a `run-all` check
+  ([plan 0004](../../docs/plans/active/0004-intake.md) scope item 3): each source line carries a
+  retrieval date and, where pinnable, a commit; every distilled claim cites a source; the
+  grounded/inference split is structurally present; and its teeth, where the corpus is saved
+  in-repo, are **completeness** (every entry classified or discarded-with-reason — no silent
+  truncation; an in-repo `discard` is recorded in the reference itself, a bullet naming the entry
+  with its reason, so completeness is machine-checkable) and **quote-match** (a quoted span must
+  appear in the cited saved source). It passes on the already-landed
+  [harness-engineering.md](../../docs/references/harness-engineering.md) — all-external, so the
+  teeth are vacuous there and provenance + citation + the split carry the weight.
 - **Faithfulness (inferential).** Whether a paraphrase stays true to its source is *not*
   computationally checkable — it needs a judge the seed does not yet have
   ([E-013](../../docs/plans/entropy-ledger.md)). v0's control is

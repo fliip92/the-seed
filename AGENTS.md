@@ -61,14 +61,18 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   first external-corpus intake
   ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)) and recorded in
   ring [0024](docs/rings/0024-intake-network-free-metabolizer.md) (its name, pin-not-mirror
-  provenance, and closed outcome vocabulary). **Correct next action:** scope item 3 —
-  `validate-references` (a new `run-all` check): bind every
-  `docs/references/*.md` with provenance + per-claim citation + the grounded/inference split, its
-  teeth being completeness and quote-match where the corpus is saved in-repo; it must pass on the
-  already-landed harness-engineering.md, and when it lands its link is added to grounded-or-ask's
-  Enforcement clause (ring 0023). The Stage 2 →
+  provenance, and closed outcome vocabulary). Scope item 3 is **done** too:
+  [validate-references](.seed/checks/validate-references.ts) (a new `run-all` check) binds every
+  `docs/references/*.md` — provenance (a Source line with a retrieval date + a commit pin for a
+  GitHub-pinnable repo) + per-claim citation + the grounded/inference split — its teeth being
+  completeness and quote-match where the corpus is saved in-repo (ring 0024's pin-not-mirror),
+  passing the all-external harness-engineering.md (teeth vacuous there) and pinned by eleven
+  self-tests; [grounded-or-ask](docs/principles/grounded-or-ask.md)'s Enforcement now links it (the
+  ring 0023 forward-reference discharged). That was plan 0004's **last buildable scope item** —
+  item 4 (the inferential faithfulness judge, E-013) is deferred by design. **Correct next action:**
+  plan 0004's buildable scope is complete — close it and take up the Stage 2 →
   3 (Growth → Flowering) transition ([plan 0003](docs/plans/active/0003-growth.md) Next actions
-  item 9) stays **queued behind plan 0004**: proposed as a plan, approved by the Gardener, recorded
+  item 9), no longer queued behind plan 0004: proposed as a plan, approved by the Gardener, recorded
   as a ring (the [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
   precedent); no transition ring is cut before approval. Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification

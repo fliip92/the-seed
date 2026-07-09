@@ -9,6 +9,11 @@ fresh agent cannot find is tribal knowledge, and tribal knowledge is entropy (SE
 - Each reference is one file, named for its subject (`<subject>.md`), listed below.
 - State the source and retrieval date at the top — undated distillations rot silently.
 - Distill, don't mirror: keep only what agents here actually need (LAW-7).
+- The format is enforced by [validate-references](../../.seed/checks/validate-references.ts) (in
+  `npm run check`): a **Source** line with a retrieval date (and a commit pin for a repo GitHub can
+  pin), every claim cited, and the grounded/inference split (`**Seed reading:**`) present — with
+  quote-match + completeness teeth where the cited corpus is saved in-repo. The [intake](../../skills/intake/SKILL.md)
+  skill is how a reference is produced (grounded-or-ask; pin, don't mirror — ring [0024](../rings/0024-intake-network-free-metabolizer.md)).
 
 ## References
 

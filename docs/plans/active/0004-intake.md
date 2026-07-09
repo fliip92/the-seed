@@ -136,16 +136,37 @@ when intake's engine is proven.
   grounded-or-ask's compose-not-commit + Gardener ratification, with the committed scout
   ([harness-engineering.md](../../references/harness-engineering.md)) as standing evidence the loop
   produces a faithful artifact. Next: scope item 3, validate-references.
+- **2026-07-08** — Scope item 3 landed.
+  [validate-references](../../../.seed/checks/validate-references.ts) (in `run-all`) binds every
+  `docs/references/*.md`: **provenance** (a **Source** line with a retrieval date, plus a commit pin
+  for a GitHub-pinnable repo), **per-claim citation** (every claim's grounded head carries a link),
+  and the **grounded/inference split** (a `**Seed reading:**` marker present) — with teeth that bind
+  only where the cited corpus is saved in-repo (ring 0024's pin-not-mirror): **quote-match** (a
+  double-quoted span in a grounded claim must appear verbatim in the cited saved source) and
+  **completeness** (every corpus entry cited or `discard`-ed-with-reason — no silent truncation). It
+  passes on the all-external [harness-engineering.md](../../references/harness-engineering.md) (its
+  teeth vacuous there — no saved corpus to enumerate or quote-check) and is pinned by eleven
+  self-test cases: each structural guard and each tooth fires on a fixture breaking exactly it, and a
+  valid external-corpus reference *and* a valid in-repo-corpus reference (teeth active) both pass. No
+  new ring: the load-bearing call (pin-not-mirror → the teeth bind in-repo only) was settled in ring
+  [0024](../../rings/0024-intake-network-free-metabolizer.md); the concrete teeth semantics (an entry
+  is a link target, a quoted span is a `"…"` span, an in-repo discard is recorded in the reference)
+  live in the check header and this log. On landing, the ring-0023 forward-reference is discharged:
+  [grounded-or-ask](../../principles/grounded-or-ask.md)'s Enforcement now links validate-references,
+  and the [intake skill](../../../skills/intake/SKILL.md) names it as its live structural enforcer.
+  This was the **last buildable scope item** — item 4 (the inferential faithfulness judge,
+  [E-013](../entropy-ledger.md)) is deferred by design, named not dropped. Next: close plan 0004 and
+  return to plan 0003 Next actions item 9 (the Stage 2 → 3 transition).
 
 ## Next actions
 
-1. **Scope item 3 — validate-references.** `.seed/checks/validate-references.ts` with completeness +
-   quote-match teeth (the latter binding where a cited source is saved in-repo, per ring 0024's
-   pin-not-mirror decision), passing the landed `harness-engineering.md`, pinned by self-tests. When
-   it lands, add its link to grounded-or-ask's Enforcement clause — the interim-enforcer note there
-   names it as pending (ring 0023).
-2. **Then** — return to plan 0003 Next actions item 9: propose the Stage 2 → 3 (Growth → Flowering)
-   transition, now with intake in the garden.
+1. **Close plan 0004 and open the transition.** All buildable scope is landed (items 1–3); item 4
+   (the inferential faithfulness judge, [E-013](../entropy-ledger.md)) is deferred by design — named,
+   not dropped. Mark this plan completed and return to [plan 0003](0003-growth.md) Next actions item
+   9: propose the Stage 2 → 3 (Growth → Flowering) transition — approved by the Gardener, recorded as
+   a ring (the ring [0009](../../rings/0009-stage-1-transition-approved.md) /
+   [0014](../../rings/0014-stage-2-transition-approved.md) precedent) — now with intake in the garden.
 
 (Scope item 1 landed 2026-07-08: grounded-or-ask + validate-principles, ring 0023. Scope item 2
-landed 2026-07-08: the intake skill, ring 0024.)
+landed 2026-07-08: the intake skill, ring 0024. Scope item 3 landed 2026-07-08: validate-references,
+no new ring — the pin-not-mirror decision it rests on was settled in ring 0024.)
