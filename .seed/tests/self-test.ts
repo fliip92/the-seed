@@ -22,6 +22,7 @@ const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const ARCH = 'seed/validate-architecture';
 const POSTMORTEM = 'seed/validate-postmortems';
+const ASSESS = 'seed/validate-assessments';
 const GENERATED = 'seed/validate-generated';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
@@ -75,6 +76,14 @@ const LEDGER_GAP = pad3(ledgerMax + 2);
 const postmortemMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/postmortems')), /^(\d{4})-/);
 const POSTMORTEM_NEXT = pad4(postmortemMax + 1);
 const POSTMORTEM_GAP = pad4(postmortemMax + 2);
+
+// Assessments (ring 0022) are numbered like postmortems, but the organ ships non-empty (0001
+// lands with the exit criterion), so a duplicate collides with a NEW file at NEXT (max+1) and
+// a gap seeds one at GAP (max+2) — both stay valid as more assessments land, the derive-from-
+// maxima discipline the other organs use.
+const assessmentMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/assessments')), /^(\d{4})-/);
+const ASSESS_NEXT = pad4(assessmentMax + 1);
+const ASSESS_GAP = pad4(assessmentMax + 2);
 
 function copyRepo(): string {
   const root = mkdtempSync(join(tmpdir(), 'seed-selftest-'));
@@ -290,6 +299,65 @@ function validPostmortem(num: string, opts: {
     opts.ring ?? '- Ring: The decision trail — [ring 0001](../rings/0001-founding-defaults.md).',
   ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
   return [`# Postmortem ${opts.title ?? `${num} — Self-test fixture`}`, '', ...fields, ''].join('\n');
+}
+
+// A valid assessment (ring 0022): title, the two fields, the four sections, a Scout naming all
+// six §6 metric keys, one finding converting to a product, a grill question, and a two-sided
+// ownership split — so a valid fixture passes and each opt breaks exactly one completion
+// condition. Written to docs/assessments/<num>-*.md.
+function validAssessment(num: string, opts: {
+  title?: string;
+  drop?: string;              // drop a required field: Date | Target
+  dropSection?: string;       // drop a required section heading line
+  scout?: string[];           // override the Scout body bullets (to omit a metric)
+  findings?: string[] | null; // override finding bullets; null = present-but-empty section
+  grill?: string[];           // override grill bullets
+  ownership?: string[];       // override ownership bullets
+} = {}): string {
+  const scout = opts.scout ?? [
+    '- map_reachability 0.0% — an AGENTS.md exists but reaches almost nothing',
+    '- enforcement_ratio null — no docs/principles/ organ',
+    '- drift_count 3',
+    '- plan_traceability null — no plan/ring decision log',
+    '- escalation_rate null — no run-log instrument',
+    '- ledger_trend null — no entropy ledger',
+  ];
+  const findings =
+    opts.findings === undefined
+      ? ['- No legible entry point (map_reachability 0.0%) — Product: invariant — propose an AGENTS.md map plus a reachability gate.']
+      : opts.findings ?? [];
+  const grill = opts.grill ?? ['- Which module is the intended dependency root?'];
+  const ownership = opts.ownership ?? [
+    '- Owner (human): intent, priorities, taste, and gate approvals.',
+    '- Seed (agent): everything else — the map, the lints, the CI.',
+  ];
+  const fields = [
+    '- Date: 2026-07-05',
+    '- Target: A synthetic foreign repo that exists only inside a self-test temp copy — read-only.',
+  ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
+  const sections = [
+    `# Assessment ${opts.title ?? `${num} — Self-test fixture target`}`,
+    '',
+    ...fields,
+    '',
+    '## Scout',
+    '',
+    ...scout,
+    '',
+    '## Findings',
+    '',
+    ...findings,
+    '',
+    '## Grill agenda',
+    '',
+    ...grill,
+    '',
+    '## Ownership',
+    '',
+    ...ownership,
+    '',
+  ];
+  return sections.filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection)).join('\n');
 }
 
 // A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
@@ -672,6 +740,116 @@ const CASES: ViolationCase[] = [
     seed: (r) => write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT, { invariant: '- Invariant: Reviews happen — Enforcement: we will be careful — [the dep-direction lint](../../.seed/checks/validate-postmortems.ts).' })),
     expect: { check: POSTMORTEM, law: LAW2, contains: ["Invariant's enforcement names no mechanism"] },
   },
+  // --- assessment format (Stage 2 exit criterion, ring 0022). Each writes an unreachable entry
+  // --- into docs/assessments/, so validate-map also fires — the assertion only requires the
+  // --- assessment marker + message, so that noise is harmless. The valid-entry-passes and
+  // --- each-product-accepted paths need reachability and so run as standalone exit-0 blocks below.
+  {
+    name: 'assessment: invalid title line',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { title: 'without the required shape' })),
+    expect: { check: ASSESS, law: LAW2, contains: ['first line is not a valid assessment title'] },
+  },
+  {
+    name: 'assessment: bad filename',
+    seed: (r) => write(r, 'docs/assessments/not-an-assessment.md', validAssessment(ASSESS_NEXT)),
+    expect: { check: ASSESS, law: LAW2, contains: ['does not match the assessment filename format'] },
+  },
+  {
+    name: 'assessment: title number != filename number',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { title: `${ASSESS_GAP} — Self-test fixture target` })),
+    expect: { check: ASSESS, law: LAW2, contains: [`title number ${ASSESS_GAP} does not match filename number ${ASSESS_NEXT}`] },
+  },
+  {
+    name: 'assessment: missing required field',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { drop: 'Target' })),
+    expect: { check: ASSESS, law: LAW2, contains: ['missing required field: Target'] },
+  },
+  {
+    // A present-but-malformed Date pins the Date-format branch, distinct from missing-field.
+    name: 'assessment: a present-but-malformed Date is caught',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT).replace('- Date: 2026-07-05', '- Date: July 5')),
+    expect: { check: ASSESS, law: LAW2, contains: ['Date field is not a YYYY-MM-DD date'] },
+  },
+  {
+    name: 'assessment: missing required section',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { dropSection: '## Findings' })),
+    expect: { check: ASSESS, law: LAW2, contains: ['missing required section: ## Findings'] },
+  },
+  {
+    // The whole-baseline teeth: a Scout that omits even one §6 metric cannot pass — a proposal
+    // judged on evidence carries every metric, not a cherry-picked subset.
+    name: 'assessment: a Scout omitting a §6 metric is caught',
+    seed: (r) =>
+      write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, {
+        scout: [
+          '- map_reachability 0.0% — an AGENTS.md exists but reaches almost nothing',
+          '- enforcement_ratio null — no docs/principles/ organ',
+          '- drift_count 3',
+          '- plan_traceability null — no plan/ring decision log',
+          '- escalation_rate null — no run-log instrument',
+        ],
+      })),
+    expect: { check: ASSESS, law: LAW2, contains: ['does not report every SEED.md §6 metric', 'ledger_trend'] },
+  },
+  {
+    // No `Product:` clause at all: the finding is sensed entropy left unconverted (SEED.md §0).
+    name: 'assessment: a finding with no Product clause is caught',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { findings: ['- No legible entry point — someone should add a map.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ['finding does not name a product'] },
+  },
+  {
+    // A clause is present but names none of the four products — pins that the vocabulary is
+    // required, not merely the word "Product:".
+    name: "assessment: a finding's Product clause names no product",
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { findings: ['- No legible entry point — Product: fix it eventually.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ["finding's Product clause names no product"] },
+  },
+  {
+    // A product word only in the finding's LINK text must not satisfy it — pins the
+    // link-stripping (the same teeth validate-postmortems has for its Enforcement clause).
+    name: "assessment: a product word only in the finding's link does not satisfy it",
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { findings: ['- No legible entry point — Product: [propose the invariant](../rings/0001-founding-defaults.md) later.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ["finding's Product clause names no product"] },
+  },
+  {
+    name: 'assessment: an empty findings section',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { findings: null })),
+    expect: { check: ASSESS, law: LAW2, contains: ['names no findings'] },
+  },
+  {
+    // A grill agenda that asks nothing has silently guessed the architecture (SEED.md §5).
+    name: 'assessment: a grill agenda with no question is caught',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { grill: ['- The architecture is self-evident.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ['states no question'] },
+  },
+  {
+    name: 'assessment: ownership names only the human side',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { ownership: ['- Owner (human): intent, priorities, taste, and gate approvals.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ['does not name the agent/Seed side'] },
+  },
+  {
+    name: 'assessment: ownership names only the agent side',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { ownership: ['- Seed (agent): everything else — the map, the lints, the CI.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ['does not name the human/owner side'] },
+  },
+  {
+    name: 'assessment: a single both-mentioning ownership bullet is not a split',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, { ownership: ['- Owner (human) and Seed (agent): one bullet naming both.'] })),
+    expect: { check: ASSESS, law: LAW2, contains: ['both sides on separate bullets'] },
+  },
+  {
+    name: 'assessment: duplicate number',
+    seed: (r) => {
+      write(r, `docs/assessments/${ASSESS_NEXT}-a.md`, validAssessment(ASSESS_NEXT));
+      write(r, `docs/assessments/${ASSESS_NEXT}-b.md`, validAssessment(ASSESS_NEXT));
+    },
+    expect: { check: ASSESS, law: LAW2, contains: [`duplicate assessment number ${ASSESS_NEXT}`] },
+  },
+  {
+    name: 'assessment: numbering gap',
+    seed: (r) => write(r, `docs/assessments/${ASSESS_GAP}-fixture.md`, validAssessment(ASSESS_GAP)),
+    expect: { check: ASSESS, law: LAW2, contains: [`assessment numbering gap: found ${ASSESS_GAP} where ${ASSESS_NEXT} was expected`] },
+  },
   // --- generated-artifact discipline (onboard-human, ring 0020). validate-generated re-runs each
   // --- manifest generator and fails when a committed docs/generated/ artifact differs from its
   // --- regeneration (a hand-edit, or a source changed without regenerating), when the generator
@@ -878,6 +1056,40 @@ for (const mech of [
     const { status, output } = runChecks(root);
     report(
       `postmortem: an invariant enforced by "${mech.split(/[ ,(]/)[0]}" passes`,
+      status === 0 && output.includes('all checks passed'),
+      `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+    );
+  });
+}
+
+// --- assessment format, the exit-0 side (Stage 2 exit criterion, ring 0022): a valid
+// --- assessment must pass all checks, so it is linked from the docs/assessments/ README
+// --- (reachability) and its content honors every completion condition. The pristine copy
+// --- already covers the real 0001 assessment passing; this pins a synthetic fixture.
+
+inTempCopy((root) => {
+  write(root, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT));
+  append(root, 'docs/assessments/README.md', `\n- [fixture](${ASSESS_NEXT}-fixture.md) — self-test fixture assessment.\n`);
+  const { status, output } = runChecks(root);
+  report(
+    'assessment: a valid, four-section assessment passes all checks',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// Every product in SEED.md §0's closed vocabulary must be accepted for a finding — pins
+// PRODUCT_RE against a regression that narrows it and wrongly rejects a real conversion.
+// `priced-debt` (feedback.ts's hyphenated form) is accepted alongside the prose `priced debt`.
+for (const product of ['invariant', 'ring', 'priced debt', 'priced-debt', 'deletion']) {
+  inTempCopy((root) => {
+    write(root, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT, {
+      findings: [`- Sensed entropy in the fixture — Product: ${product} — the concrete conversion step.`],
+    }));
+    append(root, 'docs/assessments/README.md', `\n- [fixture](${ASSESS_NEXT}-fixture.md) — self-test fixture assessment.\n`);
+    const { status, output } = runChecks(root);
+    report(
+      `assessment: a finding converting to "${product}" passes`,
       status === 0 && output.includes('all checks passed'),
       `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
     );

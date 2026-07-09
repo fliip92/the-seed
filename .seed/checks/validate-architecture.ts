@@ -11,7 +11,7 @@
 // doc. Architecture docs live in docs/architecture/<slug>.md (non-numbered, one per
 // target, indexed by the README) — they are per-target statements, not the sequential
 // decision log that rings are.
-import { readRepoFile } from '../lib/repo.ts';
+import { readRepoFile, sectionBody, topLevelBullets } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-2 — legible and enforceable, or it doesn\'t exist';
@@ -33,32 +33,6 @@ const REQUIRED_SECTIONS = ['## Shape', '## Rules', '## Ownership'] as const;
 // `structural` is omitted deliberately — `structural test` is the mechanism; `structural` on
 // its own is common architecture prose ("structural layers") and would wave a rule through.
 const MECHANISM_RE = /(lint|structural test|CI gate|doc-only)/i;
-
-/** The lines of a `## <Section>` block: from just after the heading to the next `## ` heading (or EOF). */
-function sectionBody(lines: string[], heading: string): string[] | null {
-  const start = lines.findIndex((l) => l.trim() === heading);
-  if (start === -1) return null;
-  let end = start + 1;
-  while (end < lines.length && !/^## /.test(lines[end])) end++;
-  return lines.slice(start + 1, end);
-}
-
-/** Top-level `- ` bullets in a block, each spanning to the next top-level bullet (wrapped
- *  lines and sub-bullets folded in) — mirrors how validate-rings reads the Enforcement field. */
-function topLevelBullets(body: string[]): string[] {
-  const bullets: string[] = [];
-  let current: string[] | null = null;
-  for (const line of body) {
-    if (/^- \S/.test(line)) {
-      if (current) bullets.push(current.join('\n'));
-      current = [line];
-    } else if (current && !/^## /.test(line)) {
-      current.push(line);
-    }
-  }
-  if (current) bullets.push(current.join('\n'));
-  return bullets;
-}
 
 export const check: Check = {
   id: ID,

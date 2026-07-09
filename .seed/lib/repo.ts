@@ -152,6 +152,35 @@ export function extractLocalLinks(repoRelPath: string, root: string = REPO_ROOT)
   return links;
 }
 
+/** The lines of a `## <Section>` block: from just after the heading to the next `## `
+ *  heading (or EOF). Null when the section is absent. The single definition (LAW-3) shared by
+ *  the section-structured validators (validate-architecture, validate-assessments). */
+export function sectionBody(lines: string[], heading: string): string[] | null {
+  const start = lines.findIndex((l) => l.trim() === heading);
+  if (start === -1) return null;
+  let end = start + 1;
+  while (end < lines.length && !/^## /.test(lines[end])) end++;
+  return lines.slice(start + 1, end);
+}
+
+/** Top-level `- ` bullets in a block, each spanning to the next top-level bullet (wrapped
+ *  lines and sub-bullets folded in) — mirrors how validate-rings reads the Enforcement field.
+ *  Shared by the bullet-structured validators (validate-architecture, validate-assessments). */
+export function topLevelBullets(body: string[]): string[] {
+  const bullets: string[] = [];
+  let current: string[] | null = null;
+  for (const line of body) {
+    if (/^- \S/.test(line)) {
+      if (current) bullets.push(current.join('\n'));
+      current = [line];
+    } else if (current && !/^## /.test(line)) {
+      current.push(line);
+    }
+  }
+  if (current) bullets.push(current.join('\n'));
+  return bullets;
+}
+
 /** Four-digit numbers prefixing filenames directly inside `dir` (rings, plans/active, plans/completed).
  *  Returns [] when the directory does not exist under `root` — a foreign repo (repo-fitness) need
  *  not carry the seed's anatomy, so its absence is data, not an error. */

@@ -222,6 +222,33 @@ carried its own decisions). The exit criterion governs completion, not the item 
   cause (absent vs. parentless lineage file). Build decision recorded as
   [ring 0021](../../rings/0021-feedback-composes-upstream-issue.md). `npm run check` + `npm test`
   (137 cases) green; `drift_count` 0.
+- **2026-07-06** — **Stage 2 exit criterion evidenced** (SEED.md §4): the two load-bearing organs
+  exercised end-to-end on a real foreign repository, producing
+  [assessment 0001 — mottainapp](../../assessments/0001-mottainapp.md) — a read-only Scout of a
+  691-file / 792-commit pnpm/turbo product turned into an evidence-judgeable proposal. The
+  [repo-fitness](../../../skills/repo-fitness/SKILL.md) Scout computed the full SEED.md §6 baseline
+  (`map_reachability` 0.0% — an `AGENTS.md` that is a beads/tool brief, not a map; `drift_count`; the
+  other four `null`, each with a stated reason), proven strictly read-only (target HEAD + tree hash +
+  clean status byte-identical before and after — repo-fitness's non-mutation contract); each finding
+  was converted to exactly one of SEED.md §0's four products; and the target's architecture — which
+  the Scout does not get to invent (SEED.md §5) — was left to a **grill agenda** of owner-only
+  questions. The proposal lives in the new [docs/assessments/](../../assessments/README.md) organ
+  (numbered like rings/postmortems, format enforced by
+  [`validate-assessments.ts`](../../../.seed/checks/validate-assessments.ts) in `run-all`, with the
+  shared `sectionBody`/`topLevelBullets` parsers consolidated into
+  [`lib/repo.ts`](../../../.seed/lib/repo.ts) per LAW-3). Verification (LAW-6): the check binds every
+  entry to carry the whole six-metric baseline (no cherry-picking), convert every finding to a product
+  (link-stripped), ask at least one grill question, and split ownership on two bullets;
+  [`.seed/tests/self-test.ts`](../../../.seed/tests/self-test.ts) pins a valid assessment passing (all
+  four products accepted, including the hyphenated `priced-debt`) and each binding failing red on a
+  fixture that breaks exactly it. The first exercise dogfed an instrument self-observation (SEED.md
+  §3): repo-fitness walks the on-disk tree, not `git ls-files`, priced as
+  [E-012](../entropy-ledger.md) — it changed no verdict (each reading robust against the tracked-only
+  recount). Build decision recorded as
+  [ring 0022](../../rings/0022-assessment-organ-exit-criterion.md). `npm run check` + `npm test` green;
+  `drift_count` 0. **Both Stage 2 exit conditions are now met** — the skill garden grown and a foreign
+  repo assessed read-only on evidence — so the next work is to propose the Stage 2 → 3 (Growth →
+  Flowering) transition as a plan for Gardener approval.
 
 ## Next actions
 
@@ -257,12 +284,17 @@ carried its own decisions). The exit criterion governs completion, not the item 
    descendant's recorded parent and refused at a root seed; the genome ships composition, posting is a
    Gardener-gated host act outside it, verified by a side-effect-free dry-run; build decision in
    [ring 0021](../../rings/0021-feedback-composes-upstream-issue.md).
-8. **Seed:** the Stage 2 skill-garden menu is fully planted (grill-the-gardener, repo-fitness,
-   postmortem, parallel-worktrees, onboard-human, feedback), each with its verification (LAW-6). The
-   remaining Stage 2 work is the **exit criterion** (SEED.md §4): assess a foreign repository
-   read-only and produce an evidence-judgeable proposal — its two load-bearing organs
-   (grill-the-gardener + repo-fitness) are planted, so the next work is to exercise them end-to-end on
-   a real foreign repo and produce that proposal. Once evidenced, propose the Stage 2 → 3 (Growth →
-   Flowering) transition as a plan for Gardener approval (the SEED.md §4 stage-transition protocol;
-   the [ring 0009](../../rings/0009-stage-1-transition-approved.md)/[0014](../../rings/0014-stage-2-transition-approved.md)
-   precedent).
+8. ✅ **Scope complete — Stage 2 exit criterion evidenced** (2026-07-06): the skill garden's two
+   load-bearing organs (repo-fitness + grill-the-gardener) exercised end-to-end on a real foreign
+   repository — [assessment 0001 — mottainapp](../../assessments/0001-mottainapp.md), a read-only
+   Scout turned into an evidence-judgeable proposal in the new
+   [docs/assessments/](../../assessments/README.md) organ, its whole-baseline Scout, four-products
+   findings, grill agenda, and ownership split enforced by
+   [`validate-assessments.ts`](../../../.seed/checks/validate-assessments.ts); build decision in
+   [ring 0022](../../rings/0022-assessment-organ-exit-criterion.md).
+9. **Seed:** both Stage 2 exit conditions are met — the skill garden grown (items 1–7) and a foreign
+   repo assessed read-only on evidence (item 8). The next work is to **propose the Stage 2 → 3
+   (Growth → Flowering) transition** as an execution plan for Gardener approval — the SEED.md §4
+   stage-transition protocol (proposed as a plan, approved by the Gardener, recorded as a ring; the
+   [ring 0009](../../rings/0009-stage-1-transition-approved.md)/[0014](../../rings/0014-stage-2-transition-approved.md)
+   precedent). No transition ring is cut before approval.

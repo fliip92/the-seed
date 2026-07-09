@@ -40,12 +40,22 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   [0020](docs/rings/0020-onboard-human-generated-briefing.md)), and **feedback** (open a well-formed
   issue upstream against the mother seed from any repository, composed but never posted, ring
   [0021](docs/rings/0021-feedback-composes-upstream-issue.md)). With the Stage 2 menu fully planted,
-  the next work is the **exit criterion** — assess a foreign repository read-only and produce an
-  evidence-judgeable proposal (SEED.md §4) — then propose the Stage 2 → 3 (Growth → Flowering)
-  transition as a plan for Gardener approval. Stage 2 grows the skill garden (grill-the-gardener, repo-fitness,
+  the **exit criterion is now evidenced** (SEED.md §4): [assessment 0001 — mottainapp](docs/assessments/0001-mottainapp.md)
+  is a read-only Scout of a real 691-file / 792-commit foreign product turned into an
+  evidence-judgeable proposal — the full SEED.md §6 baseline computed (each metric, or a stated
+  `null` whose reason is itself the finding), every finding converted to one of SEED.md §0's four
+  products, and the target's architecture left to a **grill agenda** rather than guessed (SEED.md
+  §5), with the target proven byte-identical before and after (ring
+  [0022](docs/rings/0022-assessment-organ-exit-criterion.md), the new
+  [docs/assessments/](docs/assessments/README.md) organ). **Correct next action:** both Stage 2
+  exit conditions are now met — the skill garden grown *and* a foreign repo assessed read-only on
+  evidence — so propose the Stage 2 → 3 (Growth → Flowering) transition as an execution plan for
+  Gardener approval (the SEED.md §4 stage-transition protocol; the
+  [ring 0009](docs/rings/0009-stage-1-transition-approved.md)/[0014](docs/rings/0014-stage-2-transition-approved.md)
+  precedent — proposed as a plan, approved by the Gardener, recorded as a ring; no transition ring
+  is cut before approval). Stage 2 grew the skill garden (grill-the-gardener, repo-fitness,
   postmortem, parallel-worktrees, onboard-human, feedback), each shipping its own verification
-  (LAW-6); the exit criterion is assessing a foreign repository read-only and producing an
-  evidence-judgeable proposal (SEED.md §4). Stage 1's self-maintenance organs — all built and evidenced in
+  (LAW-6). Stage 1's self-maintenance organs — all built and evidenced in
   [plan 0002](docs/plans/completed/0002-rooting.md) — remain live: the self-tests
   (`npm test`), the traceability gate, the [doc-gardener](skills/doc-gardener/SKILL.md) drift
   detector (`npm run garden`, advisory per ring
@@ -65,6 +75,7 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 | [docs/principles/](docs/principles/README.md) | Golden principles, each naming its enforcement | [README](docs/principles/README.md) |
 | [docs/architecture/](docs/architecture/README.md) | Elicited target architectures (grill-the-gardener) | [README](docs/architecture/README.md) |
 | [docs/postmortems/](docs/postmortems/README.md) | Failures metabolized into fix + invariant + ring (postmortem) | [README](docs/postmortems/README.md) |
+| [docs/assessments/](docs/assessments/README.md) | Read-only foreign-repo assessments — the Stage 2 exit criterion's artifact | [README](docs/assessments/README.md) |
 | [docs/fitness/](docs/fitness/FITNESS.md) | Fitness metrics, current scores, dated history | [FITNESS.md](docs/fitness/FITNESS.md) |
 | [docs/references/](docs/references/README.md) | Distilled external docs, curated for agents | [README](docs/references/README.md) |
 | [docs/generated/](docs/generated/README.md) | Regenerated-only artifacts — never hand-edit (enforced, ring 0020) | [README](docs/generated/README.md) |
