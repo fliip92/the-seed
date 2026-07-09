@@ -12,5 +12,9 @@ fresh agent cannot find is tribal knowledge, and tribal knowledge is entropy (SE
 
 ## References
 
-None yet. Add the first one the moment you catch yourself fetching the same external doc
-twice (LAW-10 applied to documents).
+- [harness-engineering.md](harness-engineering.md) — distilled foundations of harness
+  engineering (the discipline the seed is an instance of), metabolized from the
+  [awesome-harness-engineering](https://github.com/ai-boost/awesome-harness-engineering)
+  `Foundations` section (plan [0003](../plans/active/0003-growth.md); the first external-corpus
+  intake). Grounded-or-ask: every claim cites its source, every seed-connection is marked as
+  inference.

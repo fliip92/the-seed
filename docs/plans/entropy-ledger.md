@@ -91,6 +91,49 @@ ledger is also a record of digestion.
   self-test pinning that untracked files no longer inflate the count; fold into the next
   repo-fitness change, or a dedicated fix before the instrument is pointed at hosts in earnest
 
+## E-013 — the seed has only computational controls, no inferential ones
+
+- First observed: 2026-07-08, metabolizing the awesome-harness-engineering `Foundations` section
+  ([docs/references/harness-engineering.md](../references/harness-engineering.md)) — Böckeler's
+  computational-vs-inferential controls distinction
+- Where: every check in `.seed/checks/` is a deterministic structural gate
+  (a *computational* control). The seed has no *inferential* control — no LLM-as-judge — so it
+  cannot judge the quality of an agent's synthesis: whether a distilled reference stayed faithful
+  to its source, whether a grill elicited completely, whether a generated doc hallucinated.
+  Provenance + quote-match (the intake skill's mechanical guards) catch *fabrication*, but
+  paraphrase *faithfulness* is not computationally checkable — it needs a judge
+- Interest rate: low now, rising sharply the moment the seed ships knowledge-synthesis skills
+  (intake, PRD authoring) and again at Flowering, where pollen quality is a behavioral property,
+  not a structural one — an unjudged inferential output is trust taken on faith (LAW-6: a claim,
+  not a change)
+- Price: medium — an LLM-as-judge instrument that scores an inferential artifact against a stated
+  rubric, with its inputs pinned so the verdict is reproducible enough to trend (LAW-9); the hard
+  part is making a probabilistic control legible and enforceable (LAW-2) without pretending it is
+  deterministic
+- Conversion path: invariant — build the inferential-control instrument alongside the first skill
+  that needs it (intake); until then the mitigation is compose-not-commit plus human ratification
+  (the grounded-or-ask discipline), a doc-only control that keeps fabrication visible and gated
+
+## E-014 — plans have no resumable, context-scoped work-unit format
+
+- First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
+  Plan.md/Implement.md artifacts, Meta's hibernate-and-wake checkpointing, LangChain's
+  context-rot/compaction warning) in [docs/references/harness-engineering.md](../references/harness-engineering.md)
+- Where: [docs/plans/](README.md) carry a prose progress log and a `Next actions` list, but no
+  structured, context-scoped work-unit a fresh session — or a parallel [worktrees](../../skills/parallel-worktrees/SKILL.md)
+  agent — can pick up cold without re-deriving context. The Gardener's "implement pieces across
+  sessions without derailing, with efficient context/token usage, and parallel humans + machines"
+  need has no artifact
+- Interest rate: low now (solo, mostly single-session), rising as tasks span sessions and agents —
+  re-derivation cost and derailment risk compound with task size and parallelism
+- Price: medium — a work-unit / handoff format (scope + entry-context + done-when + owner) that a
+  plan decomposes into and parallel-worktrees consumes; likely a plan-format enrichment plus a
+  skill
+- Conversion path: ring then invariant — decide the format as a ring (it touches the LAW-5 plan
+  discipline), then enforce it structurally; sequence after the intake skill, and design it against
+  the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
+  first principles
+
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
