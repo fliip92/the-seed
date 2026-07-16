@@ -21,10 +21,18 @@ artifact regenerate byte-identically.
 | Artifact | Sources | Regenerate |
 |---|---|---|
 | [onboarding.md](onboarding.md) | the map (AGENTS.md) + the active plans it links | `npm run generate` |
+| [pending-release.md](pending-release.md) | [`pollen/pending.md`](../../pollen/pending.md) + the pollen version + the release history | `npm run generate` |
 
 [onboarding.md](onboarding.md) is the [onboard-human](../../skills/onboard-human/SKILL.md)
 briefing — current state → goal, derived from the map's stage line and the active plan it
 links, so it cannot drift from the truth without `npm run check` catching it.
+
+[pending-release.md](pending-release.md) is the **pending-release notes** (ring
+[0027](../rings/0027-release-graft-cli.md)): what the next pollen release would be — the version
+bumped by the maximum declared impact, and the rings it composes — computed purely from the committed
+[pending intents](../../pollen/pending.md). It is the ring-0020 determinism split's "pure pending
+notes, byte-exact-gated" half; the release tool that consumes those intents is
+[.seed/checks/release.ts](../../.seed/checks/release.ts).
 
 Every artifact added here must be registered in the manifest with its source and regeneration
 command.

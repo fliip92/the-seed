@@ -27,15 +27,27 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   (transition approved 2026-07-15, ring
   [0025](docs/rings/0025-stage-3-transition-approved.md)). The governing plan is
   [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope
-  item 2 (the owned `.seed/` release/graft CLI) is the live work**. Scope item 1 (pollen boundary +
-  versioning + lineage) landed 2026-07-15 in the founding
-  [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided
-  [E-015](docs/plans/entropy-ledger.md)'s three forks — the semver + migration model, the three
+  item 3 (the installer + the mandated uninstall path) is the live work**. Scope item 2 (the owned
+  `.seed/` release/graft CLI) landed 2026-07-15 in [ring 0027](docs/rings/0027-release-graft-cli.md),
+  **paying off [E-015](docs/plans/entropy-ledger.md)**: the release model
+  ([.seed/lib/release.ts](.seed/lib/release.ts)) and CLI
+  ([.seed/checks/release.ts](.seed/checks/release.ts), `npm run release` — verbs
+  `sense`/`cut-release`/`verify`/`feedback`, with `graft`/`uninstall` reserved for scope item 3), the
+  ring-0020 determinism split (pure byte-exact
+  [pending-release notes](docs/generated/pending-release.md); the append-only dated
+  [release history](pollen/releases/README.md) with its
+  [gate](.seed/checks/release-append-only.ts); the side-effecting `cut-release`, dry-run-verified),
+  the version-bump-from-max-declared-impact and the migration-required-for-major tooth, all pinned by
+  [validate-release](.seed/checks/validate-release.ts) + the self-tests. The pollen line rests at
+  v0.0.0 with the boundary (ring 0026) and the release tool (ring 0027) declared as
+  [pending intents](pollen/pending.md) composing a first v0.1.0, cut by the recursive test (scope
+  item 4). Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
+  [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided E-015's three
+  forks — the semver + migration model, the three
   orthogonal granularity axes (release = pollen version, learning = ring, artifact = skill), and the
   three ownership tiers (sovereign genome / portable method / local history) — and shipped the
   [pollen manifest](.seed/lib/pollen.ts) (the boundary + the two version lines) with
-  [validate-pollen](.seed/checks/validate-pollen.ts); the release CLI is E-015's remaining conversion
-  path. Stage 3 packages the portable subset — skills, scaffolding templates, protocols, an
+  [validate-pollen](.seed/checks/validate-pollen.ts). Stage 3 packages the portable subset — skills, scaffolding templates, protocols, an
   installer, and a mandated uninstall path — as versioned [`pollen/`](pollen/README.md), then runs
   the recursive test (**the seed is its own first host**: upgrade the seed using its own pollen),
   proving the transplant by installing pollen into a sacrificial test repo with fitness measured

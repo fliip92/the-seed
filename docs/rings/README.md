@@ -32,6 +32,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0024 — intake metabolizes a repo-saved corpus network-free; pin-not-mirror provenance and a closed outcome vocabulary](0024-intake-network-free-metabolizer.md)
 - [0025 — Stage 2 → 3 transition approved](0025-stage-3-transition-approved.md)
 - [0026 — the pollen boundary, two version lines, and the semver/migration model](0026-pollen-boundary-versioning-lineage.md)
+- [0027 — the release / graft CLI: the determinism split made mechanical](0027-release-graft-cli.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

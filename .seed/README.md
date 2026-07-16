@@ -44,6 +44,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
 | [checks/validate-references.ts](checks/validate-references.ts) | The distilled-reference format (intake): a **Source** with a retrieval date + commit pin (for a pinnable repo), every claim cited, the `**Seed reading:**` grounded/inference split present — with quote-match + completeness teeth where the cited corpus is saved in-repo (plan 0004, ring 0024's pin-not-mirror) | LAW-2 |
 | [checks/validate-pollen.ts](checks/validate-pollen.ts) | The pollen boundary (ring 0026): the [manifest](lib/pollen.ts) classifies every top-level entry (portable / sovereign / local) so the Stage 3 boundary stays total, the two version lines (genome vs pollen) are well-formed, and the seed's [lineage](../pollen/lineage.json) (SEED.md §7) is present and well-formed | LAW-3, LAW-2 |
+| [checks/validate-release.ts](checks/validate-release.ts) | The pure release invariants (ring 0027): the [pending intents](../pollen/pending.md) are well-formed and name existing rings, every [release](../pollen/releases/README.md) is semver + dated + strictly increasing, `POLLEN_VERSION` tracks the latest release, and every major carries an existing migration | LAW-3, LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -61,6 +62,14 @@ of [docs/rings/README.md](../docs/rings/README.md) (converted from ledger E-005)
 modification or deletion of an existing ring since the base ref fails CI, naming LAW-10.
 The symlink route around its pathspec (link a ring to a file outside `docs/rings/`,
 then edit the target) is closed by the repo-wide symlink ban in `validate-anatomy`.
+
+[checks/release-append-only.ts](checks/release-append-only.ts) is its twin for the release
+history (ring [0027](../docs/rings/0027-release-graft-cli.md)): a cut release under
+[`pollen/releases/`](../pollen/releases/README.md) is a published, dated fact descendants graft
+against, so modifying or deleting one since the base ref fails CI, naming LAW-2 (the index README
+excepted — it gains a line per release). A wrong release is corrected by a new release that
+supersedes it, never by editing history. Same base-ref resolution and merge-base safety as
+ring-append-only.
 
 [checks/plan-traceability.ts](checks/plan-traceability.ts) enforces traceability
 (converted from ledger E-003; SEED.md §4 Stage 1): every non-merge commit since the
@@ -217,8 +226,47 @@ is **complete** (every top-level entry classified — a new one that nobody clas
 version lines are well-formed and the genome copy tracks `SEED.md`, and the lineage is present and
 well-formed. It is a `run-all.ts` gate rather than an advisory because it is a pure function of the
 working tree and an incomplete boundary is a correctness defect, not a trend (the
-[validate-generated](checks/validate-generated.ts) shape). The release/graft CLI, the migration
-machinery, and the append-only dated release history are plan 0005 scope item 2 (E-015).
+[validate-generated](checks/validate-generated.ts) shape).
+
+## Release / graft
+
+[lib/release.ts](lib/release.ts) is the **release model** — the single source of truth (LAW-3) for
+how a pollen release is composed, versioned, and recorded (founding ring
+[0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) for the model, build ring
+[0027](../docs/rings/0027-release-graft-cli.md) for this build; E-015). Three organs import it — the
+generator, the check, and the CLI — so the code that COMPUTES a release, the code that VALIDATES one,
+and the code that CUTS one cannot drift on what a release is. Pollen is semver; the impact class is
+DECLARED and checked (not parsed from commit keywords); the next version is a pure function of the max
+declared impact across the [pending intents](../pollen/pending.md); a major forces a migration.
+
+[checks/release.ts](checks/release.ts) (`npm run release`) is the **release / graft CLI**, owned in
+`.seed/` (portable — a descendant carries it and cuts its own pollen, self-carrying). A thin
+orchestrator over the already-built organs, with the verbs plan 0005 scope item 2 names:
+
+- `sense [<repo>]` — report a target's pollen version, released history, and the pending next release
+  (the read side a descendant runs against its mother).
+- `cut-release --date YYYY-MM-DD [--migration F] [--dry-run]` — the git-aware, **side-effecting**
+  release step, kept **out of `run-all.ts`**: it folds the pending intents into a dated release under
+  [`pollen/releases/`](../pollen/releases/README.md), bumps `POLLEN_VERSION` + the lineage, clears
+  [pending](../pollen/pending.md), and regenerates the notes. `--date` is required — a release date is
+  a recorded fact, so no wall-clock is read (ring 0020). Its `--dry-run` computes and prints the plan
+  while writing nothing — the verification, pinned by the self-tests in the three-binding shape (the
+  [worktrees](checks/worktrees.ts) / [feedback](checks/feedback.ts) precedent).
+- `verify [<repo>]` — delegates to the target seed's own `run-all.ts` (prove a grafted seed holds its
+  invariants). `feedback ...` — delegates to the [feedback composer](checks/feedback.ts).
+- `graft` / `uninstall` — **reserved**: the install + mandated-uninstall machinery is plan 0005 scope
+  item 3 (the installer). The surface is named here; the capability lands there. It declares, it does
+  not fake (LAW-2).
+
+The [ring 0020](../docs/rings/0020-onboard-human-generated-briefing.md) determinism split maps onto
+three artifacts, each with its own enforcement: the pending **notes**
+([docs/generated/pending-release.md](../docs/generated/pending-release.md)) are pure + byte-exact
+([validate-generated](checks/validate-generated.ts)); the release **history**
+([`pollen/releases/`](../pollen/releases/README.md)) is append-only + dated
+([release-append-only.ts](checks/release-append-only.ts)); and the **cut** is the side-effecting step,
+out of `run-all.ts`, self-tested as a dry-run. The pure invariants tying them together are
+[validate-release.ts](checks/validate-release.ts) (in `run-all.ts`). The installer, the mandated
+uninstall path, and the recursive self-upgrade test are plan 0005 scope items 3–4.
 
 ## Self-tests
 

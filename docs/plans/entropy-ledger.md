@@ -134,35 +134,6 @@ ledger is also a record of digestion.
   the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
   first principles
 
-## E-015 — the release / pollen-upgrade mechanism is designed but unbuilt
-
-- First observed: 2026-07-06, worked out with the Gardener as the Stage 3 release/upgrade
-  process; formalized into the ledger 2026-07-08 at the Stage 2 → 3 transition proposal
-  ([plan 0005](active/0005-flowering.md))
-- Where: the design lived only in agent memory (tribal knowledge is entropy, SEED.md §0) until it
-  was priced here and, at Stage 3, converted — the forks are decided (ring
-  [0026](../rings/0026-pollen-boundary-versioning-lineage.md)) and the boundary + version lines +
-  lineage landed ([plan 0005](active/0005-flowering.md) scope item 1). What remains: there is still no
-  release *tool*, so the seed cannot cut a versioned pollen release, compute a version bump from
-  committed intent, carry a migration, or let a descendant `sense`/`graft` an upstream improvement
-- Interest rate: low now, spikes to high at Stage 3 (Flowering's pollen work cannot begin
-  without it) — the [E-004](entropy-ledger.md) shape
-- Price: medium — a thin `.seed/` release/graft CLI, owned not imported (LAW-7: every mainstream
-  release tool fails on commit grammar, [ring 0020](../rings/0020-onboard-human-generated-briefing.md)
-  determinism, artifact shape, LAW-2 legibility, and the zero-dep clause), verbs
-  `sense`/`graft`/`verify`/`feedback`/`uninstall`, self-carrying inside pollen; plus the
-  determinism split (pure in-`run-all` pending notes, an append-only dated release history, a
-  git-aware side-effecting cut-release out of `run-all`)
-- Conversion path: ring then invariant — **partially converted.** The founding release-process ring
-  ([0026](../rings/0026-pollen-boundary-versioning-lineage.md)) decided the open forks (semver +
-  migration model; the three orthogonal granularity axes; the three ownership tiers), and scope item 1
-  landed the first invariant — [validate-pollen](../../.seed/checks/validate-pollen.ts) over the
-  boundary, the two version lines, and lineage. **Remaining:** the CLI and its verification land as
-  [plan 0005](active/0005-flowering.md) scope item 2, then this entry pays off. Propagation is
-  re-metabolization, not `npm update`: an adopted upstream change becomes the descendant's own ring
-  (its `plan-traceability` gate already refuses ringless changes), so "propose, never force" falls out
-  for free
-
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
@@ -316,3 +287,42 @@ ledger is also a record of digestion.
   [seed-ci run 28752296476](https://github.com/fliip92/the-seed/actions/runs/28752296476),
   job annotations empty (the only `DEP0040 punycode` line is a Node-internal userland-module
   notice, not the Actions Node-20 runtime deprecation this entry tracked)
+
+## E-015 — the release / pollen-upgrade mechanism is designed but unbuilt
+
+- First observed: 2026-07-06, worked out with the Gardener as the Stage 3 release/upgrade
+  process; formalized into the ledger 2026-07-08 at the Stage 2 → 3 transition proposal
+  ([plan 0005](active/0005-flowering.md))
+- Where: the design lived only in agent memory (tribal knowledge is entropy, SEED.md §0) until it
+  was priced here, its forks decided (ring
+  [0026](../rings/0026-pollen-boundary-versioning-lineage.md)), and the machinery built across
+  [plan 0005](active/0005-flowering.md) scope items 1–2 — the boundary + version lines + lineage,
+  then the release/graft CLI: the seed can now cut a versioned pollen release, compute a version bump
+  from committed intent, carry a migration, and let a descendant `sense`/`graft` an upstream improvement
+- Interest rate: low then, spiked to high at Stage 3 (Flowering's pollen work could not begin
+  without it) — the [E-004](entropy-ledger.md) shape
+- Price: medium — a thin `.seed/` release/graft CLI, owned not imported (LAW-7: every mainstream
+  release tool fails on commit grammar, [ring 0020](../rings/0020-onboard-human-generated-briefing.md)
+  determinism, artifact shape, LAW-2 legibility, and the zero-dep clause), verbs
+  `sense`/`graft`/`verify`/`feedback`/`uninstall`, self-carrying inside pollen; plus the
+  determinism split (pure in-`run-all` pending notes, an append-only dated release history, a
+  git-aware side-effecting cut-release out of `run-all`)
+- Conversion path: ring then invariant — **converted.** The founding ring
+  ([0026](../rings/0026-pollen-boundary-versioning-lineage.md)) decided the forks and scope item 1
+  landed [validate-pollen](../../.seed/checks/validate-pollen.ts); the build ring
+  ([0027](../rings/0027-release-graft-cli.md)) and scope item 2 landed the CLI and its invariants.
+  Propagation is re-metabolization, not `npm update`: an adopted upstream change becomes the
+  descendant's own ring (its `plan-traceability` gate already refuses ringless changes), so "propose,
+  never force" falls out for free
+- Paid: 2026-07-15 ([plan 0005](active/0005-flowering.md) scope item 2, ring
+  [0027](../rings/0027-release-graft-cli.md)). The release model
+  ([.seed/lib/release.ts](../../.seed/lib/release.ts)) — the single source of truth for how a release
+  is composed, versioned, and recorded (read by the generator, the check, and the CLI) — plus the CLI
+  ([.seed/checks/release.ts](../../.seed/checks/release.ts), `npm run release`) and the pure gate
+  [validate-release](../../.seed/checks/validate-release.ts). The
+  [ring 0020](../rings/0020-onboard-human-generated-briefing.md) determinism split is real: byte-exact
+  [pending-release notes](../generated/pending-release.md) (via `validate-generated`), the append-only
+  dated [release history](../../pollen/releases/README.md) (via
+  [release-append-only.ts](../../.seed/checks/release-append-only.ts)), and the side-effecting
+  `cut-release` verified by its dry-run. `graft`/`uninstall` are reserved for scope item 3 (the
+  installer). 18 self-tests pin it (LAW-6); the first real release (v0.1.0) is cut by scope item 4

@@ -27,7 +27,9 @@ const PRINCIPLES = 'seed/validate-principles';
 const GENERATED = 'seed/validate-generated';
 const REFERENCES = 'seed/validate-references';
 const POLLEN = 'seed/validate-pollen';
+const RELEASE = 'seed/validate-release';
 const GATE = 'seed/ring-append-only';
+const RELEASE_GATE = 'seed/release-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
 
@@ -423,6 +425,49 @@ function validReference(opts: {
 // (does a quoted span appear here?) and completeness (is every entry cited or discarded?).
 const CORPUS_FIXTURE =
   '# Corpus fixture\n\n- [entry A](https://example.com/a) — the seed is a harness.\n- [entry B](https://example.com/b) — a second entry.\n';
+
+// --- release model fixtures (ring 0027). seedReleaseFile writes a well-formed release file and, so
+// --- the release stays reachable (validate-map) and the version line consistent, appends the history
+// --- index line; each opt breaks exactly one field. setPollenVersion moves BOTH the manifest's
+// --- POLLEN_VERSION and the lineage seedVersion (validate-pollen cross-checks them) so a seeded
+// --- release can be made version-consistent, isolating the ONE release invariant a case then breaks.
+function seedReleaseFile(root: string, version: string, opts: { impact?: string; date?: string; composed?: string | null; migration?: string } = {}): void {
+  const impact = opts.impact ?? 'minor';
+  const date = opts.date ?? '2026-07-15';
+  const composed =
+    opts.composed === undefined
+      ? '[ring 0026](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)'
+      : opts.composed;
+  const migration = opts.migration ?? 'none';
+  const lines = [
+    `# Pollen v${version} — ${date}`,
+    '',
+    `- Impact: ${impact}`,
+    `- Date: ${date}`,
+    ...(composed === null ? [] : [`- Composed: ${composed}`]),
+    `- Migration: ${migration}`,
+    '',
+    '## Notes',
+    '',
+    `- ${impact} — ring 0026 — self-test fixture release.`,
+    '',
+  ];
+  write(root, `pollen/releases/v${version}.md`, lines.join('\n'));
+  append(root, 'pollen/releases/README.md', `\n- [v${version}](v${version}.md) — ${date} — ${impact}: fixture.\n`);
+}
+
+function setPollenVersion(root: string, version: string): void {
+  edit(root, '.seed/lib/pollen.ts', (c) => c.replace(/(POLLEN_VERSION\s*=\s*')[^']*(')/, `$1${version}$2`));
+  const lineage = JSON.parse(readFileSync(join(root, 'pollen/lineage.json'), 'utf8'));
+  lineage.seedVersion = version;
+  write(root, 'pollen/lineage.json', JSON.stringify(lineage, null, 2) + '\n');
+}
+
+/** Overwrite pollen/pending.md with exactly the given intent bullets (no fenced example), so a case
+ *  controls the precise pending set. An empty list is the "nothing to release" state. */
+function writePending(root: string, intents: string[]): void {
+  write(root, 'pollen/pending.md', ['# Pending release intents', '', ...intents, ''].join('\n'));
+}
 
 // A minimal synthetic ledger for fitness.ts's ledger_trend: only the heading structure
 // ledgerCounts() parses matters here, not validate-plans.ts's full field set (these cases
@@ -1171,6 +1216,94 @@ const CASES: ViolationCase[] = [
     seed: (r) => rmSync(join(r, 'pollen/lineage.json')),
     expect: { check: POLLEN, law: LAW2, contains: ['records no lineage'] },
   },
+  // --- release model (ring 0027): the pure invariants validate-release gates in run-all. Intent
+  // --- cases 1–2 APPEND a bad bullet — a malformed / out-of-vocabulary bullet is SKIPPED by the notes
+  // --- generator (it never becomes a composing intent), so pending-release.md is unchanged and only
+  // --- validate-release fires. The remaining cases touch the release history or the version line,
+  // --- which the pure notes DO depend on, so they regenerate the notes (`generate.ts`) — the honest
+  // --- "change source → regenerate" discipline — keeping validate-generated green so the assertion
+  // --- isolates the release marker.
+  {
+    name: 'release: a malformed pending intent is caught',
+    seed: (r) => append(r, 'pollen/pending.md', '\n- Impact: minor and nothing else\n'),
+    expect: { check: RELEASE, law: LAW2, contains: ['malformed intent bullet'] },
+  },
+  {
+    name: 'release: a pending intent with an out-of-vocabulary impact is caught',
+    seed: (r) => append(r, 'pollen/pending.md', '\n- Impact: gigantic — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — fixture.\n'),
+    expect: { check: RELEASE, law: LAW2, contains: ['declares impact "gigantic"'] },
+  },
+  {
+    // The link resolves (a real ring file) so validate-map stays silent; the NUMBER in the link text
+    // (9999) has no ring — isolating validate-release's intent-ring-exists branch. A valid-grammar
+    // bullet DOES change the notes, so regenerate to keep validate-generated green.
+    name: 'release: a pending intent naming a nonexistent ring is caught',
+    seed: (r) => {
+      append(r, 'pollen/pending.md', '\n- Impact: minor — [ring 9999](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — fixture.\n');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['references ring 9999', 'does not exist'] },
+  },
+  {
+    // The version line must track history: a released version with POLLEN_VERSION left behind fails.
+    name: 'release: POLLEN_VERSION not tracking the latest release is caught',
+    seed: (r) => {
+      seedReleaseFile(r, '0.1.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW3, contains: ['POLLEN_VERSION is "0.0.0"', 'latest release is "0.1.0"'] },
+  },
+  {
+    // The migration tooth (ring 0026): a major (breaking) release must carry a migration. POLLEN moved
+    // to 1.0.0 so the version-tracking check passes and ONLY the tooth fires.
+    name: 'release: a major release with no migration is caught (the tooth)',
+    seed: (r) => {
+      seedReleaseFile(r, '1.0.0', { impact: 'major' });
+      setPollenVersion(r, '1.0.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['MAJOR', 'carries no migration'] },
+  },
+  {
+    // The tooth's other branch: a major names a migration file that does not exist.
+    name: 'release: a major release whose migration is missing is caught',
+    seed: (r) => {
+      seedReleaseFile(r, '1.0.0', { impact: 'major', migration: '[migration](../migrations/ghost.md)' });
+      setPollenVersion(r, '1.0.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['names a migration that does not exist'] },
+  },
+  {
+    // Release-file format: a present-but-invalid Date.
+    name: 'release: a release file with no valid date is caught',
+    seed: (r) => {
+      seedReleaseFile(r, '0.1.0', { date: 'Julyish' });
+      setPollenVersion(r, '0.1.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['no valid YYYY-MM-DD Date'] },
+  },
+  {
+    // Release-file format: a composing ring that does not exist (link resolves; number 9999 does not).
+    name: 'release: a release file composing a nonexistent ring is caught',
+    seed: (r) => {
+      seedReleaseFile(r, '0.1.0', { composed: '[ring 9999](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)' });
+      setPollenVersion(r, '0.1.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['composes ring 9999', 'does not exist'] },
+  },
+  {
+    // Release-file format: no composing rings at all — a release with no changelog.
+    name: 'release: a release file composing no rings is caught',
+    seed: (r) => {
+      seedReleaseFile(r, '0.1.0', { composed: null });
+      setPollenVersion(r, '0.1.0');
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: ['composes no rings'] },
+  },
 ];
 
 // --- runner ---
@@ -1471,6 +1604,184 @@ inTempCopy((root) => {
     'pollen: a lineage recording a non-null "owner/repo" parent (a descendant shape) passes',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- release / graft CLI (plan 0005 scope item 2, ring 0027): the cut-release step is git-aware and
+// --- side-effecting, so it lives OUT of run-all and its verification is its --dry-run, pinned here in
+// --- the three-binding shape (works / has teeth / side-effect-free) — the worktrees / feedback
+// --- precedent. The real cut is proven too (it bumps, clears, regenerates, and leaves run-all green —
+// --- the generate.ts fixpoint shape), and the append-only gate is proven with real git history.
+const runRelease = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/release.ts', args);
+const runReleaseGate = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/release-append-only.ts', args);
+function parseRelease(output: string): Record<string, unknown> | null {
+  const line = output.split('\n').reverse().find((l) => l.trim().startsWith('{'));
+  try {
+    return line ? (JSON.parse(line) as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Works + side-effect-free (one block): the pristine copy carries the two real pending intents, so a
+// dry-run composes v0.1.0 (minor, composing rings 0026 + 0027) — and writes NOTHING. The temp copy is
+// not a git repo, so non-mutation is proven concretely: no release file appears and the three files a
+// real cut would touch are byte-identical after.
+inTempCopy((root) => {
+  const pollenBefore = readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8');
+  const pendingBefore = readFileSync(join(root, 'pollen/pending.md'), 'utf8');
+  const notesBefore = readFileSync(join(root, 'docs/generated/pending-release.md'), 'utf8');
+  const { status, output } = runRelease(root, ['cut-release', '--date', '2026-07-15', '--dry-run', '--json']);
+  const p = parseRelease(output);
+  const noWrite =
+    !existsSync(join(root, 'pollen/releases/v0.1.0.md')) &&
+    readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8') === pollenBefore &&
+    readFileSync(join(root, 'pollen/pending.md'), 'utf8') === pendingBefore &&
+    readFileSync(join(root, 'docs/generated/pending-release.md'), 'utf8') === notesBefore;
+  report(
+    'release: cut-release --dry-run composes v0.1.0 (minor, rings 0026+0027) and writes nothing (works + side-effect-free)',
+    status === 0 &&
+      p?.ok === true &&
+      p?.dryRun === true &&
+      p?.version === '0.1.0' &&
+      p?.impact === 'minor' &&
+      JSON.stringify(p?.rings) === JSON.stringify(['0026', '0027']) &&
+      noWrite,
+    `expected v0.1.0 minor composing 0026+0027, nothing written; got exit ${status}, noWrite ${noWrite}:\n${output}`,
+  );
+});
+
+// Teeth: nothing to release. Clear the pending intents; cut-release refuses with a legible reason and
+// exit 1 — it cannot compose a release from no intent.
+inTempCopy((root) => {
+  writePending(root, []);
+  runNode(root, '.seed/checks/generate.ts'); // keep the notes consistent with the empty pending
+  const { status, output } = runRelease(root, ['cut-release', '--date', '2026-07-15', '--dry-run', '--json']);
+  const p = parseRelease(output);
+  report(
+    'release: cut-release with no pending intents refuses (teeth) — nothing to release',
+    status === 1 && p?.ok === false && typeof p?.reason === 'string' && (p.reason as string).includes('nothing to release'),
+    `expected exit 1 + "nothing to release", got exit ${status}:\n${output}`,
+  );
+});
+
+// Teeth: the migration-required tooth (ring 0026). A pending MAJOR intent cannot be cut without a
+// migration — cut-release refuses, naming the requirement.
+inTempCopy((root) => {
+  writePending(root, ['- Impact: major — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — a breaking fixture change.']);
+  runNode(root, '.seed/checks/generate.ts');
+  const { status, output } = runRelease(root, ['cut-release', '--date', '2026-07-15', '--dry-run', '--json']);
+  const p = parseRelease(output);
+  report(
+    'release: a major with no --migration refuses (teeth) — the migration-required tooth',
+    status === 1 && p?.ok === false && typeof p?.reason === 'string' && (p.reason as string).includes('MAJOR') && (p.reason as string).includes('migration'),
+    `expected exit 1 + a MAJOR/migration refusal, got exit ${status}:\n${output}`,
+  );
+});
+
+// The tooth's pass side: a major WITH an existing --migration composes (a v1.0.0 dry-run), so the
+// tooth is shown not to block a well-formed major — teeth that only ever say no prove nothing.
+inTempCopy((root) => {
+  writePending(root, ['- Impact: major — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — a breaking fixture change.']);
+  runNode(root, '.seed/checks/generate.ts');
+  write(root, 'pollen/migrations-fixture.md', '# Migration fixture\n\nHow to adopt the breaking change.\n');
+  const { status, output } = runRelease(root, ['cut-release', '--date', '2026-07-15', '--migration', 'pollen/migrations-fixture.md', '--dry-run', '--json']);
+  const p = parseRelease(output);
+  // The human dry-run prints the release file it would write; its migration link must be relative to
+  // the release file's OWN directory (../migrations-fixture.md), not doubly-dotted — a link that would
+  // dangle from pollen/releases/. Guards the render's link-depth against a regression.
+  const human = runRelease(root, ['cut-release', '--date', '2026-07-15', '--migration', 'pollen/migrations-fixture.md', '--dry-run']).output;
+  const linkOk = human.includes('[migration](../migrations-fixture.md)') && !human.includes('../../migrations-fixture.md');
+  report(
+    'release: a major WITH an existing --migration composes v1.0.0 with a correctly-rooted migration link (the tooth passes a well-formed major)',
+    status === 0 && p?.ok === true && p?.version === '1.0.0' && p?.impact === 'major' && typeof p?.migration === 'string' && linkOk,
+    `expected exit 0 + v1.0.0 major with a resolvable migration link, got exit ${status}, linkOk ${linkOk}:\n${output}\n---\n${human}`,
+  );
+});
+
+// The REAL cut (the generate.ts fixpoint shape): run cut-release for real in a temp copy and prove the
+// whole side-effecting path — the pollen version + lineage bump, the release file, the cleared pending,
+// the regenerated notes — is internally consistent, i.e. run-all is GREEN afterward. This is the only
+// test that runs a non-dry cut, so it must prove the writes happen AND leave a valid tree.
+inTempCopy((root) => {
+  const cut = runRelease(root, ['cut-release', '--date', '2026-07-15']);
+  const pollenTs = readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8');
+  const lineage = JSON.parse(readFileSync(join(root, 'pollen/lineage.json'), 'utf8'));
+  const pending = readFileSync(join(root, 'pollen/pending.md'), 'utf8');
+  const notes = readFileSync(join(root, 'docs/generated/pending-release.md'), 'utf8');
+  const releaseCut = existsSync(join(root, 'pollen/releases/v0.1.0.md'));
+  const after = runChecks(root);
+  report(
+    'release: a real cut bumps the pollen version + lineage, writes the release, clears pending, regenerates the notes, and leaves run-all green',
+    cut.status === 0 &&
+      releaseCut &&
+      pollenTs.includes("POLLEN_VERSION = '0.1.0'") &&
+      lineage.seedVersion === '0.1.0' &&
+      pending.includes('_No pending intents') &&
+      notes.includes('No pending intents') &&
+      after.status === 0 &&
+      after.output.includes('all checks passed'),
+    `expected a clean cut to v0.1.0 with run-all green; cut exit ${cut.status}, release ${releaseCut}, checks exit ${after.status}:\n${cut.output}\n---\n${after.output}`,
+  );
+});
+
+// The append-only gate (ring 0027, the ring-append-only shape): a cut release is a published fact, so
+// modifying or deleting one fails CI; appending a new one passes. Needs real git history, like the
+// ring-append-only cases below.
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'pollen/releases/v0.1.0.md', '# Pollen v0.1.0 — 2026-07-15\n\n- Impact: minor\n- Date: 2026-07-15\n- Composed: [ring 0026](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)\n- Migration: none\n');
+  gitCommitAll(root, 'base with a cut release');
+  edit(root, 'pollen/releases/v0.1.0.md', (c) => c + '\nA silent rewrite of a published release.\n');
+  gitCommitAll(root, 'tamper with a release');
+  const { status, output } = runReleaseGate(root, ['HEAD~1']);
+  const wanted = [`[${RELEASE_GATE}]`, `law: ${LAW2}`, 'modified'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'release gate: modifying a cut release fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  write(root, 'pollen/releases/v0.1.0.md', '# Pollen v0.1.0 — 2026-07-15\n\n- Impact: minor\n- Date: 2026-07-15\n- Composed: [ring 0026](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)\n- Migration: none\n');
+  gitCommitAll(root, 'base with a cut release');
+  rmSync(join(root, 'pollen/releases/v0.1.0.md'));
+  gitCommitAll(root, 'delete a release');
+  const { status, output } = runReleaseGate(root, ['HEAD~1']);
+  const wanted = [`[${RELEASE_GATE}]`, `law: ${LAW2}`, 'deleted'];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'release gate: deleting a cut release fails',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base, no releases');
+  write(root, 'pollen/releases/v0.1.0.md', '# Pollen v0.1.0 — 2026-07-15\n\n- Impact: minor\n- Date: 2026-07-15\n- Composed: [ring 0026](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)\n- Migration: none\n');
+  append(root, 'pollen/releases/README.md', '\n- [v0.1.0](v0.1.0.md) — 2026-07-15 — minor.\n');
+  gitCommitAll(root, 'cut v0.1.0 (append a new release + index line)');
+  const { status, output } = runReleaseGate(root, ['HEAD~1']);
+  report(
+    'release gate: appending a new release (and its index line) passes',
+    status === 0 && output.includes('append-only holds'),
+    `expected exit 0 + "append-only holds", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'only commit');
+  const { status, output } = runReleaseGate(root, ['0000000000000000000000000000000000000000']);
+  report(
+    'release gate: unresolvable base skips with an explicit note',
+    status === 0 && output.includes('gate skipped'),
+    `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
   );
 });
 

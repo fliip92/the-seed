@@ -165,6 +165,32 @@ item count.
   **complete** + the version lines + lineage well-formed — pinned by 10 self-test violation cases + a
   valid-descendant exit-0 case (LAW-6). `npm run check` (12 checks) + `npm test` (191 cases) green;
   `drift_count` 0. **Scope item 2 (the owned `.seed/` release/graft CLI) is now the live work.**
+- **2026-07-15** — **Scope item 2 landed (the owned `.seed/` release/graft CLI) — [E-015](../entropy-ledger.md)
+  paid.** The build **[ring 0027](../../rings/0027-release-graft-cli.md)** decides the concrete design
+  ring 0026 left open, mapping the [ring 0020](../../rings/0020-onboard-human-generated-briefing.md)
+  determinism split onto three artifacts: **committed intent** →
+  [pollen/pending.md](../../../pollen/pending.md) (one file, declared `- Impact: … — [ring NNNN](…) — …`
+  bullets); **pending-release notes** → the generated, byte-exact
+  [docs/generated/pending-release.md](../../generated/pending-release.md) (via `validate-generated`);
+  and the **append-only dated release history** → [pollen/releases/](../../../pollen/releases/README.md)
+  (one file per cut release, guarded by [release-append-only.ts](../../../.seed/checks/release-append-only.ts),
+  the ring-append-only shape). Built: the pure model [.seed/lib/release.ts](../../../.seed/lib/release.ts)
+  (the single source of truth read by the generator, the check, and the CLI — LAW-3) with the
+  version-bump-from-max-declared-impact and the migration-required-for-major tooth; the CLI
+  [.seed/checks/release.ts](../../../.seed/checks/release.ts) (`npm run release`) with verbs
+  `sense` / `cut-release` (the git-aware, side-effecting step, `--date` a recorded fact, out of
+  `run-all`, verified by its `--dry-run`) / `verify` / `feedback`, and `graft` / `uninstall` reserved
+  for scope item 3; and [validate-release.ts](../../../.seed/checks/validate-release.ts) (in `npm run
+  check`) proving the pure invariants (intents well-formed + ring-resolving, releases well-formed,
+  `POLLEN_VERSION` tracks the latest release, majors carry a migration). The two capabilities that have
+  landed (rings 0026, 0027) are declared as pending intents composing a first **v0.1.0**; the pollen
+  line rests at v0.0.0 (the first real cut is scope item 4). Verification (LAW-6): 18 new self-tests —
+  the 9 `validate-release` violation classes, the `cut-release --dry-run` in the three-binding shape
+  (works / has teeth: nothing-to-release + the migration tooth both ways / side-effect-free), a real
+  cut proven to bump + clear + regenerate and leave `run-all` green (the generate.ts fixpoint shape),
+  and the append-only gate (modify/delete fail, append passes, unresolvable base skips). `npm run check`
+  (12 checks) + `npm test` (209 cases) green; `drift_count` 0. **Scope item 3 (the installer + the
+  mandated uninstall path) is now the live work.**
 
 ## Next actions
 
@@ -179,14 +205,22 @@ item count.
    [lineage schema](../../../.seed/lib/lineage.ts) + the mother's root
    [lineage.json](../../../pollen/lineage.json), and [validate-pollen](../../../.seed/checks/validate-pollen.ts)
    landed with 11 self-test cases (LAW-6).
-3. **Scope item 2 — the owned `.seed/` release/graft CLI (the live work).** A thin orchestrator over
-   already-built skills (verbs `sense` / `graft` / `verify` / `feedback` / `uninstall`), self-carrying
-   inside pollen, implementing ring 0026's model: the determinism split (pure in-`run-all` pending
-   notes computed from committed intent, byte-exact gated; an append-only dated release history; the
-   git-aware side-effecting cut-release out of `run-all`, self-tested as a dry-run), the
-   version-bump-from-max-declared-impact, and the migration-required-for-major tooth. Verification: a
-   side-effect-free dry-run in the three-binding shape (works / has teeth / side-effect-free).
-4. **Then items 3–4** in scope order: the installer + the mandated uninstall path, and the recursive
-   self-upgrade test (fitness before/after as the exit proof). Clear the gating prerequisites
-   [E-004](../entropy-ledger.md) (name/trademark) and [E-013](../entropy-ledger.md) (inferential
-   control) within the stage before pollen ships.
+3. ✅ **Scope item 2 landed** (2026-07-15) — the owned `.seed/` release/graft CLI, decided in
+   [ring 0027](../../rings/0027-release-graft-cli.md) and paying off [E-015](../entropy-ledger.md): the
+   pure model ([.seed/lib/release.ts](../../../.seed/lib/release.ts)), the CLI
+   ([.seed/checks/release.ts](../../../.seed/checks/release.ts), verbs `sense`/`cut-release`/`verify`/`feedback`,
+   `graft`/`uninstall` reserved for item 3), the determinism split (byte-exact
+   [pending notes](../../generated/pending-release.md); append-only
+   [release history](../../../pollen/releases/README.md) + [its gate](../../../.seed/checks/release-append-only.ts);
+   dry-run-verified `cut-release`), the version-bump-from-max-declared-impact + the migration tooth, and
+   [validate-release](../../../.seed/checks/validate-release.ts) — with 18 self-tests (LAW-6).
+4. **Scope item 3 — the installer + the mandated uninstall path (the live work).** Install pollen into a
+   repo (the map, the plan structure, the first lints — the Stage 4 graft step, dry-run here) and prove
+   it reverses cleanly; this is where the CLI's reserved `graft` / `uninstall` verbs gain their
+   machinery. Verification: install-then-uninstall against a hermetic scratch repo leaves it
+   byte-identical (the worktrees hermetic-dry-run shape).
+5. **Then item 4** — the recursive self-upgrade test (**the seed is its own first host**): cut the first
+   real pollen release (**v0.1.0**, already composed as pending intents), upgrade the seed using its own
+   pollen, and install into a sacrificial test repo, with fitness measured before and after — the delta
+   is the exit proof. Clear the gating prerequisites [E-004](../entropy-ledger.md) (name/trademark) and
+   [E-013](../entropy-ledger.md) (inferential control) within the stage before pollen ships.

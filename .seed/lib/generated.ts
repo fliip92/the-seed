@@ -19,6 +19,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { REPO_ROOT, readRepoFile, extractLocalLinks } from './repo.ts';
+import { renderPendingNotes } from './release.ts';
 
 export interface GeneratedArtifact {
   /** Repo-relative path under docs/generated/ the generator writes. */
@@ -151,5 +152,17 @@ export const MANIFEST: GeneratedArtifact[] = [
     sources: ['AGENTS.md'],
     command: 'npm run generate',
     generate: (root) => generateOnboarding(root),
+  },
+  {
+    // The pending-release notes (ring 0027): what the next pollen release WOULD be, computed purely
+    // from the committed intents in pollen/pending.md + the pollen version + the release history — the
+    // ring-0020 determinism split's "pure pending notes, byte-exact-gated" half. The generator lives
+    // in the release model (.seed/lib/release.ts), the single source of truth read by the check and
+    // the CLI too. Its sources include pollen/pending.md; the generator reads the release history
+    // (pollen/releases/) directly, guarded there, so it need not be listed as an anchor.
+    artifact: 'docs/generated/pending-release.md',
+    sources: ['pollen/pending.md'],
+    command: 'npm run generate',
+    generate: (root) => renderPendingNotes(root),
   },
 ];

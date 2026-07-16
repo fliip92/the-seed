@@ -31,3 +31,26 @@ and *how it is versioned*, decided in the founding
 
 The boundary's completeness, the version lines, and the lineage are enforced by
 [validate-pollen](../.seed/checks/validate-pollen.ts) (LAW-6), part of `npm run check`.
+
+## The release mechanism (scope item 2)
+
+[Plan 0005](../docs/plans/active/0005-flowering.md) scope item 2 builds the owned release / graft
+CLI, decided in ring [0027](../docs/rings/0027-release-graft-cli.md) — a thin orchestrator
+([`.seed/checks/release.ts`](../.seed/checks/release.ts), `npm run release`) over the model in
+[`.seed/lib/release.ts`](../.seed/lib/release.ts). A release is composed from **committed intent** and
+recorded as **append-only history**, with the [ring 0020](../docs/rings/0020-onboard-human-generated-briefing.md)
+determinism split:
+
+- **[pending.md](pending.md)** — the committed intents: the unreleased portable-subtree changes, each
+  declaring its impact (major/minor/patch), the ring behind it, and a one-line summary. The next
+  version is a pure function of the max declared impact (ring 0026).
+- **[releases/](releases/README.md)** — the append-only, dated release history: one file per cut
+  release, enumerating the rings it composed (the decision log is the changelog). Enforced append-only
+  by [release-append-only.ts](../.seed/checks/release-append-only.ts).
+- **[pending-release notes](../docs/generated/pending-release.md)** — what the next release *would* be,
+  generated purely from `pending.md` and byte-exact-gated by `npm run check`.
+
+The pollen line rests at **v0.0.0**; the boundary (ring 0026) and this release tool (ring 0027) are
+declared as pending intents composing a first **v0.1.0**, cut by the recursive self-upgrade test
+(scope item 4). The pure invariants are [validate-release](../.seed/checks/validate-release.ts) (part
+of `npm run check`). `graft` and `uninstall` are reserved for the installer (scope item 3).
