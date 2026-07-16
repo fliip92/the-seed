@@ -78,7 +78,7 @@ holds only its README, and binds the moment an assessment lands.
 ## Assessments
 
 - [0001 — mottainapp](0001-mottainapp.md) — the first foreign-repo assessment, evidencing the
-  Stage 2 exit criterion (plan [0003](../plans/active/0003-growth.md), ring
+  Stage 2 exit criterion (plan [0003](../plans/completed/0003-growth.md), ring
   [0022](../rings/0022-assessment-organ-exit-criterion.md)): a read-only Scout of a real
   691-file / 792-commit product, its findings converted to the four products, its architecture
   left to a grill agenda rather than guessed.

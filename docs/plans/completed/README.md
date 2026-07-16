@@ -11,6 +11,13 @@ built, and the evidence trail behind every capability (LAW-6).
   (E-003), the doc-gardener drift detector, fitness v0 in CI, and cadence automation
   (E-008/E-010). Stage 1 exit criterion evidenced — the seed detects its own drift
   automatically.
+- [0003 — Growth (Stage 2)](0003-growth.md) — completed 2026-07-15. Grew the Stage 2 skill garden
+  — grill-the-gardener, repo-fitness, postmortem, parallel-worktrees, onboard-human, feedback
+  (rings 0015–0021) — each shipping its own verification (LAW-6). Stage 2 exit criterion evidenced:
+  [assessment 0001 — mottainapp](../../assessments/0001-mottainapp.md) (ring
+  [0022](../../rings/0022-assessment-organ-exit-criterion.md)), a read-only foreign-repo assessment
+  turned into an evidence-judgeable proposal, proven byte-identical before and after. Closed by the
+  Stage 2 → 3 transition (ring [0025](../../rings/0025-stage-3-transition-approved.md)).
 - [0004 — Intake: metabolizing external knowledge](0004-intake.md) — completed 2026-07-08. Grew the
   **intake** skill + the seed's first stated principle, **grounded-or-ask**, so the seed digests
   knowledge from the field (not only in-repo entropy) before Flowering: the network-free parse →

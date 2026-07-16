@@ -162,7 +162,7 @@ when intake's engine is proven.
 
 1. **Close plan 0004 and open the transition.** All buildable scope is landed (items 1–3); item 4
    (the inferential faithfulness judge, [E-013](../entropy-ledger.md)) is deferred by design — named,
-   not dropped. Mark this plan completed and return to [plan 0003](../active/0003-growth.md) Next
+   not dropped. Mark this plan completed and return to [plan 0003](../completed/0003-growth.md) Next
    actions item 9: propose the Stage 2 → 3 (Growth → Flowering) transition — approved by the Gardener, recorded as
    a ring (the ring [0009](../../rings/0009-stage-1-transition-approved.md) /
    [0014](../../rings/0014-stage-2-transition-approved.md) precedent) — now with intake in the garden.

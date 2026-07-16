@@ -173,7 +173,7 @@ item), and every session opens with the metabolism per the map.
   (which links this plan by its `active/` path and cannot be edited); that class was fixed
   first in [ring 0013](../../rings/0013-plan-links-resolve-across-active-completed.md) — plan
   links now resolve across `active/`⇄`completed/`. The Stage 1→2 (Rooting → Growth) transition
-  is proposed as [plan 0003](../active/0003-growth.md) for Gardener approval (SEED.md §4); on
+  is proposed as [plan 0003](../completed/0003-growth.md) for Gardener approval (SEED.md §4); on
   approval it is recorded as a ring (the ring 0009 pattern).
 
 ## Decision log
@@ -299,8 +299,8 @@ Plan complete — both original `Next actions` items are done:
 2. ✅ **Plan closed; transition proposed:** all five scope items are evidenced, the Stage 1
    exit criterion is met (doc-gardener scope item 3 + scheduled cadence scope item 5), Status
    is `completed 2026-07-05`, and the plan lives in `completed/`. The Stage 1→2 (Rooting →
-   Growth) transition is proposed as [plan 0003](../active/0003-growth.md) for Gardener
+   Growth) transition is proposed as [plan 0003](../completed/0003-growth.md) for Gardener
    approval (SEED.md §4); on approval it is recorded as a ring, following the
    [ring 0009](../../rings/0009-stage-1-transition-approved.md) pattern.
 
-Nothing further here — the successor work lives in [plan 0003](../active/0003-growth.md).
+Nothing further here — the successor work lives in [plan 0003](../completed/0003-growth.md).

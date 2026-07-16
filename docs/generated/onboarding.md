@@ -9,9 +9,8 @@ repository's own state, `npm run check` fails the moment this page drifts from t
 
 ## Where the Seed is now
 
-- **Stage:** 2 — Growth.
-- **Active plans — where it is going:**
-  - [Plan 0003 — Growth (Stage 2)](../plans/active/0003-growth.md) — Advance from Stage 1 (Rooting) to Stage 2 (Growth): grow the skill garden (SEED.md §4, Stage 2) — the skills that make the seed useful beyond maintaining itself — until it can assess a foreign repository without modifying it and produce a proposal its owners could judge on evidence (the Stage 2 exit criterion).
+- **Stage:** 3 — Flowering.
+- **Active plan — where it is going:**
   - [Plan 0005 — Flowering (Stage 3)](../plans/active/0005-flowering.md) — Advance from Stage 2 (Growth) to Stage 3 (Flowering, SEED.md §4): package the portable subset of the Seed — skills, scaffolding templates, protocols, an installer, and a mandated uninstall path — as versioned `pollen/`, then run the recursive test — **the seed is its own first host**: upgrade the seed using its own pollen — proving the transplant by installing pollen into a sacrificial test repo with fitness measured before and after. The delta is the proof (the Stage 3 exit criterion).
 
 ## How to get oriented

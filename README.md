@@ -83,7 +83,7 @@ The Seed is a **solo experiment** right now, by recorded decision (see the [deci
 
 - **Clone it and run the checks** (above) — see the invariants fire against a live repo, and `npm test` prove the testers work.
 - **Read the genome**, [SEED.md](SEED.md) — it is short, and it is the whole argument — then the map, [AGENTS.md](AGENTS.md).
-- **Follow the reasoning** — the [rings](docs/rings/README.md) are the append-only trail of every decision and why the alternatives were rejected; the [active plan](docs/plans/active/0003-growth.md) shows what it is building next.
+- **Follow the reasoning** — the [rings](docs/rings/README.md) are the append-only trail of every decision and why the alternatives were rejected; the [active plan](docs/plans/completed/0003-growth.md) shows what it is building next.
 - **Point the read-only instrument at your own project** — `npm run repo-fitness -- <path>` reads a foreign repo without touching it.
 - **Star / watch** [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed) and follow it toward Flowering.
 

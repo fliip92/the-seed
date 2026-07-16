@@ -986,9 +986,11 @@ const CASES: ViolationCase[] = [
   {
     // The teeth case: a SOURCE changed without regenerating. It proves the check re-derives from
     // source, not merely re-reads the artifact — editing the map's stage line changes the
-    // briefing's "Where the Seed is now" and nothing else a run-all check inspects.
+    // briefing's "Where the Seed is now" and nothing else a run-all check inspects. The stage line
+    // is matched by pattern (not a hardcoded stage value) so a stage transition never silently
+    // defangs this fixture — a stale literal would no-op the replace and the teeth would vanish.
     name: 'generated: a source changed without regenerating is caught (the check re-derives from source)',
-    seed: (r) => edit(r, 'AGENTS.md', (c) => c.replace('**Stage:** 2 — Growth', '**Stage:** 9 — Fixture')),
+    seed: (r) => edit(r, 'AGENTS.md', (c) => c.replace(/\*\*Stage:\*\* \d+ — \w+/, '**Stage:** 9 — Fixture')),
     expect: { check: GENERATED, law: LAW2, contains: ['does not match its regeneration', 'docs/generated/onboarding.md'] },
   },
   {

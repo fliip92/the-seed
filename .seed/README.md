@@ -109,7 +109,7 @@ single definition of what each metric means (LAW-3). Two thin CLIs call it:
   [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md)). It carries the hand-bumped
   `CURRENT_STAGE` (E-011).
 - [checks/repo-fitness.ts](checks/repo-fitness.ts) — the same engine pointed at **any**
-  repository (plan [0003](../docs/plans/active/0003-growth.md) scope item 2), the seed's
+  repository (plan [0003](../docs/plans/completed/0003-growth.md) scope item 2), the seed's
   read-only diagnostic instrument for hosts (SEED.md §4, Stage 2). It is **strictly
   read-only** — reads files and runs only read-only git subcommands against the target — and
   its non-mutation is proven by the self-tests (LAW-6).
@@ -136,7 +136,7 @@ emits `{ date, stage, metrics, notes }` (stage null, notes explaining each null)
 
 [checks/worktrees.ts](checks/worktrees.ts) owns the host-agnostic worktree lifecycle for the
 [parallel-worktrees](../skills/parallel-worktrees/SKILL.md) skill (plan
-[0003](../docs/plans/active/0003-growth.md) scope item 4, ring
+[0003](../docs/plans/completed/0003-growth.md) scope item 4, ring
 [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)): create N isolated
 worktrees, boot an instance per worktree through a `HostAdapter` contract (`boot` / `teardown`),
 tear them all down, and prove isolation + cleanup held. Host-specific boot mechanics (simulators,
@@ -155,7 +155,7 @@ checks }`.
 ## Feedback
 
 [checks/feedback.ts](checks/feedback.ts) owns the upstream-issue **composer** for the
-[feedback](../skills/feedback/SKILL.md) skill (plan [0003](../docs/plans/active/0003-growth.md)
+[feedback](../skills/feedback/SKILL.md) skill (plan [0003](../docs/plans/completed/0003-growth.md)
 scope item 6, ring [0021](../docs/rings/0021-feedback-composes-upstream-issue.md)): from any
 repository it composes a well-formed issue to send upstream against the mother seed (LAW-11;
 SEED.md §7) — a `[seed-feedback]` title and a fixed body (Lineage / Kind / What happened / Why this

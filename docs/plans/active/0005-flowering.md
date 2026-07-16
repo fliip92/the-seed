@@ -14,7 +14,7 @@ after. The delta is the proof (the Stage 3 exit criterion).
 This plan opened as a **transition proposal**: SEED.md §4 requires each stage transition to be
 proposed by the seed as an execution plan, approved by a Gardener, and recorded as a ring. It
 is a proposal until the Gardener approves it — no Stage 3 scope item starts and no transition
-ring is cut before approval, the arc [plan 0003](0003-growth.md) (Stage 1→2) and
+ring is cut before approval, the arc [plan 0003](../completed/0003-growth.md) (Stage 1→2) and
 [plan 0002](../completed/0002-rooting.md) (Stage 0→1) each followed via
 [ring 0014](../../rings/0014-stage-2-transition-approved.md) and
 [ring 0009](../../rings/0009-stage-1-transition-approved.md).
@@ -23,7 +23,7 @@ ring is cut before approval, the arc [plan 0003](0003-growth.md) (Stage 1→2) a
 
 Stage 2's exit criterion (SEED.md §4): *you can assess a foreign repository without modifying
 it and produce a proposal its owners could judge on evidence.* Met on both counts, evidenced in
-[plan 0003](0003-growth.md):
+[plan 0003](../completed/0003-growth.md):
 
 - **The skill garden grown.** All six Stage 2 skills are planted, each shipping its own
   verification (LAW-6): grill-the-gardener ([ring 0015](../../rings/0015-grill-the-gardener-architecture-doc.md)),
@@ -129,29 +129,39 @@ item count.
 ## Progress log
 
 - **2026-07-08** — Drafted at the close of [plan 0004](../completed/0004-intake.md) (intake
-  landed) and on [plan 0003](0003-growth.md)'s Next actions item 9, with both Stage 2 exit
+  landed) and on [plan 0003](../completed/0003-growth.md)'s Next actions item 9, with both Stage 2 exit
   conditions evidenced above. Proposed for Gardener approval of the Stage 2 → 3 (Growth →
   Flowering) transition (SEED.md §4). The parked release/upgrade design is formalized at this
   transition as [E-015](../entropy-ledger.md) — the "at/before the transition" step it called for
   (the E-004 precedent). Awaiting approval; on approval a transition ring is cut (the
   [ring 0014](../../rings/0014-stage-2-transition-approved.md) pattern), Stage 3 is entered, this
-  plan becomes governing, [plan 0003](0003-growth.md) completes and moves to `completed/`, and
+  plan becomes governing, [plan 0003](../completed/0003-growth.md) completes and moves to `completed/`, and
   AGENTS.md `Current state` + `fitness.ts` (`CURRENT_STAGE`) flip to Stage 3. `npm run check` +
   `npm test` green; `drift_count` 0.
+- **2026-07-15** — **Transition approved by the Gardener**; recorded as
+  [ring 0025](../../rings/0025-stage-3-transition-approved.md). **Stage 3 (Flowering) entered; this
+  plan is now governing.** Enacted: [plan 0003](../completed/0003-growth.md) set to `completed
+  2026-07-15` and `git mv`d to `completed/` (non-ring references repointed; the append-only rings
+  resolve through validate-map's active/⇄completed/ plan-link flex), AGENTS.md `Current state` +
+  `fitness.ts` (`CURRENT_STAGE`) flipped to Stage 3, and this plan's status held `active` as the
+  live plan. No scope item is built yet — **scope item 1 (pollen boundary + versioning + lineage)
+  is the live work**, and its first build decision is the release-process founding ring (E-015's
+  conversion path). `npm run check` + `npm test` green; `drift_count` 0.
 
 ## Next actions
 
-1. **Await Gardener approval** of the Stage 2 → 3 (Growth → Flowering) transition. This plan is a
-   proposal (SEED.md §4); nothing in Stage 3 scope starts and no transition ring is cut before
-   approval — the [ring 0009](../../rings/0009-stage-1-transition-approved.md) /
-   [0014](../../rings/0014-stage-2-transition-approved.md) precedent.
-2. **On approval:** cut the transition ring (next free number, the ring 0014 format), enter Stage
-   3, and make this the governing plan; complete [plan 0003](0003-growth.md) (Status →
-   `completed`, `git mv` to `completed/`, repoint links); flip AGENTS.md `Current state` and
-   `fitness.ts` `CURRENT_STAGE` to Stage 3 (honoring [E-011](../entropy-ledger.md) — the two must
-   agree). Then begin scope item 1 (pollen boundary + versioning + lineage), cutting the
-   release-process founding ring (E-015's conversion path) as the first build decision.
-3. **If the Gardener defers** (e.g. to land E-004's trademark clearance or build E-013's
-   inferential control first): record the deferral and the condition that clears it, and keep
-   Stage 2 as the governing stage until then. The genome forbids lingering past an exit criterion,
-   so a deferral must name its blocking prerequisite rather than simply wait.
+1. ✅ **Transition approved** (2026-07-15) — recorded as
+   [ring 0025](../../rings/0025-stage-3-transition-approved.md); Stage 3 entered, this plan
+   governing, [plan 0003](../completed/0003-growth.md) completed, AGENTS.md `Current state` +
+   `fitness.ts` flipped to Stage 3.
+2. **Scope item 1 — pollen boundary + versioning + lineage (the live work).** Cut the
+   release-process **founding ring** first (E-015's conversion path): decide the open forks — the
+   semver/migration trigger, improvement granularity (ring vs skill vs pollen-version), and the
+   framework/local ownership boundary. Then define the portable subset (which skills, scaffolding
+   templates, protocols) versus what is sovereign to the mother, the two version lines (genome vs
+   pollen), and the lineage metadata (seed version, parent, date planted; SEED.md §7), with a
+   structural check on manifest completeness and lineage well-formedness (LAW-6).
+3. **Then items 2–4** in scope order: the owned `.seed/` release/graft CLI, the installer + the
+   mandated uninstall path, and the recursive self-upgrade test (fitness before/after as the exit
+   proof). Clear the gating prerequisites [E-004](../entropy-ledger.md) (name/trademark) and
+   [E-013](../entropy-ledger.md) (inferential control) within the stage before pollen ships.

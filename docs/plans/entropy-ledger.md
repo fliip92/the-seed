@@ -171,7 +171,7 @@ ledger is also a record of digestion.
   match regeneration
 - Conversion path: invariant — build the manifest + check alongside the first generated
   artifact (Stage 1 closed with none; the directory stayed empty until Stage 2)
-- Paid: 2026-07-05 (plan [0003](active/0003-growth.md) scope item 5, onboard-human; ring
+- Paid: 2026-07-05 (plan [0003](completed/0003-growth.md) scope item 5, onboard-human; ring
   [0020](../rings/0020-onboard-human-generated-briefing.md)). The first generated artifact —
   [docs/generated/onboarding.md](../generated/onboarding.md), the onboard-human briefing —
   landed with its infrastructure: the generation manifest

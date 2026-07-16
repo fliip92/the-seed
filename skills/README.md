@@ -15,34 +15,34 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   Gardener until the target architecture fits one page, is expressible as lintable rules, and
   has an explicit human/agent ownership split, producing an
   [architecture doc](../docs/architecture/README.md) its verification enforces (Stage 2, plan
-  [0003](../docs/plans/active/0003-growth.md) scope item 1; ring
+  [0003](../docs/plans/completed/0003-growth.md) scope item 1; ring
   [0015](../docs/rings/0015-grill-the-gardener-architecture-doc.md)).
 - [repo-fitness](repo-fitness/SKILL.md) — read-only fitness assessment of *any* repository:
   the shared SEED.md §6 metric engine pointed at a target repo's root, degrading each metric
   to `null` with a stated reason where the target's anatomy does not define it, proven not to
   mutate the target. The seed's diagnostic instrument for hosts and the load-bearing organ of
   the Stage 2 exit criterion (Stage 2, plan
-  [0003](../docs/plans/active/0003-growth.md) scope item 2; ring
+  [0003](../docs/plans/completed/0003-growth.md) scope item 2; ring
   [0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)).
 - [postmortem](postmortem/SKILL.md) — a failure yields three artifacts, never one: the fix,
   the invariant that prevents recurrence (made enforceable, LAW-2), and the ring recording the
   decision trail. Produces a numbered [postmortem entry](../docs/postmortems/README.md) its
   verification binds to link all three (Stage 2, plan
-  [0003](../docs/plans/active/0003-growth.md) scope item 3; ring
+  [0003](../docs/plans/completed/0003-growth.md) scope item 3; ring
   [0017](../docs/rings/0017-postmortem-three-artifacts-linked.md)).
 - [parallel-worktrees](parallel-worktrees/SKILL.md) — decompose a large task across isolated git
   worktrees, one booted instance per worktree, torn down at task end. The genome ships the
   host-agnostic worktree lifecycle plus a host-adapter boot contract; host-specific boot
   mechanics live in adapters, not the genome (SEED.md §4). Verified by a hermetic dry-run that
   creates, isolates, boots, and tears down N worktrees and asserts isolation plus cleanup (Stage
-  2, plan [0003](../docs/plans/active/0003-growth.md) scope item 4; ring
+  2, plan [0003](../docs/plans/completed/0003-growth.md) scope item 4; ring
   [0019](../docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)).
 - [onboard-human](onboard-human/SKILL.md) — brief a new human, current state → goal, as
   conversation plus a generated artifact. The briefing
   ([docs/generated/onboarding.md](../docs/generated/onboarding.md)) is generated from the map
   and the active plan it links, not hand-written, so it cannot drift from the truth; it lands
   the generation manifest and the regeneration check that convert ledger E-001 (Stage 2, plan
-  [0003](../docs/plans/active/0003-growth.md) scope item 5; ring
+  [0003](../docs/plans/completed/0003-growth.md) scope item 5; ring
   [0020](../docs/rings/0020-onboard-human-generated-briefing.md)).
 - [feedback](feedback/SKILL.md) — open an issue upstream against the mother seed from any repository
   (LAW-11; SEED.md §7). The genome ships the composer — a well-formed upstream issue (title + a fixed
@@ -50,7 +50,7 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   descendant's recorded parent; it never posts, emitting the `gh issue create` command a human runs
   once the Gardener approves. A root seed with no parent is refused (feedback flows upstream).
   Verified by a side-effect-free dry-run that composes well-formed, has teeth, and mutates nothing
-  (Stage 2, plan [0003](../docs/plans/active/0003-growth.md) scope item 6; ring
+  (Stage 2, plan [0003](../docs/plans/completed/0003-growth.md) scope item 6; ring
   [0021](../docs/rings/0021-feedback-composes-upstream-issue.md)).
 - [intake](intake/SKILL.md) — metabolize external knowledge already saved in-repo (curated link
   lists, papers, write-ups) into the seed's four products, under **grounded-or-ask** (cite or ask,
