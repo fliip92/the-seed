@@ -26,11 +26,13 @@ const ASSESS = 'seed/validate-assessments';
 const PRINCIPLES = 'seed/validate-principles';
 const GENERATED = 'seed/validate-generated';
 const REFERENCES = 'seed/validate-references';
+const POLLEN = 'seed/validate-pollen';
 const GATE = 'seed/ring-append-only';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
 
 const LAW2 = "LAW-2 — legible and enforceable, or it doesn't exist";
+const LAW3 = 'LAW-3 — invariants over implementations';
 const LAW4 = 'LAW-4 — the map is the entry point';
 const LAW5 = 'LAW-5 — plans are first-class artifacts';
 const LAW8 = 'LAW-8 — entropy is paid continuously';
@@ -1098,6 +1100,77 @@ const CASES: ViolationCase[] = [
     },
     expect: { check: REFERENCES, law: LAW2, contains: ['discards a source entry with no stated reason'] },
   },
+  // --- pollen boundary (founding ring 0026, plan 0005 scope item 1). The completeness cases write an
+  // --- unclassified top-level entry (which also trips validate-map's reachability — harmless noise,
+  // --- the assertion only requires the pollen marker + message); the version/lineage cases mutate the
+  // --- manifest, SEED.md's genome line, or pollen/lineage.json in isolation. The valid pristine tree
+  // --- passing is covered by the pristine case; a descendant-shaped lineage passing runs as a
+  // --- standalone exit-0 block below.
+  {
+    // Completeness (c, the ownership boundary): a new top-level entry the manifest classifies in no
+    // tier fails — the Stage 3 boundary must stay total (LAW-3).
+    name: 'pollen: an unclassified top-level entry is caught',
+    seed: (r) => write(r, 'stray-top-level.md', '# Stray\n\nA new top-level entry nobody classified.\n'),
+    expect: { check: POLLEN, law: LAW3, contains: ['stray-top-level.md', 'classified by no pollen tier'] },
+  },
+  {
+    // The mirror: a manifest path with nothing behind it — a boundary pointing at nothing.
+    name: 'pollen: a manifest path absent from the tree is caught',
+    seed: (r) => edit(r, '.seed/lib/pollen.ts', (c) => c.replace("'.gitattributes',", "'.gitattributes',\n  'ghost-local-dir',")),
+    expect: { check: POLLEN, law: LAW3, contains: ['ghost-local-dir', 'absent from the tree'] },
+  },
+  {
+    // The pollen version line must be semver (X.Y.Z).
+    name: 'pollen: a non-semver pollen version is caught',
+    seed: (r) => edit(r, '.seed/lib/pollen.ts', (c) => c.replace("POLLEN_VERSION = '0.0.0'", "POLLEN_VERSION = '0.0'")),
+    expect: { check: POLLEN, law: LAW2, contains: ['the pollen version', 'is not semver'] },
+  },
+  {
+    // The manifest's genome copy must track SEED.md's declared genome version (the E-011 shape,
+    // checked). Drift SEED.md's line; the manifest no longer matches its source.
+    name: "pollen: the manifest's genome version drifting from SEED.md is caught",
+    seed: (r) => edit(r, 'SEED.md', (c) => c.replace('genome v0.1', 'genome v0.2')),
+    expect: { check: POLLEN, law: LAW2, contains: ['does not match', 'SEED.md'] },
+  },
+  {
+    // Lineage (SEED.md §7): a required field absent.
+    name: 'pollen: a lineage missing a required field is caught',
+    seed: (r) => write(r, 'pollen/lineage.json', JSON.stringify({ seedVersion: '0.0.0', genomeVersion: '0.1', parent: null, repo: 'the-seed' })),
+    expect: { check: POLLEN, law: LAW2, contains: ['missing planted'] },
+  },
+  {
+    // A present-but-malformed date, distinct from the missing-field branch.
+    name: 'pollen: a lineage with a malformed planted date is caught',
+    seed: (r) => write(r, 'pollen/lineage.json', JSON.stringify({ seedVersion: '0.0.0', genomeVersion: '0.1', parent: null, planted: 'July 3', repo: 'the-seed' })),
+    expect: { check: POLLEN, law: LAW2, contains: ['planted', 'YYYY-MM-DD'] },
+  },
+  {
+    // No-drift cross-check: the seed's recorded seedVersion must match the pollen version it carries.
+    name: 'pollen: a lineage seedVersion disagreeing with the manifest is caught',
+    seed: (r) => write(r, 'pollen/lineage.json', JSON.stringify({ seedVersion: '9.9.9', genomeVersion: '0.1', parent: null, planted: '2026-07-03', repo: 'the-seed' })),
+    expect: { check: POLLEN, law: LAW2, contains: ['9.9.9', 'disagrees with the manifest'] },
+  },
+  {
+    // A non-null parent that is not "owner/repo" (null/absent is the valid root case, exercised by the
+    // pristine tree).
+    name: 'pollen: a lineage parent that is not owner/repo is caught',
+    seed: (r) => write(r, 'pollen/lineage.json', JSON.stringify({ seedVersion: '0.0.0', genomeVersion: '0.1', parent: 'noslash', planted: '2026-07-03', repo: 'the-seed' })),
+    expect: { check: POLLEN, law: LAW2, contains: ['parent', 'owner/repo'] },
+  },
+  {
+    // Malformed JSON yields a legible violation, not a crash — and exercises the SHARED reader
+    // (lib/lineage.ts), the same throw feedback catches.
+    name: 'pollen: a malformed pollen/lineage.json yields a legible violation, not a crash',
+    seed: (r) => write(r, 'pollen/lineage.json', 'not json{'),
+    expect: { check: POLLEN, law: LAW2, contains: ['not valid JSON'] },
+  },
+  {
+    // Absence is a violation: every seed records its lineage (SEED.md §7). Removing it also dangles
+    // the pollen/README.md link (validate-map noise) — harmless; the assertion targets the pollen marker.
+    name: 'pollen: an absent lineage is caught',
+    seed: (r) => rmSync(join(r, 'pollen/lineage.json')),
+    expect: { check: POLLEN, law: LAW2, contains: ['records no lineage'] },
+  },
 ];
 
 // --- runner ---
@@ -1380,6 +1453,24 @@ inTempCopy((root) => {
     'generated: `npm run generate` runs, deterministically rewrites the artifact to the committed bytes, and leaves the tree green',
     gen.status === 0 && restored === committed && status === 0 && output.includes('all checks passed'),
     `expected generate exit 0 + artifact restored to committed bytes + run-all green; genStatus ${gen.status}, restored ${restored === committed}, checkExit ${status}:\n${gen.output}\n---\n${output}`,
+  );
+});
+
+// --- pollen boundary, the exit-0 side (ring 0026): the pristine copy already proves the mother's
+// --- ROOT lineage (parent null) passes. This pins the other valid shape — a DESCENDANT's lineage
+// --- recording a real "owner/repo" parent — so the parent-shape acceptance path is shown not to
+// --- false-fire on a well-formed non-root lineage.
+inTempCopy((root) => {
+  write(
+    root,
+    'pollen/lineage.json',
+    JSON.stringify({ seedVersion: '0.0.0', genomeVersion: '0.1', parent: 'fliip92/the-seed', planted: '2026-07-03', repo: 'the-seed' }, null, 2) + '\n',
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'pollen: a lineage recording a non-null "owner/repo" parent (a descendant shape) passes',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );
 });
 

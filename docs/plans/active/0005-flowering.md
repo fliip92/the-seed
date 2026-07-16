@@ -147,6 +147,24 @@ item count.
   live plan. No scope item is built yet — **scope item 1 (pollen boundary + versioning + lineage)
   is the live work**, and its first build decision is the release-process founding ring (E-015's
   conversion path). `npm run check` + `npm test` green; `drift_count` 0.
+- **2026-07-15** — **Scope item 1 landed (pollen boundary + versioning + lineage).** The
+  release-process **founding [ring 0026](../../rings/0026-pollen-boundary-versioning-lineage.md)**
+  decides [E-015](../entropy-ledger.md)'s three forks: **(a)** pollen is semver and the impact class
+  is *declared-and-checked* (not parsed from commit keywords — the seed's grammar is plan/ring refs),
+  major = breaking *forces a migration*, minor = feature, patch = fix; **(b)** improvement granularity
+  dissolves into three orthogonal axes — a *release* is a pollen version, a *learning* is a ring (the
+  decision log is the changelog), a *portable artifact* is a skill/template/protocol; **(c)** the
+  ownership boundary is three tiers — **sovereign** (the genome `SEED.md`), **portable** (the method:
+  `skills/` + `.seed/`), **local** (each seed's own history). Built: the
+  [pollen manifest](../../../.seed/lib/pollen.ts) (the boundary + the two version lines, genome `0.1`
+  vs pollen `0.0.0`, never conflated), the shared [lineage schema](../../../.seed/lib/lineage.ts)
+  (SEED.md §7 — now the single definition read by *both* the pollen check and the
+  [feedback](../../../skills/feedback/SKILL.md) composer, LAW-3, closing the E-011 shape by
+  construction), the mother's root [lineage.json](../../../pollen/lineage.json) (`parent` null), and
+  [validate-pollen](../../../.seed/checks/validate-pollen.ts) (in `npm run check`) proving the boundary
+  **complete** + the version lines + lineage well-formed — pinned by 10 self-test violation cases + a
+  valid-descendant exit-0 case (LAW-6). `npm run check` (12 checks) + `npm test` (191 cases) green;
+  `drift_count` 0. **Scope item 2 (the owned `.seed/` release/graft CLI) is now the live work.**
 
 ## Next actions
 
@@ -154,14 +172,21 @@ item count.
    [ring 0025](../../rings/0025-stage-3-transition-approved.md); Stage 3 entered, this plan
    governing, [plan 0003](../completed/0003-growth.md) completed, AGENTS.md `Current state` +
    `fitness.ts` flipped to Stage 3.
-2. **Scope item 1 — pollen boundary + versioning + lineage (the live work).** Cut the
-   release-process **founding ring** first (E-015's conversion path): decide the open forks — the
-   semver/migration trigger, improvement granularity (ring vs skill vs pollen-version), and the
-   framework/local ownership boundary. Then define the portable subset (which skills, scaffolding
-   templates, protocols) versus what is sovereign to the mother, the two version lines (genome vs
-   pollen), and the lineage metadata (seed version, parent, date planted; SEED.md §7), with a
-   structural check on manifest completeness and lineage well-formedness (LAW-6).
-3. **Then items 2–4** in scope order: the owned `.seed/` release/graft CLI, the installer + the
-   mandated uninstall path, and the recursive self-upgrade test (fitness before/after as the exit
-   proof). Clear the gating prerequisites [E-004](../entropy-ledger.md) (name/trademark) and
-   [E-013](../entropy-ledger.md) (inferential control) within the stage before pollen ships.
+2. ✅ **Scope item 1 landed** (2026-07-15) — the founding
+   [ring 0026](../../rings/0026-pollen-boundary-versioning-lineage.md) decided the three forks
+   (semver/migration model, the three orthogonal granularity axes, and the three ownership tiers);
+   the [pollen manifest](../../../.seed/lib/pollen.ts) (boundary + two version lines), the shared
+   [lineage schema](../../../.seed/lib/lineage.ts) + the mother's root
+   [lineage.json](../../../pollen/lineage.json), and [validate-pollen](../../../.seed/checks/validate-pollen.ts)
+   landed with 11 self-test cases (LAW-6).
+3. **Scope item 2 — the owned `.seed/` release/graft CLI (the live work).** A thin orchestrator over
+   already-built skills (verbs `sense` / `graft` / `verify` / `feedback` / `uninstall`), self-carrying
+   inside pollen, implementing ring 0026's model: the determinism split (pure in-`run-all` pending
+   notes computed from committed intent, byte-exact gated; an append-only dated release history; the
+   git-aware side-effecting cut-release out of `run-all`, self-tested as a dry-run), the
+   version-bump-from-max-declared-impact, and the migration-required-for-major tooth. Verification: a
+   side-effect-free dry-run in the three-binding shape (works / has teeth / side-effect-free).
+4. **Then items 3–4** in scope order: the installer + the mandated uninstall path, and the recursive
+   self-upgrade test (fitness before/after as the exit proof). Clear the gating prerequisites
+   [E-004](../entropy-ledger.md) (name/trademark) and [E-013](../entropy-ledger.md) (inferential
+   control) within the stage before pollen ships.

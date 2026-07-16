@@ -33,8 +33,9 @@
 // or no upstream to address — the message says which); 2 = a usage error. Like repo-fitness and
 // worktrees it is NOT a run-all.ts gate (it reads arbitrary targets and is not a per-commit
 // invariant of the seed's own tree); it is reached through the map, and its proof is the self-tests.
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
+import { LINEAGE_PATH, readLineage, type Lineage } from '../lib/lineage.ts';
 
 // The learning's class, and the proposed product — both named, closed vocabularies (the automerge
 // -class precedent): an out-of-vocabulary value is rejected, not silently accepted. CONVERSIONS are
@@ -46,7 +47,6 @@ type Kind = (typeof KINDS)[number];
 type Conversion = (typeof CONVERSIONS)[number];
 
 const TITLE_PREFIX = '[seed-feedback]';
-const LINEAGE_PATH = 'pollen/lineage.json'; // where a descendant records its lineage (SEED.md §7)
 
 // The learning: the sensed unit of entropy about the seed/method a descendant sends upstream.
 // Every field is required for a WELL-FORMED issue — the whole point of the verification.
@@ -56,14 +56,6 @@ export interface Learning {
   observation: string; // what happened
   generalizes: string; // why it belongs upstream, not in a local ring (the LAW-11 test)
   conversion: Conversion; // the proposed product (SEED.md §0)
-}
-
-// A descendant's lineage (SEED.md §7 triple). parent is the mother seed the issue is addressed to.
-export interface Lineage {
-  parent?: string; // "owner/repo" of the mother seed
-  seedVersion?: string;
-  planted?: string; // date planted (a recorded value — never a wall-clock read)
-  repo?: string; // this descendant's own name, if it records one
 }
 
 export interface ComposedIssue {
@@ -206,25 +198,6 @@ export function composeIssue(
 
 // --- reading the target repo. The ONLY side of the tool that touches the filesystem; strictly
 // --- read-only, so a compose never mutates the target (proven by the self-tests, repo-fitness style).
-
-/** Read the descendant's lineage from pollen/lineage.json, or null if absent. A present-but-malformed
- *  file throws a legible error (caught into a violation upstream) rather than crashing the run. */
-export function readLineage(root: string): Lineage | null {
-  const path = join(root, LINEAGE_PATH);
-  if (!existsSync(path)) return null;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(readFileSync(path, 'utf8'));
-  } catch {
-    throw new Error(`${LINEAGE_PATH} is present but is not valid JSON — fix it or remove it (SEED.md §7 lineage: seed version, parent, date planted).`);
-  }
-  if (parsed === null || typeof parsed !== 'object') {
-    throw new Error(`${LINEAGE_PATH} is present but is not a JSON object with { parent, seedVersion, planted }.`);
-  }
-  const o = parsed as Record<string, unknown>;
-  const str = (k: string): string | undefined => (typeof o[k] === 'string' ? (o[k] as string) : undefined);
-  return { parent: str('parent'), seedVersion: str('seedVersion'), planted: str('planted'), repo: str('repo') };
-}
 
 export function readContext(root: string, lineage: Lineage | null): RepoContext {
   return { repoName: orNone(lineage?.repo, basename(root)), isSeed: existsSync(join(root, 'SEED.md')) };

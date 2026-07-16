@@ -43,6 +43,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-principles.ts](checks/validate-principles.ts) | Principle format (SEED.md §2): the four fields, and an Enforcement clause naming a mechanism whose enforcer is linked and **exists** — so a principle is anchored taste, not a wish that inflates `enforcement_ratio` (ring 0023) | LAW-2 |
 | [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
 | [checks/validate-references.ts](checks/validate-references.ts) | The distilled-reference format (intake): a **Source** with a retrieval date + commit pin (for a pinnable repo), every claim cited, the `**Seed reading:**` grounded/inference split present — with quote-match + completeness teeth where the cited corpus is saved in-repo (plan 0004, ring 0024's pin-not-mirror) | LAW-2 |
+| [checks/validate-pollen.ts](checks/validate-pollen.ts) | The pollen boundary (ring 0026): the [manifest](lib/pollen.ts) classifies every top-level entry (portable / sovereign / local) so the Stage 3 boundary stays total, the two version lines (genome vs pollen) are well-formed, and the seed's [lineage](../pollen/lineage.json) (SEED.md §7) is present and well-formed | LAW-3, LAW-2 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -190,6 +191,35 @@ generator cannot run (e.g. a source it reads is gone). It is a `run-all.ts` gate
 because the generator is a pure function of the working tree (no git, no filesystem side effects)
 and a stale generated artifact is a correctness defect, not a trend.
 
+## Pollen boundary
+
+[lib/pollen.ts](lib/pollen.ts) is the **pollen manifest** (founding ring
+[0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md), plan
+[0005](../docs/plans/active/0005-flowering.md) scope item 1): the single source of truth (LAW-3)
+for the Stage 3 portable boundary. It classifies every top-level repo entry into one tier —
+**portable** (the method: `skills/` and `.seed/`, grafted into descendants and locally
+adaptable), **sovereign** (the genome `SEED.md`, amended only the mother's way), or **local**
+(the map, plans, rings, ledger, fitness a seed writes about itself — never portable). It also
+declares the two version lines the ring fixed, never conflated: `GENOME_VERSION` (the
+constitution's line, cross-checked against `SEED.md`) and `POLLEN_VERSION` (this distribution's
+line, semver). Being in `.seed/` it is itself portable, so a descendant carries the manifest and
+can define its own boundary and cut its own pollen (self-carrying, [E-015](../docs/plans/entropy-ledger.md)).
+
+[lib/lineage.ts](lib/lineage.ts) is the single definition of the lineage schema (SEED.md §7: seed
+version = the pollen version, parent, date planted). Both the pollen check (which validates the
+seed's own [pollen/lineage.json](../pollen/lineage.json)) and the
+[feedback](checks/feedback.ts) composer (which reads a target's lineage to address an issue
+upstream) import it, so the two organs cannot drift on what a lineage is (LAW-3, closing the
+E-011 shape by construction).
+
+[checks/validate-pollen.ts](checks/validate-pollen.ts) is the gate (in `run-all.ts`): the manifest
+is **complete** (every top-level entry classified — a new one that nobody classifies fails), the
+version lines are well-formed and the genome copy tracks `SEED.md`, and the lineage is present and
+well-formed. It is a `run-all.ts` gate rather than an advisory because it is a pure function of the
+working tree and an incomplete boundary is a correctness defect, not a trend (the
+[validate-generated](checks/validate-generated.ts) shape). The release/graft CLI, the migration
+machinery, and the append-only dated release history are plan 0005 scope item 2 (E-015).
+
 ## Self-tests
 
 [tests/self-test.ts](tests/self-test.ts) (`npm test`) verifies the verifiers (converted
@@ -241,8 +271,14 @@ it works (a descendant composes a well-formed upstream issue with the exact orde
 green, and deterministically), its validation has teeth (a missing field, an unknown kind, an unknown
 conversion, a malformed lineage file, and a root seed with no parent each exit 1 with a legible
 message), and it is side-effect-free (composing leaves the target byte-identical and posts nothing —
-the `gh` command emitted as text). Fixture numbers are derived from
-the repository's current maxima, so cutting
+the `gh` command emitted as text). The pollen boundary check (ring
+[0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md)) is pinned the same way — the
+pristine tree's complete boundary + root lineage passes, a descendant-shaped lineage (a non-null
+`owner/repo` parent) also passes, and an unclassified top-level entry, a manifest path absent from
+the tree, a non-semver pollen version, the manifest's genome copy drifting from SEED.md, a lineage
+missing a field, a malformed planted date, a seedVersion disagreeing with the manifest, a parent that
+is not `owner/repo`, a malformed lineage JSON, and an absent lineage each fire. Fixture numbers are
+derived from the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.
 

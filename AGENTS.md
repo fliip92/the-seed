@@ -27,10 +27,15 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   (transition approved 2026-07-15, ring
   [0025](docs/rings/0025-stage-3-transition-approved.md)). The governing plan is
   [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope
-  item 1 (pollen boundary + versioning + lineage) is the live work**, and its first build decision
-  is the **release-process founding ring** — the conversion path of
-  [E-015](docs/plans/entropy-ledger.md), which prices the release/upgrade mechanism designed with
-  the Gardener. Stage 3 packages the portable subset — skills, scaffolding templates, protocols, an
+  item 2 (the owned `.seed/` release/graft CLI) is the live work**. Scope item 1 (pollen boundary +
+  versioning + lineage) landed 2026-07-15 in the founding
+  [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided
+  [E-015](docs/plans/entropy-ledger.md)'s three forks — the semver + migration model, the three
+  orthogonal granularity axes (release = pollen version, learning = ring, artifact = skill), and the
+  three ownership tiers (sovereign genome / portable method / local history) — and shipped the
+  [pollen manifest](.seed/lib/pollen.ts) (the boundary + the two version lines) with
+  [validate-pollen](.seed/checks/validate-pollen.ts); the release CLI is E-015's remaining conversion
+  path. Stage 3 packages the portable subset — skills, scaffolding templates, protocols, an
   installer, and a mandated uninstall path — as versioned [`pollen/`](pollen/README.md), then runs
   the recursive test (**the seed is its own first host**: upgrade the seed using its own pollen),
   proving the transplant by installing pollen into a sacrificial test repo with fitness measured
