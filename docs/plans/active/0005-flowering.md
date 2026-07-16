@@ -191,6 +191,31 @@ item count.
   and the append-only gate (modify/delete fail, append passes, unresolvable base skips). `npm run check`
   (12 checks) + `npm test` (209 cases) green; `drift_count` 0. **Scope item 3 (the installer + the
   mandated uninstall path) is now the live work.**
+- **2026-07-15** — **Scope item 3 landed (the installer + the mandated uninstall path).** The build
+  **[ring 0028](../../rings/0028-installer-uninstall.md)** decides the graft as the SEED.md §4
+  Stage-4-step-4 **beachhead** — *the map, the plan structure, and the first lints; no behavior changes
+  yet* — and the uninstall as its byte-exact inverse. Built: the graft model
+  [.seed/lib/graft.ts](../../../.seed/lib/graft.ts) — the single source of truth (LAW-3) for what graft
+  **lays down** and uninstall **takes back**, so the round-trip is byte-identical: the running seed
+  **copies** its portable method (`.seed/`, `skills/`) + sovereign genome (`SEED.md`) verbatim and
+  **emits** the local scaffold (map, plans, rings, release data, lineage, plumbing) as parameterized
+  templates carried as strings — invisible to the mother's own `.md`-only
+  [validate-map](../../../.seed/checks/validate-map.ts) / [doc-drift](../../../.seed/checks/doc-drift.ts)
+  that a `.md` template would trip. Graft is **purely additive** (refuses to overwrite, LAW-2) — the
+  invariant that makes uninstall a clean inverse (remove exactly the graft set + prune emptied dirs →
+  byte-identical). The release CLI's reserved `graft` / `uninstall` verbs
+  ([.seed/checks/release.ts](../../../.seed/checks/release.ts)) gained their machinery —
+  `graft <target> --planted YYYY-MM-DD [--parent] [--repo] [--dry-run]` and `uninstall <target>
+  [--dry-run]`, side-effecting so **out of `run-all`** (the cut-release/worktrees precedent), `--planted`
+  a recorded fact (ring 0020). Verification (LAW-6): 3 self-tests in the worktrees three-binding shape —
+  **works + teeth + byte-identical** (graft into a hermetic empty repo lands the method + scaffold, the
+  target's **own copied** `release.ts sense` runs against the grafted data, uninstall restores it
+  byte-identical, and the round-trip proves graft **changed** the tree while uninstall **reversed** it),
+  **refuse-to-clobber** (a pre-existing target path → exit 1, host file untouched, nothing installed),
+  and **`--dry-run` side-effect-free**. The installer (ring 0028) is declared a third pending intent
+  composing **v0.1.0** (still minor). `npm run check` (12 checks) + `npm test` (212 cases) green;
+  `drift_count` 0. **Scope item 4 (the recursive self-upgrade test — the seed is its own first host) is
+  now the live work.**
 
 ## Next actions
 
@@ -214,13 +239,18 @@ item count.
    [release history](../../../pollen/releases/README.md) + [its gate](../../../.seed/checks/release-append-only.ts);
    dry-run-verified `cut-release`), the version-bump-from-max-declared-impact + the migration tooth, and
    [validate-release](../../../.seed/checks/validate-release.ts) — with 18 self-tests (LAW-6).
-4. **Scope item 3 — the installer + the mandated uninstall path (the live work).** Install pollen into a
-   repo (the map, the plan structure, the first lints — the Stage 4 graft step, dry-run here) and prove
-   it reverses cleanly; this is where the CLI's reserved `graft` / `uninstall` verbs gain their
-   machinery. Verification: install-then-uninstall against a hermetic scratch repo leaves it
-   byte-identical (the worktrees hermetic-dry-run shape).
-5. **Then item 4** — the recursive self-upgrade test (**the seed is its own first host**): cut the first
-   real pollen release (**v0.1.0**, already composed as pending intents), upgrade the seed using its own
-   pollen, and install into a sacrificial test repo, with fitness measured before and after — the delta
-   is the exit proof. Clear the gating prerequisites [E-004](../entropy-ledger.md) (name/trademark) and
-   [E-013](../entropy-ledger.md) (inferential control) within the stage before pollen ships.
+4. ✅ **Scope item 3 landed** (2026-07-15) — the installer + the mandated uninstall path, decided in
+   [ring 0028](../../rings/0028-installer-uninstall.md): the graft model
+   ([.seed/lib/graft.ts](../../../.seed/lib/graft.ts)) — copy the portable method + sovereign genome,
+   emit the local scaffold as parameterized templates, purely additive (refuse-to-clobber) so uninstall
+   reverses byte-identical — and the release CLI's now-live `graft` / `uninstall` verbs
+   ([.seed/checks/release.ts](../../../.seed/checks/release.ts)), pinned by 3 self-tests in the worktrees
+   hermetic round-trip shape (works + teeth + byte-identical, refuse-to-clobber, `--dry-run`
+   side-effect-free).
+5. **Scope item 4 — the recursive self-upgrade test (the live work): the seed is its own first host.**
+   Cut the first real pollen release (**v0.1.0**, already composed as the pending intents of rings 0026,
+   0027, 0028), upgrade the seed using its own pollen, and graft into a sacrificial test repo, with
+   [repo-fitness](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md) measured before and
+   after each — the delta is the exit proof (SEED.md §4). Clear the gating prerequisites
+   [E-004](../entropy-ledger.md) (name/trademark) and [E-013](../entropy-ledger.md) (inferential control)
+   within the stage before pollen ships.

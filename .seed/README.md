@@ -254,9 +254,11 @@ orchestrator over the already-built organs, with the verbs plan 0005 scope item 
   [worktrees](checks/worktrees.ts) / [feedback](checks/feedback.ts) precedent).
 - `verify [<repo>]` — delegates to the target seed's own `run-all.ts` (prove a grafted seed holds its
   invariants). `feedback ...` — delegates to the [feedback composer](checks/feedback.ts).
-- `graft` / `uninstall` — **reserved**: the install + mandated-uninstall machinery is plan 0005 scope
-  item 3 (the installer). The surface is named here; the capability lands there. It declares, it does
-  not fake (LAW-2).
+- `graft <target> --planted YYYY-MM-DD [--parent owner/repo] [--repo owner/repo] [--dry-run]` — install
+  this seed's portable subset into `<target>` (plan 0005 scope item 3, ring
+  [0028](../docs/rings/0028-installer-uninstall.md)). `uninstall <target> [--dry-run]` — reverse a graft,
+  byte-identical. Both are side-effecting on a target tree, so — like `cut-release` — they live out of
+  `run-all`; the model is [lib/graft.ts](lib/graft.ts) (below).
 
 The [ring 0020](../docs/rings/0020-onboard-human-generated-briefing.md) determinism split maps onto
 three artifacts, each with its own enforcement: the pending **notes**
@@ -265,8 +267,21 @@ three artifacts, each with its own enforcement: the pending **notes**
 ([`pollen/releases/`](../pollen/releases/README.md)) is append-only + dated
 ([release-append-only.ts](checks/release-append-only.ts)); and the **cut** is the side-effecting step,
 out of `run-all.ts`, self-tested as a dry-run. The pure invariants tying them together are
-[validate-release.ts](checks/validate-release.ts) (in `run-all.ts`). The installer, the mandated
-uninstall path, and the recursive self-upgrade test are plan 0005 scope items 3–4.
+[validate-release.ts](checks/validate-release.ts) (in `run-all.ts`). The recursive self-upgrade test
+(**the seed is its own first host**) is plan 0005 scope item 4.
+
+[lib/graft.ts](lib/graft.ts) is the **graft model** — the single source of truth (LAW-3) for what the
+installer lays down and what the uninstaller takes back, so the round-trip is byte-identical (plan 0005
+scope item 3, ring [0028](../docs/rings/0028-installer-uninstall.md)). A graft is the SEED.md §4 Stage-4
+step-4 beachhead ("the map, the plan structure, and the first lints — no behavior changes yet"): the
+running seed installs its own portable subset into a target, **copying** the portable method (`.seed/`,
+`skills/`) + the sovereign genome (`SEED.md`) verbatim and **emitting** the local scaffold (the map, the
+plan structure, the decision log, the release data, the lineage, and the minimal plumbing) as
+parameterized templates carried as strings here — invisible to the mother's own `.md`-only
+validate-map/doc-drift. Graft is **purely additive** — it refuses to overwrite any existing target path
+(LAW-2) — which is what makes `uninstall` a clean inverse: it removes exactly the graft set and prunes
+the directories it emptied, restoring the target byte-identical. Being side-effecting the verbs stay out
+of `run-all.ts`; their verification is a hermetic round-trip pinned by the self-tests (below).
 
 ## Self-tests
 
@@ -325,7 +340,12 @@ pristine tree's complete boundary + root lineage passes, a descendant-shaped lin
 `owner/repo` parent) also passes, and an unclassified top-level entry, a manifest path absent from
 the tree, a non-semver pollen version, the manifest's genome copy drifting from SEED.md, a lineage
 missing a field, a malformed planted date, a seedVersion disagreeing with the manifest, a parent that
-is not `owner/repo`, a malformed lineage JSON, and an absent lineage each fire. Fixture numbers are
+is not `owner/repo`, a malformed lineage JSON, and an absent lineage each fire. The installer (ring
+[0028](../docs/rings/0028-installer-uninstall.md)) is pinned in the worktrees three-binding shape — a
+graft from the seed copy into a hermetic empty repo lands the method + scaffold and the target's own
+`release.ts sense` runs, then `uninstall` restores it byte-identical (the round-trip proves graft
+changed the tree and uninstall reversed it); graft refuses to clobber an existing target path (exit 1,
+host file untouched, nothing installed); and `--dry-run` writes nothing. Fixture numbers are
 derived from the repository's current maxima, so cutting
 the next real ring/plan/ledger entry cannot invalidate a seeded gap. Any change to a
 validator that stops a class from firing fails CI.

@@ -1623,10 +1623,10 @@ function parseRelease(output: string): Record<string, unknown> | null {
   }
 }
 
-// Works + side-effect-free (one block): the pristine copy carries the two real pending intents, so a
-// dry-run composes v0.1.0 (minor, composing rings 0026 + 0027) — and writes NOTHING. The temp copy is
-// not a git repo, so non-mutation is proven concretely: no release file appears and the three files a
-// real cut would touch are byte-identical after.
+// Works + side-effect-free (one block): the pristine copy carries the three real pending intents, so a
+// dry-run composes v0.1.0 (minor, composing rings 0026 + 0027 + 0028) — and writes NOTHING. The temp
+// copy is not a git repo, so non-mutation is proven concretely: no release file appears and the three
+// files a real cut would touch are byte-identical after.
 inTempCopy((root) => {
   const pollenBefore = readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8');
   const pendingBefore = readFileSync(join(root, 'pollen/pending.md'), 'utf8');
@@ -1639,15 +1639,15 @@ inTempCopy((root) => {
     readFileSync(join(root, 'pollen/pending.md'), 'utf8') === pendingBefore &&
     readFileSync(join(root, 'docs/generated/pending-release.md'), 'utf8') === notesBefore;
   report(
-    'release: cut-release --dry-run composes v0.1.0 (minor, rings 0026+0027) and writes nothing (works + side-effect-free)',
+    'release: cut-release --dry-run composes v0.1.0 (minor, rings 0026+0027+0028) and writes nothing (works + side-effect-free)',
     status === 0 &&
       p?.ok === true &&
       p?.dryRun === true &&
       p?.version === '0.1.0' &&
       p?.impact === 'minor' &&
-      JSON.stringify(p?.rings) === JSON.stringify(['0026', '0027']) &&
+      JSON.stringify(p?.rings) === JSON.stringify(['0026', '0027', '0028']) &&
       noWrite,
-    `expected v0.1.0 minor composing 0026+0027, nothing written; got exit ${status}, noWrite ${noWrite}:\n${output}`,
+    `expected v0.1.0 minor composing 0026+0027+0028, nothing written; got exit ${status}, noWrite ${noWrite}:\n${output}`,
   );
 });
 
@@ -1783,6 +1783,111 @@ inTempCopy((root) => {
     status === 0 && output.includes('gate skipped'),
     `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
   );
+});
+
+// --- graft / uninstall (plan 0005 scope item 3, ring 0028): the installer + the mandated uninstall
+// --- path. Side-effecting on a target tree, so — like cut-release and the worktrees lifecycle — they
+// --- live OUT of run-all and their verification is a hermetic round-trip pinned here in the worktrees
+// --- three-binding shape (works / has teeth / side-effect-free). The source is the temp copy (a seed
+// --- grafts its OWN portable subset); the target is a fresh empty repo the case creates and owns.
+
+// A hermetic, empty scratch git repo the case owns and removes — the graft target. treeHash skips .git,
+// so its baseline is the empty tree, and a byte-identical uninstall returns it there.
+function withEmptyRepo(fn: (dir: string) => void): void {
+  const dir = mkdtempSync(join(tmpdir(), 'seed-graft-target-'));
+  try {
+    git(dir, 'init', '--quiet');
+    fn(dir);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// Works + teeth + the exit proof, in one round-trip: a graft from the seed copy into an empty repo lands
+// the method (the copied .seed/ + skills/ + SEED.md) and the local scaffold, records the lineage, and
+// the target's OWN copied CLI runs (`release.ts sense` reports v0.0.0 against the grafted data —
+// self-carrying, E-015); then uninstall restores the target byte-identical. The teeth are the CONTRAST:
+// graft must CHANGE the tree (a no-op graft fails `before !== afterGraft`) and uninstall must RESTORE it
+// (a no-op uninstall fails `before === afterUninstall`) — neither side can pass vacuously.
+inTempCopy((root) => {
+  withEmptyRepo((target) => {
+    const before = treeHash(target);
+    const g = runRelease(root, ['graft', target, '--planted', '2026-07-15', '--parent', 'fliip92/the-seed', '--json']);
+    const gp = parseRelease(g.output);
+    const afterGraft = treeHash(target);
+    const landed = ['.seed/checks/run-all.ts', 'skills/README.md', 'SEED.md', 'AGENTS.md', 'docs/plans/README.md', 'pollen/lineage.json']
+      .every((p) => existsSync(join(target, p)));
+    let lineageOk = false;
+    try {
+      const l = JSON.parse(readFileSync(join(target, 'pollen/lineage.json'), 'utf8'));
+      lineageOk = l.parent === 'fliip92/the-seed' && l.seedVersion === '0.0.0' && l.planted === '2026-07-15';
+    } catch {
+      /* lineageOk stays false */
+    }
+    // The target's own copied CLI runs against the grafted pollen data — the method is installed AND works.
+    const sense = runNodeIn(target, join(target, '.seed/checks/release.ts'), ['sense', target, '--json']);
+    const sp = parseRelease(sense.output);
+    const senseRuns = sense.status === 0 && sp?.version === '0.0.0' && sp?.pending === null;
+    const u = runRelease(root, ['uninstall', target, '--json']);
+    const up = parseRelease(u.output);
+    const afterUninstall = treeHash(target);
+    report(
+      "graft: installs the method + scaffold (the target's own release.ts sense runs), then uninstall restores it byte-identical (works + teeth: graft changed the tree, uninstall reversed it)",
+      g.status === 0 &&
+        gp?.ok === true &&
+        landed &&
+        lineageOk &&
+        senseRuns &&
+        before !== afterGraft &&
+        u.status === 0 &&
+        up?.ok === true &&
+        before === afterUninstall,
+      `expected graft to land+run and uninstall to restore byte-identical; graft ${g.status}/${gp?.ok} landed ${landed} ` +
+        `lineage ${lineageOk} sense ${senseRuns} changed ${before !== afterGraft} uninstall ${u.status}/${up?.ok} ` +
+        `restored ${before === afterUninstall}\n${g.output}\n---\n${sense.output}\n---\n${u.output}`,
+    );
+  });
+});
+
+// Teeth (refuse to clobber): a pre-existing target file at a graft path makes graft refuse with exit 1,
+// naming the conflict — and the host's file is left byte-for-byte untouched, with nothing installed
+// (purely additive, LAW-2). A graft that could overwrite would make the byte-identical-uninstall
+// guarantee a lie, and a partial install would leave the target neither grafted nor clean.
+inTempCopy((root) => {
+  withEmptyRepo((target) => {
+    write(target, 'AGENTS.md', "the host's own map — do not touch\n");
+    const before = readFileSync(join(target, 'AGENTS.md'), 'utf8');
+    const { status, output } = runRelease(root, ['graft', target, '--planted', '2026-07-15', '--json']);
+    const p = parseRelease(output);
+    const untouched = readFileSync(join(target, 'AGENTS.md'), 'utf8') === before;
+    const noSeedInstalled = !existsSync(join(target, '.seed'));
+    report(
+      'graft: refuses to clobber an existing target path (exit 1, names the conflict, host file untouched, nothing installed) — the additive guarantee has teeth',
+      status === 1 &&
+        p?.ok === false &&
+        Array.isArray(p?.conflicts) &&
+        (p.conflicts as string[]).includes('AGENTS.md') &&
+        untouched &&
+        noSeedInstalled,
+      `expected exit 1 + ok:false + AGENTS.md in conflicts + host file untouched + nothing installed; got exit ${status}, untouched ${untouched}, noSeed ${noSeedInstalled}\n${output}`,
+    );
+  });
+});
+
+// Side-effect-free preview: graft --dry-run computes the plan and writes NOTHING — the target tree hash
+// is unchanged (the cut-release / worktrees dry-run precedent).
+inTempCopy((root) => {
+  withEmptyRepo((target) => {
+    const before = treeHash(target);
+    const { status, output } = runRelease(root, ['graft', target, '--planted', '2026-07-15', '--dry-run', '--json']);
+    const p = parseRelease(output);
+    const after = treeHash(target);
+    report(
+      'graft: --dry-run composes the plan and writes nothing (side-effect-free — the target is byte-identical after)',
+      status === 0 && p?.ok === true && p?.dryRun === true && before === after,
+      `expected exit 0 + ok:true + dryRun:true + unchanged tree, got exit ${status}, unchanged ${before === after}\n${output}`,
+    );
+  });
 });
 
 // --- ring append-only gate (E-005): needs real git history, so these cases init a

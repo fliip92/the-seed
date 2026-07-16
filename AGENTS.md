@@ -26,22 +26,30 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 - **Correct first action for a fresh agent right now:** Stage 3 (Flowering) is underway
   (transition approved 2026-07-15, ring
   [0025](docs/rings/0025-stage-3-transition-approved.md)). The governing plan is
-  [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope
-  item 3 (the installer + the mandated uninstall path) is the live work**. Scope item 2 (the owned
+  [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope item 4
+  (the recursive self-upgrade test — the seed is its own first host) is the live work**. Scope item 3
+  (the installer + the mandated uninstall path) landed 2026-07-15 in
+  [ring 0028](docs/rings/0028-installer-uninstall.md): the graft model
+  ([.seed/lib/graft.ts](.seed/lib/graft.ts)) — the running seed copies its portable method + sovereign
+  genome verbatim and emits the local scaffold (map, plans, rings, lineage, plumbing) as parameterized
+  templates, purely additive (refuse-to-clobber) so `uninstall` reverses byte-identical — plus the
+  release CLI's now-live `graft` / `uninstall` verbs, pinned by 3 self-tests in the worktrees hermetic
+  round-trip shape (works + teeth + byte-identical, refuse-to-clobber, `--dry-run` side-effect-free).
+  Scope item 2 (the owned
   `.seed/` release/graft CLI) landed 2026-07-15 in [ring 0027](docs/rings/0027-release-graft-cli.md),
   **paying off [E-015](docs/plans/entropy-ledger.md)**: the release model
   ([.seed/lib/release.ts](.seed/lib/release.ts)) and CLI
   ([.seed/checks/release.ts](.seed/checks/release.ts), `npm run release` — verbs
-  `sense`/`cut-release`/`verify`/`feedback`, with `graft`/`uninstall` reserved for scope item 3), the
+  `sense`/`cut-release`/`verify`/`feedback`, with `graft`/`uninstall` landing in scope item 3), the
   ring-0020 determinism split (pure byte-exact
   [pending-release notes](docs/generated/pending-release.md); the append-only dated
   [release history](pollen/releases/README.md) with its
   [gate](.seed/checks/release-append-only.ts); the side-effecting `cut-release`, dry-run-verified),
   the version-bump-from-max-declared-impact and the migration-required-for-major tooth, all pinned by
   [validate-release](.seed/checks/validate-release.ts) + the self-tests. The pollen line rests at
-  v0.0.0 with the boundary (ring 0026) and the release tool (ring 0027) declared as
-  [pending intents](pollen/pending.md) composing a first v0.1.0, cut by the recursive test (scope
-  item 4). Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
+  v0.0.0 with the boundary (ring 0026), the release tool (ring 0027), and the installer (ring 0028)
+  declared as [pending intents](pollen/pending.md) composing a first v0.1.0, cut by the recursive test
+  (scope item 4). Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
   [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided E-015's three
   forks — the semver + migration model, the three
   orthogonal granularity axes (release = pollen version, learning = ring, artifact = skill), and the

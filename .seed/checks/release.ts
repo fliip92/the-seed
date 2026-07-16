@@ -14,9 +14,13 @@
 //   verify [<repo>]                prove a (grafted) seed holds its invariants — delegates to its own
 //                                  run-all.ts.
 //   feedback ...                   compose an upstream issue — delegates to the feedback composer.
-//   graft | uninstall              RESERVED — the install / mandated-uninstall machinery is plan 0005
-//                                  scope item 3; the surface is named here (self-carrying), the
-//                                  capability lands there. Not a costume: it declares, it does not fake.
+//   graft <target> [...]           install this seed's portable subset into <target> (SEED.md §4 step
+//                                  4: the map, the plan structure, the first lints — no behavior changes
+//                                  yet). Purely additive: it refuses to overwrite (LAW-2). --planted is
+//                                  a recorded fact (ring 0020). Model: .seed/lib/graft.ts (ring 0028).
+//   uninstall <target>             reverse a graft: remove exactly the graft set and prune the
+//                                  directories it emptied, restoring the target byte-identical (SEED.md
+//                                  §4: an uninstall path must exist).
 //
 // The determinism split (ring 0020): the pending-release NOTES are pure + byte-exact-gated
 // (docs/generated/pending-release.md, via validate-generated); the release HISTORY is append-only +
@@ -24,9 +28,8 @@
 // side-effecting half, kept out of run-all and pinned by the self-tests as a dry-run. A release date is
 // a recorded fact, so --date is required and no wall-clock is read.
 //
-// Exit: 0 ok; 1 the operation could not complete (nothing to release, a missing migration, a target
-// that is not a seed); 2 usage; 3 a reserved verb (graft / uninstall). verify / feedback pass their
-// child's exit through.
+// Exit: 0 ok; 1 the operation could not complete (nothing to release, a missing migration, a graft that
+// would clobber, a target that is not a seed); 2 usage. verify / feedback pass their child's exit through.
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { isAbsolute, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -43,6 +46,16 @@ import {
   renderEmptyPending,
   renderReleaseFile,
 } from '../lib/release.ts';
+import {
+  type GraftVars,
+  COPY_ROOTS,
+  TEMPLATES,
+  applyGraft,
+  applyUninstall,
+  conflicts,
+  defaultVars,
+  graftFiles,
+} from '../lib/graft.ts';
 
 const POLLEN_TS = '.seed/lib/pollen.ts';
 const LINEAGE_PATH = 'pollen/lineage.json';
@@ -57,6 +70,8 @@ function usage(message: string): never {
   console.error(`usage: node .seed/checks/release.ts <verb> [args]   verbs: ${VERBS.join(' | ')}`);
   console.error('  sense [<repo>] [--json]                         report version, history, and the pending release');
   console.error('  cut-release --date YYYY-MM-DD [--migration F] [--dry-run] [--json]');
+  console.error('  graft <target> --planted YYYY-MM-DD [--parent owner/repo] [--repo owner/repo] [--dry-run] [--json]');
+  console.error('  uninstall <target> [--dry-run] [--json]         reverse a graft, byte-identical');
   console.error('  verify [<repo>]                                 run the target seed\'s own run-all');
   console.error('  feedback ...                                    forward to the feedback composer');
   process.exit(2);
@@ -76,7 +91,7 @@ function positional(args: string[]): string | undefined {
   if (pos.length > 1) usage(`expected at most one target repo path, got ${pos.length}`);
   return pos[0];
 }
-const VALUE_FLAGS = new Set(['--date', '--migration']);
+const VALUE_FLAGS = new Set(['--date', '--migration', '--parent', '--planted', '--repo']);
 
 function targetRoot(args: string[]): string {
   const target = resolve(process.cwd(), positional(args) ?? '.');
@@ -227,12 +242,98 @@ function passthrough(scriptRoot: string, script: string, args: string[]): never 
   process.exit(res.status ?? 1);
 }
 
-function reserved(verb: string): never {
-  console.error(
-    `release: \`${verb}\` is reserved — the install / mandated-uninstall machinery is plan 0005 scope item 3 ` +
-      `(the installer + the uninstall path). The verb surface is named here (self-carrying), the capability lands there.`,
+// --- graft / uninstall: the installer + the mandated uninstall path (ring 0028). Side-effecting on a
+// --- target tree (like cut-release), so out of run-all; the source is THIS running seed (REPO_ROOT),
+// --- which installs its own portable subset — self-carrying (E-015). ---
+
+/** A target repo path is REQUIRED for graft/uninstall (unlike sense, which defaults to '.') — you must
+ *  name where to install or reverse. Rejects a missing path or a non-directory. */
+function requireTargetRoot(args: string[]): string {
+  const pos = positional(args);
+  if (pos === undefined) usage('this verb needs an explicit <target> repo path');
+  const target = resolve(process.cwd(), pos);
+  if (!existsSync(target) || !statSync(target).isDirectory()) usage(`target is not a directory: ${target}`);
+  return target;
+}
+
+function graftReport(target: string, vars: GraftVars, fileCount: number, dryRun: boolean): void {
+  console.log(`release — graft${dryRun ? ' (dry-run — writes nothing; LAW-6: every capability ships verification)' : ''}\n`);
+  console.log(`Target: ${target}`);
+  console.log(
+    `Grafting pollen v${vars.version} (genome v${vars.genomeVersion}) — the map, the plan structure, and the first lints ` +
+      '(SEED.md §4 step 4; no behavior changes yet).',
   );
-  process.exit(3);
+  console.log(`Lineage: parent ${vars.parent ?? 'none (a lineage root)'}, seedVersion v${vars.version}, planted ${vars.planted}.`);
+  console.log(`Copied verbatim (portable + sovereign): ${COPY_ROOTS.join(', ')}`);
+  console.log(`Emitted as local scaffold: ${TEMPLATES.map((t) => t.path).join(', ')}`);
+  console.log(`Total files: ${fileCount}.`);
+  if (dryRun) {
+    console.log('\n✓ dry-run — nothing written (graft is side-effecting; run without --dry-run to install).');
+  } else {
+    console.log(`\n✓ grafted — the method is installed. Verify with \`node .seed/checks/release.ts verify ${target}\`; reverse with \`uninstall ${target}\`.`);
+    console.log('  Propagation is re-metabolization (ring 0026): the host adopts the method as its own — no behavior changes yet.');
+  }
+}
+
+function graftCmd(flags: string[], rest: string[], json: boolean): never {
+  const target = requireTargetRoot(flags);
+  const planted = flagValue(flags, '--planted');
+  if (planted === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(planted)) {
+    usage('graft needs --planted YYYY-MM-DD — the planting date is a recorded fact, never a wall-clock read (ring 0020).');
+  }
+  const vars = defaultVars(planted, flagValue(flags, '--parent') ?? null, flagValue(flags, '--repo') ?? null);
+  const dryRun = rest.includes('--dry-run');
+  const clash = conflicts(REPO_ROOT, target);
+  if (clash.length > 0) {
+    const shown = clash.slice(0, 8).join(', ') + (clash.length > 8 ? ', …' : '');
+    if (json) console.log(JSON.stringify({ verb: 'graft', ok: false, dryRun, target, conflicts: clash }));
+    else console.error(`release: graft would overwrite ${clash.length} existing path(s) — it refuses to clobber (LAW-2, purely additive): ${shown}`);
+    process.exit(1);
+  }
+  if (!dryRun) applyGraft(REPO_ROOT, target, vars);
+  const fileCount = graftFiles(REPO_ROOT).length;
+  if (json) {
+    console.log(JSON.stringify({ verb: 'graft', ok: true, dryRun, target, version: vars.version, genomeVersion: vars.genomeVersion, parent: vars.parent, planted: vars.planted, fileCount }));
+  } else {
+    graftReport(target, vars, fileCount, dryRun);
+  }
+  process.exit(0);
+}
+
+function uninstallReport(target: string, removed: string[], prunedDirs: string[], dryRun: boolean): void {
+  console.log(`release — uninstall${dryRun ? ' (dry-run — writes nothing)' : ''}\n`);
+  console.log(`Target: ${target}`);
+  console.log(`${dryRun ? 'Would remove' : 'Removed'} ${removed.length} graft path(s): ${removed.join(', ')}`);
+  if (!dryRun && prunedDirs.length > 0) console.log(`Pruned ${prunedDirs.length} emptied director${prunedDirs.length === 1 ? 'y' : 'ies'}: ${prunedDirs.join(', ')}`);
+  console.log(
+    dryRun
+      ? '\n✓ dry-run — nothing removed (the graft set above would be removed and any directory it emptied pruned).'
+      : '\n✓ uninstalled — the graft set was removed and emptied directories pruned; the target returns to its pre-graft state (an uninstall path must exist, SEED.md §4).',
+  );
+}
+
+function uninstallCmd(flags: string[], rest: string[], json: boolean): never {
+  const target = requireTargetRoot(flags);
+  const dryRun = rest.includes('--dry-run');
+  const present = [
+    ...COPY_ROOTS.filter((r) => existsSync(join(target, r))),
+    ...TEMPLATES.map((t) => t.path).filter((p) => existsSync(join(target, p))),
+  ];
+  if (present.length === 0) {
+    if (json) console.log(JSON.stringify({ verb: 'uninstall', ok: true, dryRun, target, removed: [], prunedDirs: [] }));
+    else console.log(`release — uninstall: ${target} carries no graft — nothing to remove.`);
+    process.exit(0);
+  }
+  let removed = present;
+  let prunedDirs: string[] = [];
+  if (!dryRun) {
+    const r = applyUninstall(target);
+    removed = r.removed;
+    prunedDirs = r.prunedDirs;
+  }
+  if (json) console.log(JSON.stringify({ verb: 'uninstall', ok: true, dryRun, target, removed, prunedDirs }));
+  else uninstallReport(target, removed, prunedDirs, dryRun);
+  process.exit(0);
 }
 
 // --- main ---
@@ -284,8 +385,10 @@ function main(): void {
       passthrough(REPO_ROOT, '.seed/checks/feedback.ts', rest);
       break;
     case 'graft':
+      graftCmd(flags, rest, json);
+      break;
     case 'uninstall':
-      reserved(verb);
+      uninstallCmd(flags, rest, json);
       break;
     case undefined:
       usage('missing verb');

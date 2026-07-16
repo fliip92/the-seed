@@ -42,8 +42,10 @@ export interface PortableRoot {
 export const PORTABLE: PortableRoot[] = [
   { path: '.seed', kind: 'machinery' }, // the checks, lib, self-tests, CI defs — the enforcement
   { path: 'skills', kind: 'skill' }, // the skill garden — the reusable capability
-  // Scaffolding templates + protocols the installer emits ship here as they are built (plan 0005
-  // scope item 3 — installer). The boundary is declared now; those artifacts follow.
+  // The installer's scaffolding templates (plan 0005 scope item 3, ring 0028) live inside .seed/ — as
+  // strings in .seed/lib/graft.ts, a whole-subtree member of the portable root above (a new file inside
+  // is portable by construction), so no new top-level entry is needed. A .ts data module keeps them
+  // invisible to the mother's own .md-only validate-map/doc-drift, which a .md template would trip.
 ];
 
 // SOVEREIGN — the frame. The genome; carried into every descendant, amended only the mother's way.

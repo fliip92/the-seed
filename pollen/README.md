@@ -16,8 +16,9 @@ and *how it is versioned*, decided in the founding
   repo entry into one tier — **portable** (the method: the skills and the machinery, grafted
   into descendants and locally adaptable), **sovereign** (the genome, `SEED.md` — the mother's
   frame, amended only her way), or **local** (this seed's own history — its map, plans, rings,
-  ledger, fitness; never portable, each seed grows its own). Scaffolding templates for the
-  local artifacts ship here as the installer is built (scope item 3).
+  ledger, fitness; never portable, each seed grows its own). The installer emits scaffolding
+  templates for the local artifacts (scope item 3, below); they live in the portable
+  [`.seed/lib/graft.ts`](../.seed/lib/graft.ts), carried onward with the method.
 - **Two version lines, never conflated.** The **genome version** (the constitution's line,
   authoritative in `SEED.md`) and the **pollen version** (this distribution's line, semver).
   A pollen release is cut by the release tool (scope item 2); the line sits at `0.0.0` until
@@ -50,7 +51,21 @@ determinism split:
 - **[pending-release notes](../docs/generated/pending-release.md)** — what the next release *would* be,
   generated purely from `pending.md` and byte-exact-gated by `npm run check`.
 
-The pollen line rests at **v0.0.0**; the boundary (ring 0026) and this release tool (ring 0027) are
-declared as pending intents composing a first **v0.1.0**, cut by the recursive self-upgrade test
-(scope item 4). The pure invariants are [validate-release](../.seed/checks/validate-release.ts) (part
-of `npm run check`). `graft` and `uninstall` are reserved for the installer (scope item 3).
+The pollen line rests at **v0.0.0**; the boundary (ring 0026), this release tool (ring 0027), and the
+installer (ring 0028) are declared as pending intents composing a first **v0.1.0**, cut by the recursive
+self-upgrade test (scope item 4). The pure invariants are
+[validate-release](../.seed/checks/validate-release.ts) (part of `npm run check`).
+
+## The installer + the mandated uninstall path (scope item 3)
+
+[Plan 0005](../docs/plans/active/0005-flowering.md) scope item 3 gives the release CLI's `graft` /
+`uninstall` verbs their machinery, decided in ring
+[0028](../docs/rings/0028-installer-uninstall.md) — the model is
+[`.seed/lib/graft.ts`](../.seed/lib/graft.ts). `graft <target>` installs this seed's portable subset —
+the SEED.md §4 Stage-4 step-4 beachhead: the map, the plan structure, and the first lints, *no behavior
+changes yet* — **copying** the portable method (`.seed/`, `skills/`) + the sovereign genome (`SEED.md`)
+verbatim and **emitting** the local scaffold (map, plans, rings, release data, lineage, plumbing) as
+parameterized templates. It is purely additive (it refuses to overwrite), so `uninstall <target>` is a
+clean inverse — it removes exactly the graft set and prunes the directories it emptied, restoring the
+target byte-identical (SEED.md §4: *an uninstall path must exist*). The round-trip is verified hermetically
+by the self-tests (LAW-6).

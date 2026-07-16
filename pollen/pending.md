@@ -19,3 +19,4 @@ file and byte-exact-gated by `npm run check` (ring
 
 - Impact: minor — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — the pollen boundary, the two version lines, the lineage schema + manifest (plan 0005 scope item 1).
 - Impact: minor — [ring 0027](../docs/rings/0027-release-graft-cli.md) — the release / graft CLI: sense, cut-release, the determinism split, the version bump, the migration tooth (plan 0005 scope item 2).
+- Impact: minor — [ring 0028](../docs/rings/0028-installer-uninstall.md) — the installer + the mandated uninstall path: graft (a refuse-to-clobber beachhead) and uninstall (its byte-exact inverse) (plan 0005 scope item 3).

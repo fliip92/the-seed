@@ -12,6 +12,7 @@ version lines — genome and pollen — are never conflated, ring 0026).
 - **Composing:**
   - minor — ring 0026 — the pollen boundary, the two version lines, the lineage schema + manifest (plan 0005 scope item 1).
   - minor — ring 0027 — the release / graft CLI: sense, cut-release, the determinism split, the version bump, the migration tooth (plan 0005 scope item 2).
+  - minor — ring 0028 — the installer + the mandated uninstall path: graft (a refuse-to-clobber beachhead) and uninstall (its byte-exact inverse) (plan 0005 scope item 3).
 
 Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD` — the first real cut is
 the recursive self-upgrade test ([plan 0005](../plans/active/0005-flowering.md) scope item 4).
