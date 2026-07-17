@@ -125,6 +125,14 @@ item count.
   (cheapest tier that clears the harness), with novel design (the release CLI, the
   recursive-upgrade harness) and any surface that gates `main` at the top tier or a top-tier
   review pass.
+- **The internal v0.1.0 cut is Stage-3 work; E-004/E-013 gate Stage-4 external distribution (Gardener
+  ruling, 2026-07-16).** The gating-prerequisites bullet above priced [E-004](../entropy-ledger.md) /
+  [E-013](../entropy-ledger.md) as owed "before pollen ships." [Ring 0029](../../rings/0029-recursive-self-upgrade-test.md)
+  raised and escalated the fork it left open — does the *internal* self-host cut count as "shipping"? The
+  Gardener ruled it does not: the recursive *self*-host test is the Stage-3 exit criterion the seed must
+  *meet*, so the internal v0.1.0 cut proceeds now; "pollen ships" is the *external* act, and E-004/E-013
+  gate the **Stage 3 → 4 transition** (pollinating a foreign host), not this item. The seed met the exit
+  criterion; the transition remains the Gardener's, once the two clear.
 
 ## Progress log
 
@@ -216,6 +224,28 @@ item count.
   composing **v0.1.0** (still minor). `npm run check` (12 checks) + `npm test` (212 cases) green;
   `drift_count` 0. **Scope item 4 (the recursive self-upgrade test — the seed is its own first host) is
   now the live work.**
+- **2026-07-16** — **Scope item 4 landed (the recursive self-upgrade test — the seed is its own first
+  host); the Stage 3 exit criterion is met.** The build **[ring 0029](../../rings/0029-recursive-self-upgrade-test.md)**
+  resolves *"the seed is its own first host"* into two self-hosting acts (a self-graft is impossible —
+  refuse-to-clobber, [ring 0028](../../rings/0028-installer-uninstall.md)); on the **Gardener's ruling**
+  (2026-07-16) that the *internal* cut is Stage-3 work — not external shipping — the whole test runs now.
+  **Act 1 (self-versioning):** the mother cut her first real pollen release with her own CLI —
+  **v0.0.0 → v0.1.0** ([pollen/releases/v0.1.0.md](../../../pollen/releases/v0.1.0.md)), composing rings
+  0026 + 0027 + 0028 (minor, no migration); `POLLEN_VERSION` + lineage `seedVersion` bumped, pending
+  cleared, notes regenerated. **Act 2 (self-diagnosis):** the mother grafted her v0.1.0 pollen (56 files)
+  into a sacrificial repo and measured it with her own repo-fitness before/after — `map_reachability`
+  **null → 100%**, the metabolization-grown organs absent by design (SEED.md §4 step 4, "no behavior
+  changes yet"), one dangling mother-reference (`drift_count` 1, [ring 0028](../../rings/0028-installer-uninstall.md)
+  foresaw it) — then uninstalled to **byte-identical** (0 files remaining, every metric back to null, the
+  self-carrying CLI proven to run in the target). Recorded as the judgeable exit-proof artifact
+  [docs/fitness/recursive-upgrade.md](../../fitness/recursive-upgrade.md); the reproducible shape
+  (`map_reachability` null → computable → null) is pinned by the `recursive test (ring 0029)` self-test.
+  The release-flow self-tests were made hermetic (each seeds its own pre-release slate) so the mother's
+  real v0.1.0 does not invalidate them. `npm run check` (12 checks) + `npm test` (213 cases) green;
+  `drift_count` 0. **The Stage 3 exit criterion is met** — remaining Stage-3 work before the transition:
+  clear [E-004](../entropy-ledger.md) (Gardener trademark) and [E-013](../entropy-ledger.md) (inferential
+  control), then propose the Stage 3 → 4 transition (a new plan, the
+  [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape).
 
 ## Next actions
 
@@ -247,10 +277,17 @@ item count.
    ([.seed/checks/release.ts](../../../.seed/checks/release.ts)), pinned by 3 self-tests in the worktrees
    hermetic round-trip shape (works + teeth + byte-identical, refuse-to-clobber, `--dry-run`
    side-effect-free).
-5. **Scope item 4 — the recursive self-upgrade test (the live work): the seed is its own first host.**
-   Cut the first real pollen release (**v0.1.0**, already composed as the pending intents of rings 0026,
-   0027, 0028), upgrade the seed using its own pollen, and graft into a sacrificial test repo, with
-   [repo-fitness](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md) measured before and
-   after each — the delta is the exit proof (SEED.md §4). Clear the gating prerequisites
-   [E-004](../entropy-ledger.md) (name/trademark) and [E-013](../entropy-ledger.md) (inferential control)
-   within the stage before pollen ships.
+5. ✅ **Scope item 4 landed** (2026-07-16) — the recursive self-upgrade test, decided in
+   [ring 0029](../../rings/0029-recursive-self-upgrade-test.md): on the Gardener's ruling the internal cut
+   proceeds, the mother cut **v0.1.0** ([release](../../../pollen/releases/v0.1.0.md)) with her own CLI —
+   composing rings 0026 + 0027 + 0028 — and grafted it into a sacrificial repo with
+   [repo-fitness](../../rings/0016-repo-fitness-generalizes-the-metric-engine.md) measured before/after
+   (`map_reachability` null → 100% → null, byte-identical uninstall), recorded as
+   [docs/fitness/recursive-upgrade.md](../../fitness/recursive-upgrade.md) and pinned by the
+   `recursive test (ring 0029)` self-test. **The Stage 3 exit criterion is met.**
+6. **Clear the Stage 3 → 4 gating prerequisites, then propose the transition.**
+   [E-004](../entropy-ledger.md) — the Gardener's trademark search (pollen cannot ship *externally* under
+   an uncleared name); [E-013](../entropy-ledger.md) — the inferential control (at Flowering, pollen
+   quality is behavioral). Once both clear, propose the Stage 3 → 4 (Flowering → Pollination) transition
+   as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape). This plan stays
+   `active` until then — the exit criterion is evidenced, but the stage transition is the Gardener's.

@@ -31,7 +31,7 @@ export const GENOME_VERSION = '0.1';
 // The pollen version — this portable distribution's line, independent of the genome's. Semver
 // (X.Y.Z). 0.0.0 = the boundary and the version line are established (this scope item) but no release
 // is cut yet; the first graftable release is cut by the release tool (plan 0005 scope item 2).
-export const POLLEN_VERSION = '0.0.0';
+export const POLLEN_VERSION = '0.1.0';
 
 export interface PortableRoot {
   path: string; // a top-level repo entry (a directory subtree, or a file)

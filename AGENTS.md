@@ -27,7 +27,11 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   (transition approved 2026-07-15, ring
   [0025](docs/rings/0025-stage-3-transition-approved.md)). The governing plan is
   [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope item 4
-  (the recursive self-upgrade test — the seed is its own first host) is the live work**. Scope item 3
+  (the recursive self-upgrade test — the seed is its own first host) landed 2026-07-16 in
+  [ring 0029](docs/rings/0029-recursive-self-upgrade-test.md), and the Stage 3 exit criterion is met**
+  (proof: [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)); **the live work is now
+  clearing the Stage 3 → 4 gating prerequisites [E-004](docs/plans/entropy-ledger.md) /
+  [E-013](docs/plans/entropy-ledger.md), then proposing the transition**. Scope item 3
   (the installer + the mandated uninstall path) landed 2026-07-15 in
   [ring 0028](docs/rings/0028-installer-uninstall.md): the graft model
   ([.seed/lib/graft.ts](.seed/lib/graft.ts)) — the running seed copies its portable method + sovereign
@@ -47,9 +51,10 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   [gate](.seed/checks/release-append-only.ts); the side-effecting `cut-release`, dry-run-verified),
   the version-bump-from-max-declared-impact and the migration-required-for-major tooth, all pinned by
   [validate-release](.seed/checks/validate-release.ts) + the self-tests. The pollen line rests at
-  v0.0.0 with the boundary (ring 0026), the release tool (ring 0027), and the installer (ring 0028)
-  declared as [pending intents](pollen/pending.md) composing a first v0.1.0, cut by the recursive test
-  (scope item 4). Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
+  **v0.1.0** — cut 2026-07-16 by the recursive self-upgrade test
+  ([ring 0029](docs/rings/0029-recursive-self-upgrade-test.md)), composing the boundary (ring 0026), the
+  release tool (ring 0027), and the installer (ring 0028) as its first release
+  ([pollen/releases/v0.1.0.md](pollen/releases/v0.1.0.md)); [pending](pollen/pending.md) is now empty. Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
   [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided E-015's three
   forks — the semver + migration model, the three
   orthogonal granularity axes (release = pollen version, learning = ring, artifact = skill), and the

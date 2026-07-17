@@ -29,6 +29,14 @@ self snapshot — [2026-07-04](history/2026-07-04.json), the first landed:
 | `escalation_rate` | null |
 | `ledger_trend` | +6 open entries (repo younger than the trailing 7-day window) |
 
+**Stage 3 exit proof.** The recursive self-upgrade test — the seed grafting its own v0.1.0 pollen into a
+sacrificial repo with fitness measured before and after (ring
+[0029](../rings/0029-recursive-self-upgrade-test.md)) — is recorded in
+[recursive-upgrade.md](recursive-upgrade.md): `map_reachability` `null → 100% → null`, byte-identically
+reversed. That delta is the Stage 3 exit proof (SEED.md §4). This is a before/after measurement on a
+*target* (the fitness organ's §6 role — "prove pollination value with before/after measurement"), not a
+snapshot of this seed, so it lives here rather than in [history/](history/README.md).
+
 ## Metric definitions (v0)
 
 | Metric | Question it answers | Source |

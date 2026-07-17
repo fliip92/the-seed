@@ -17,6 +17,4 @@ pollen version, and appends here. What the next release *would* be is the byte-e
 
 ## Releases
 
-_No release cut yet — the pollen line rests at v0.0.0. The boundary (ring 0026) and the release tool
-(ring 0027) are declared as [pending intents](../pending.md); the first release, **v0.1.0**, is cut by
-the recursive self-upgrade test ([plan 0005](../../docs/plans/active/0005-flowering.md) scope item 4)._
+- [v0.1.0](v0.1.0.md) — 2026-07-16 — minor: composed ring 0026, ring 0027, ring 0028.

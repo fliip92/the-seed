@@ -3,8 +3,10 @@
 The versioned, installable subset of the Seed — skills, scaffolding templates, protocols,
 installer, and an uninstall path — built at Stage 3 (Flowering, SEED.md §4) and carried
 into foreign hosts at Stage 4 (Pollination, SEED.md §7). The first install target is the
-Seed itself: the recursive test is upgrading this repository using its own pollen, with
-fitness measured before and after.
+Seed itself: the recursive self-upgrade test upgraded this repository using its own pollen
+(v0.1.0, cut 2026-07-16), with fitness measured before and after — the Stage 3 exit proof
+([docs/fitness/recursive-upgrade.md](../docs/fitness/recursive-upgrade.md),
+[ring 0029](../docs/rings/0029-recursive-self-upgrade-test.md)).
 
 ## The boundary, the two version lines, and lineage (scope item 1)
 
@@ -21,8 +23,8 @@ and *how it is versioned*, decided in the founding
   [`.seed/lib/graft.ts`](../.seed/lib/graft.ts), carried onward with the method.
 - **Two version lines, never conflated.** The **genome version** (the constitution's line,
   authoritative in `SEED.md`) and the **pollen version** (this distribution's line, semver).
-  A pollen release is cut by the release tool (scope item 2); the line sits at `0.0.0` until
-  then — the boundary is defined, no release yet.
+  A pollen release is cut by the release tool (scope item 2); the line reached `0.1.0` at the
+  first cut (2026-07-16, ring 0029).
 - **Lineage.** Every seed records its lineage (SEED.md §7: seed version, parent, date
   planted) in [`lineage.json`](lineage.json). The mother is the root of its lineage
   (`parent` null); a descendant names its parent and carries migrations so it can upgrade
@@ -51,9 +53,10 @@ determinism split:
 - **[pending-release notes](../docs/generated/pending-release.md)** — what the next release *would* be,
   generated purely from `pending.md` and byte-exact-gated by `npm run check`.
 
-The pollen line rests at **v0.0.0**; the boundary (ring 0026), this release tool (ring 0027), and the
-installer (ring 0028) are declared as pending intents composing a first **v0.1.0**, cut by the recursive
-self-upgrade test (scope item 4). The pure invariants are
+The pollen line rests at **v0.1.0** — cut 2026-07-16 by the recursive self-upgrade test (scope item 4,
+ring [0029](../docs/rings/0029-recursive-self-upgrade-test.md)), composing the boundary (ring 0026), this
+release tool (ring 0027), and the installer (ring 0028) as its first release
+([releases/v0.1.0.md](releases/v0.1.0.md)); [pending.md](pending.md) is now empty. The pure invariants are
 [validate-release](../.seed/checks/validate-release.ts) (part of `npm run check`).
 
 ## The installer + the mandated uninstall path (scope item 3)

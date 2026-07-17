@@ -2,20 +2,13 @@
 
 > This page is **generated from repo state** by [`.seed/checks/generate.ts`](../../.seed/checks/generate.ts) — do not hand-edit it (see [docs/generated/README.md](README.md)). It is a pure function of [`pollen/pending.md`](../../pollen/pending.md), the pollen version, and the release history; `npm run check` fails the moment it drifts.
 
-The pollen line currently rests at **v0.0.0** (the latest cut release; the two
+The pollen line currently rests at **v0.1.0** (the latest cut release; the two
 version lines — genome and pollen — are never conflated, ring 0026).
 
 ## Next release
 
-- **Version:** v0.1.0 (minor) — bumped from v0.0.0 by the maximum declared impact.
-- **Migration required:** no — a minor release is a backward-compatible graft.
-- **Composing:**
-  - minor — ring 0026 — the pollen boundary, the two version lines, the lineage schema + manifest (plan 0005 scope item 1).
-  - minor — ring 0027 — the release / graft CLI: sense, cut-release, the determinism split, the version bump, the migration tooth (plan 0005 scope item 2).
-  - minor — ring 0028 — the installer + the mandated uninstall path: graft (a refuse-to-clobber beachhead) and uninstall (its byte-exact inverse) (plan 0005 scope item 3).
-
-Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD` — the first real cut is
-the recursive self-upgrade test ([plan 0005](../plans/active/0005-flowering.md) scope item 4).
+- **No pending intents.** Declare a portable-subtree change in [`pollen/pending.md`](../../pollen/pending.md) — `- Impact: <major|minor|patch> — [ring NNNN](…) — <summary>` —
+  to compose the next release.
 
 ---
 

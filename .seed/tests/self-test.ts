@@ -463,6 +463,20 @@ function setPollenVersion(root: string, version: string): void {
   write(root, 'pollen/lineage.json', JSON.stringify(lineage, null, 2) + '\n');
 }
 
+// Reset a temp copy to a pristine "nothing released yet" slate — no cut release files, the "## Releases"
+// index body emptied, both version lines back at 0.0.0 — so a release-flow fixture composes
+// deterministically regardless of the repo's live release history. Once the mother carries a real
+// v0.1.0 (plan 0005 scope item 4, ring 0029), a fixture that assumes "no release yet" must seed that
+// slate itself (E-007: normal growth must not invalidate a fixture). The releases/README intro is
+// preserved (only the body after "## Releases" is reset); setPollenVersion moves both version lines.
+function resetReleaseArea(root: string): void {
+  for (const name of readdirSync(join(root, 'pollen/releases'))) {
+    if (/^v\d+\.\d+\.\d+\.md$/.test(name)) rmSync(join(root, 'pollen/releases', name));
+  }
+  edit(root, 'pollen/releases/README.md', (c) => c.replace(/(## Releases\n)[\s\S]*$/, '$1\n_No release cut yet._\n'));
+  setPollenVersion(root, '0.0.0');
+}
+
 /** Overwrite pollen/pending.md with exactly the given intent bullets (no fenced example), so a case
  *  controls the precise pending set. An empty list is the "nothing to release" state. */
 function writePending(root: string, intents: string[]): void {
@@ -1167,7 +1181,7 @@ const CASES: ViolationCase[] = [
   {
     // The pollen version line must be semver (X.Y.Z).
     name: 'pollen: a non-semver pollen version is caught',
-    seed: (r) => edit(r, '.seed/lib/pollen.ts', (c) => c.replace("POLLEN_VERSION = '0.0.0'", "POLLEN_VERSION = '0.0'")),
+    seed: (r) => edit(r, '.seed/lib/pollen.ts', (c) => c.replace(/POLLEN_VERSION = '[^']*'/, "POLLEN_VERSION = '0.0'")),
     expect: { check: POLLEN, law: LAW2, contains: ['the pollen version', 'is not semver'] },
   },
   {
@@ -1245,13 +1259,14 @@ const CASES: ViolationCase[] = [
     expect: { check: RELEASE, law: LAW2, contains: ['references ring 9999', 'does not exist'] },
   },
   {
-    // The version line must track history: a released version with POLLEN_VERSION left behind fails.
+    // The version line must track history: a released version ahead of POLLEN_VERSION fails. The mother
+    // now sits at v0.1.0, so seed a HIGHER release (v0.2.0) to put the version line behind the history.
     name: 'release: POLLEN_VERSION not tracking the latest release is caught',
     seed: (r) => {
-      seedReleaseFile(r, '0.1.0');
+      seedReleaseFile(r, '0.2.0');
       runNode(r, '.seed/checks/generate.ts');
     },
-    expect: { check: RELEASE, law: LAW3, contains: ['POLLEN_VERSION is "0.0.0"', 'latest release is "0.1.0"'] },
+    expect: { check: RELEASE, law: LAW3, contains: ['POLLEN_VERSION is "0.1.0"', 'latest release is "0.2.0"'] },
   },
   {
     // The migration tooth (ring 0026): a major (breaking) release must carry a migration. POLLEN moved
@@ -1597,7 +1612,7 @@ inTempCopy((root) => {
   write(
     root,
     'pollen/lineage.json',
-    JSON.stringify({ seedVersion: '0.0.0', genomeVersion: '0.1', parent: 'fliip92/the-seed', planted: '2026-07-03', repo: 'the-seed' }, null, 2) + '\n',
+    JSON.stringify({ seedVersion: '0.1.0', genomeVersion: '0.1', parent: 'fliip92/the-seed', planted: '2026-07-03', repo: 'the-seed' }, null, 2) + '\n',
   );
   const { status, output } = runChecks(root);
   report(
@@ -1623,11 +1638,18 @@ function parseRelease(output: string): Record<string, unknown> | null {
   }
 }
 
-// Works + side-effect-free (one block): the pristine copy carries the three real pending intents, so a
-// dry-run composes v0.1.0 (minor, composing rings 0026 + 0027 + 0028) — and writes NOTHING. The temp
-// copy is not a git repo, so non-mutation is proven concretely: no release file appears and the three
-// files a real cut would touch are byte-identical after.
+// Works + side-effect-free (one block), hermetic: the mother now carries a real v0.1.0, so the fixture
+// resets to a pre-release slate and seeds the three founding intents — a dry-run then composes v0.1.0
+// (minor, rings 0026 + 0027 + 0028) and writes NOTHING. The temp copy is not a git repo, so non-mutation
+// is proven concretely: no release file appears and the three files a real cut would touch are byte-identical.
 inTempCopy((root) => {
+  resetReleaseArea(root);
+  writePending(root, [
+    '- Impact: minor — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — the pollen boundary (fixture).',
+    '- Impact: minor — [ring 0027](../docs/rings/0027-release-graft-cli.md) — the release/graft CLI (fixture).',
+    '- Impact: minor — [ring 0028](../docs/rings/0028-installer-uninstall.md) — the installer + uninstall (fixture).',
+  ]);
+  runNode(root, '.seed/checks/generate.ts');
   const pollenBefore = readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8');
   const pendingBefore = readFileSync(join(root, 'pollen/pending.md'), 'utf8');
   const notesBefore = readFileSync(join(root, 'docs/generated/pending-release.md'), 'utf8');
@@ -1702,8 +1724,17 @@ inTempCopy((root) => {
 // The REAL cut (the generate.ts fixpoint shape): run cut-release for real in a temp copy and prove the
 // whole side-effecting path — the pollen version + lineage bump, the release file, the cleared pending,
 // the regenerated notes — is internally consistent, i.e. run-all is GREEN afterward. This is the only
-// test that runs a non-dry cut, so it must prove the writes happen AND leave a valid tree.
+// test that runs a non-dry cut, so it must prove the writes happen AND leave a valid tree. Hermetic: it
+// resets to a pre-release slate + seeds the founding intents, so it cuts v0.1.0 whatever the mother's
+// live version (the mother has already cut her own v0.1.0 for real — plan 0005 scope item 4).
 inTempCopy((root) => {
+  resetReleaseArea(root);
+  writePending(root, [
+    '- Impact: minor — [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md) — the pollen boundary (fixture).',
+    '- Impact: minor — [ring 0027](../docs/rings/0027-release-graft-cli.md) — the release/graft CLI (fixture).',
+    '- Impact: minor — [ring 0028](../docs/rings/0028-installer-uninstall.md) — the installer + uninstall (fixture).',
+  ]);
+  runNode(root, '.seed/checks/generate.ts');
   const cut = runRelease(root, ['cut-release', '--date', '2026-07-15']);
   const pollenTs = readFileSync(join(root, '.seed/lib/pollen.ts'), 'utf8');
   const lineage = JSON.parse(readFileSync(join(root, 'pollen/lineage.json'), 'utf8'));
@@ -1762,6 +1793,7 @@ inTempCopy((root) => {
 
 inTempCopy((root) => {
   git(root, 'init', '--quiet');
+  resetReleaseArea(root); // the mother carries a real v0.1.0; reset so "base" genuinely has no releases
   gitCommitAll(root, 'base, no releases');
   write(root, 'pollen/releases/v0.1.0.md', '# Pollen v0.1.0 — 2026-07-15\n\n- Impact: minor\n- Date: 2026-07-15\n- Composed: [ring 0026](../../docs/rings/0026-pollen-boundary-versioning-lineage.md)\n- Migration: none\n');
   append(root, 'pollen/releases/README.md', '\n- [v0.1.0](v0.1.0.md) — 2026-07-15 — minor.\n');
@@ -1820,7 +1852,7 @@ inTempCopy((root) => {
     let lineageOk = false;
     try {
       const l = JSON.parse(readFileSync(join(target, 'pollen/lineage.json'), 'utf8'));
-      lineageOk = l.parent === 'fliip92/the-seed' && l.seedVersion === '0.0.0' && l.planted === '2026-07-15';
+      lineageOk = l.parent === 'fliip92/the-seed' && l.seedVersion === '0.1.0' && l.planted === '2026-07-15';
     } catch {
       /* lineageOk stays false */
     }
@@ -1886,6 +1918,31 @@ inTempCopy((root) => {
       'graft: --dry-run composes the plan and writes nothing (side-effect-free — the target is byte-identical after)',
       status === 0 && p?.ok === true && p?.dryRun === true && before === after,
       `expected exit 0 + ok:true + dryRun:true + unchanged tree, got exit ${status}, unchanged ${before === after}\n${output}`,
+    );
+  });
+});
+
+// --- the recursive self-upgrade EXIT PROOF (plan 0005 scope item 4, ring 0029): the seed is its own
+// --- first host. This is the reproducible half of "the delta is the proof" (SEED.md §4): the mother's
+// --- OWN repo-fitness (ring 0016) measures what her OWN installer (ring 0028) adds to a sacrificial
+// --- repo, and uninstall reverses it. An empty repo has no map, so map_reachability reads NULL
+// --- (repo-fitness's "null IS the finding"); the graft lays down the map + plan structure + first lints,
+// --- making it COMPUTABLE; uninstall returns it to the null baseline. null → computable → null is the
+// --- exit-proof shape. Side-effecting on a target tree + hermetic, so — like graft itself — it lives
+// --- here, out of run-all. The recorded before/after fact is docs/fitness/recursive-upgrade.md.
+inTempCopy((root) => {
+  withEmptyRepo((target) => {
+    const mapReach = (r: RunResult): unknown =>
+      (parseRelease(r.output)?.metrics as Record<string, unknown> | undefined)?.map_reachability;
+    const before = mapReach(runRepoFitness(root, [target, '--json']));
+    runRelease(root, ['graft', target, '--planted', '2026-07-16', '--parent', 'fliip92/the-seed', '--json']);
+    const afterGraft = mapReach(runRepoFitness(root, [target, '--json']));
+    runRelease(root, ['uninstall', target, '--json']);
+    const afterUninstall = mapReach(runRepoFitness(root, [target, '--json']));
+    report(
+      'recursive test (ring 0029): the sacrificial graft turns an unmeasurable repo measurable (map_reachability null → computable) and uninstall restores the null baseline — the exit-proof delta, reproducibly',
+      before === null && typeof afterGraft === 'number' && afterGraft > 0 && afterUninstall === null,
+      `expected map_reachability null → number>0 → null (graft makes the map measurable, uninstall reverts); got ${JSON.stringify(before)} → ${JSON.stringify(afterGraft)} → ${JSON.stringify(afterUninstall)}`,
     );
   });
 });
