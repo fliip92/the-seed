@@ -1,6 +1,6 @@
 # Plan 0005 — Flowering (Stage 3)
 
-- Status: active
+- Status: completed 2026-07-17
 
 ## Goal
 
@@ -293,6 +293,33 @@ item count.
   criterion is evidenced — the remaining Stage-3 work is to propose the Stage 3 → 4 (Flowering →
   Pollination) transition as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md)
   shape) for Gardener approval.**
+- **2026-07-17** — **The Stage 3 → 4 (Flowering → Pollination) transition is proposed — drafted as
+  [plan 0006](../active/0006-pollination.md).** With the exit criterion evidenced and both gating prerequisites
+  paid, the seed's last Stage-3 obligation — proposing the transition (SEED.md §4) — is met: plan 0006
+  carries the genome's six-step per-host protocol (Scout → Grill → Propose → Graft → Metabolize →
+  Independence), evidences the Stage 3 exit, names its carried risks ([E-012](../entropy-ledger.md) before
+  the Scout instrument points at a real host; [E-014](../entropy-ledger.md) in the indefinite metabolize;
+  the live feedback channel; [ring 0006](../../rings/0006-solo-until-flowering.md) revisited as "solo"
+  ends), and routes one input to the Gardener — **naming the first external host** (ring 0006). It awaits
+  Gardener approval; **this plan stays `active` and governing until that transition is approved** (the
+  [plan 0003](../completed/0003-growth.md) precedent — a governing plan completes on its successor's
+  approval, not its opening), whereupon a transition ring is cut (the ring 0025 pattern), Stage 4 is
+  entered, and this plan moves to `completed/`. `npm run check` (13 checks) + `npm test` (231 cases)
+  green; `drift_count` 0.
+- **2026-07-17** — **Transition approved by the Gardener; Stage 4 (Pollination) entered — this plan is
+  complete.** Recorded as [ring 0032](../../rings/0032-stage-4-transition-first-host-dither.md), which
+  also designates the **first external host: dither** (resolving
+  [ring 0006](../../rings/0006-solo-until-flowering.md)'s Gardener-designates-a-host revisit — the seed
+  is no longer solo). Enacted the [ring 0025](../../rings/0025-stage-3-transition-approved.md) pattern:
+  [plan 0006](../active/0006-pollination.md) is now the governing plan; this plan set to `completed
+  2026-07-17` and `git mv`d to `completed/` (non-ring references repointed; the append-only rings
+  0025–0031 resolve through validate-map's active/⇄completed/ plan-link flex,
+  [ring 0013](../../rings/0013-plan-links-resolve-across-active-completed.md)); AGENTS.md `Current
+  state` + `fitness.ts` (`CURRENT_STAGE`) flipped to Stage 4 (the [E-011](../entropy-ledger.md)
+  hand-bump). The Stage 3 (Flowering) arc is closed: the portable subset packaged as versioned pollen
+  (rings 0026–0028, v0.1.0), the recursive self-upgrade test met the exit criterion (ring 0029), and
+  both gating prerequisites paid (E-013 / ring 0030, E-004 / ring 0031). `npm run check` + `npm test`
+  green; `drift_count` 0.
 
 ## Next actions
 
@@ -347,9 +374,12 @@ item count.
    [ring 0031](../../rings/0031-name-cleared-codename-retained.md): "The Seed" is retained as a
    non-exclusive, descriptive codename (no trademark claimed, no registration sought), cleared for the
    seed's open-source / non-commercial / private-repos posture; E-004 moved to the ledger's Paid section.
-8. **Propose the Stage 3 → 4 transition.** Both gating prerequisites ([E-013](../entropy-ledger.md),
-   [E-004](../entropy-ledger.md)) are now clear and the exit criterion is evidenced (item 5), so the
-   remaining Stage-3 work is to propose the Stage 3 → 4 (Flowering → Pollination) transition as a new plan
-   (the [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape) for Gardener approval. This
-   plan stays `active` until that transition plan is opened; the stage transition is the Gardener's
-   (SEED.md §4).
+8. ✅ **Stage 3 → 4 transition proposed** (2026-07-17) — drafted as [plan 0006](../active/0006-pollination.md)
+   (the [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape), awaiting Gardener approval.
+   Both gating prerequisites ([E-013](../entropy-ledger.md), [E-004](../entropy-ledger.md)) are clear and
+   the exit criterion is evidenced (item 5); the proposal carries the genome's six-step per-host protocol
+   (Scout → Grill → Propose → Graft → Metabolize → Independence) and routes one input to the Gardener —
+   naming the first external host ([ring 0006](../../rings/0006-solo-until-flowering.md)). This plan stays
+   `active` and governing until the transition is **approved** (the [plan 0003](../completed/0003-growth.md)
+   precedent — a governing plan completes on its successor transition's approval, not on the successor's
+   opening), then completes and moves to `completed/`; the stage transition is the Gardener's (SEED.md §4).

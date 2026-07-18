@@ -10,7 +10,7 @@ Seed itself: the recursive self-upgrade test upgraded this repository using its 
 
 ## The boundary, the two version lines, and lineage (scope item 1)
 
-[Plan 0005](../docs/plans/active/0005-flowering.md) scope item 1 defines *what is portable*
+[Plan 0005](../docs/plans/completed/0005-flowering.md) scope item 1 defines *what is portable*
 and *how it is versioned*, decided in the founding
 [ring 0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md):
 
@@ -37,7 +37,7 @@ The boundary's completeness, the version lines, and the lineage are enforced by
 
 ## The release mechanism (scope item 2)
 
-[Plan 0005](../docs/plans/active/0005-flowering.md) scope item 2 builds the owned release / graft
+[Plan 0005](../docs/plans/completed/0005-flowering.md) scope item 2 builds the owned release / graft
 CLI, decided in ring [0027](../docs/rings/0027-release-graft-cli.md) — a thin orchestrator
 ([`.seed/checks/release.ts`](../.seed/checks/release.ts), `npm run release`) over the model in
 [`.seed/lib/release.ts`](../.seed/lib/release.ts). A release is composed from **committed intent** and
@@ -61,7 +61,7 @@ release tool (ring 0027), and the installer (ring 0028) as its first release
 
 ## The installer + the mandated uninstall path (scope item 3)
 
-[Plan 0005](../docs/plans/active/0005-flowering.md) scope item 3 gives the release CLI's `graft` /
+[Plan 0005](../docs/plans/completed/0005-flowering.md) scope item 3 gives the release CLI's `graft` /
 `uninstall` verbs their machinery, decided in ring
 [0028](../docs/rings/0028-installer-uninstall.md) — the model is
 [`.seed/lib/graft.ts`](../.seed/lib/graft.ts). `graft <target>` installs this seed's portable subset —

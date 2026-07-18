@@ -16,95 +16,73 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 
 ## Current state
 
-- **Stage:** 3 — Flowering, entered 2026-07-15 (ring
-  [0025](docs/rings/0025-stage-3-transition-approved.md)). Stage 2 (Growth) completed with its
-  exit criterion evidenced in [plan 0003](docs/plans/completed/0003-growth.md) — the skill garden
-  grown and a foreign repo assessed read-only on evidence (assessment 0001); Stage 1 (Rooting) in
+- **Stage:** 4 — Pollination, entered 2026-07-17 (ring
+  [0032](docs/rings/0032-stage-4-transition-first-host-dither.md)). Stage 3 (Flowering) completed
+  with its exit criterion evidenced in [plan 0005](docs/plans/completed/0005-flowering.md) — the
+  portable subset packaged as versioned [`pollen/`](pollen/README.md) (v0.1.0) and the recursive
+  self-upgrade test passed (the seed is its own first host; proof
+  [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). Stage 2 (Growth) in
+  [plan 0003](docs/plans/completed/0003-growth.md) — the skill garden grown and a foreign repo
+  assessed read-only on evidence (assessment 0001); Stage 1 (Rooting) in
   [plan 0002](docs/plans/completed/0002-rooting.md), Stage 0 in
   [plan 0001](docs/plans/completed/0001-germination.md). The repository is public:
   [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
-- **Correct first action for a fresh agent right now:** Stage 3 (Flowering) is underway
-  (transition approved 2026-07-15, ring
-  [0025](docs/rings/0025-stage-3-transition-approved.md)). The governing plan is
-  [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope item 4
-  (the recursive self-upgrade test — the seed is its own first host) landed 2026-07-16 in
-  [ring 0029](docs/rings/0029-recursive-self-upgrade-test.md), and the Stage 3 exit criterion is met**
-  (proof: [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)); **both Stage 3 → 4
-  gating prerequisites are now paid, so the live work is proposing the transition.** [E-013](docs/plans/entropy-ledger.md)
-  — the seed's first inferential control (the [judge](skills/judge/SKILL.md) skill: a compose-not-commit
-  LLM-as-judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope) — landed
-  2026-07-17 in [ring 0030](docs/rings/0030-inferential-control-judge.md), and [E-004](docs/plans/entropy-ledger.md)
-  (the "Seed" name, an uncleared codename) is **paid** 2026-07-17 in
-  [ring 0031](docs/rings/0031-name-cleared-codename-retained.md): the Gardener's trademark knockout search
-  landed and the name is retained as a non-exclusive descriptive codename, no registration claimed. **The
-  correct next action: propose the Stage 3 → 4 (Flowering → Pollination) transition as a new plan** (the
-  [ring 0025](docs/rings/0025-stage-3-transition-approved.md) shape) for Gardener approval. Scope item 3
-  (the installer + the mandated uninstall path) landed 2026-07-15 in
-  [ring 0028](docs/rings/0028-installer-uninstall.md): the graft model
-  ([.seed/lib/graft.ts](.seed/lib/graft.ts)) — the running seed copies its portable method + sovereign
-  genome verbatim and emits the local scaffold (map, plans, rings, lineage, plumbing) as parameterized
-  templates, purely additive (refuse-to-clobber) so `uninstall` reverses byte-identical — plus the
-  release CLI's now-live `graft` / `uninstall` verbs, pinned by 3 self-tests in the worktrees hermetic
-  round-trip shape (works + teeth + byte-identical, refuse-to-clobber, `--dry-run` side-effect-free).
-  Scope item 2 (the owned
-  `.seed/` release/graft CLI) landed 2026-07-15 in [ring 0027](docs/rings/0027-release-graft-cli.md),
-  **paying off [E-015](docs/plans/entropy-ledger.md)**: the release model
-  ([.seed/lib/release.ts](.seed/lib/release.ts)) and CLI
-  ([.seed/checks/release.ts](.seed/checks/release.ts), `npm run release` — verbs
-  `sense`/`cut-release`/`verify`/`feedback`, with `graft`/`uninstall` landing in scope item 3), the
-  ring-0020 determinism split (pure byte-exact
-  [pending-release notes](docs/generated/pending-release.md); the append-only dated
-  [release history](pollen/releases/README.md) with its
-  [gate](.seed/checks/release-append-only.ts); the side-effecting `cut-release`, dry-run-verified),
-  the version-bump-from-max-declared-impact and the migration-required-for-major tooth, all pinned by
-  [validate-release](.seed/checks/validate-release.ts) + the self-tests. The pollen line rests at
-  **v0.1.0** — cut 2026-07-16 by the recursive self-upgrade test
-  ([ring 0029](docs/rings/0029-recursive-self-upgrade-test.md)), composing the boundary (ring 0026), the
-  release tool (ring 0027), and the installer (ring 0028) as its first release
-  ([pollen/releases/v0.1.0.md](pollen/releases/v0.1.0.md)); [pending](pollen/pending.md) is now empty. Scope item 1 (pollen boundary + versioning + lineage) landed 2026-07-15 in the founding
-  [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md), which decided E-015's three
-  forks — the semver + migration model, the three
-  orthogonal granularity axes (release = pollen version, learning = ring, artifact = skill), and the
-  three ownership tiers (sovereign genome / portable method / local history) — and shipped the
-  [pollen manifest](.seed/lib/pollen.ts) (the boundary + the two version lines) with
-  [validate-pollen](.seed/checks/validate-pollen.ts). Stage 3 packages the portable subset — skills, scaffolding templates, protocols, an
-  installer, and a mandated uninstall path — as versioned [`pollen/`](pollen/README.md), then runs
-  the recursive test (**the seed is its own first host**: upgrade the seed using its own pollen),
-  proving the transplant by installing pollen into a sacrificial test repo with fitness measured
-  before and after — the delta is the exit proof (SEED.md §4). Two gating prerequisites clear
-  *within* this stage before the transition: [E-013](docs/plans/entropy-ledger.md) (the seed had only
-  computational controls; inferential quality rises sharply at Flowering) — **paid 2026-07-17**, the
-  [judge](skills/judge/SKILL.md) inferential control (ring
-  [0030](docs/rings/0030-inferential-control-judge.md)); and [E-004](docs/plans/entropy-ledger.md) (the
-  "Seed" name is an uncleared codename) — **also paid 2026-07-17** in
-  [ring 0031](docs/rings/0031-name-cleared-codename-retained.md): the Gardener's trademark knockout search
-  landed and the name is retained as a non-exclusive descriptive codename (no registration claimed).
-  **Both gating prerequisites are now clear; the Stage 3 → 4 transition awaits its proposal.** Stage 2 grew
-  the skill garden — **grill-the-gardener** (ring
-  [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)), **repo-fitness** (ring
-  [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), **postmortem** (ring
-  [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)), **parallel-worktrees** (ring
-  [0019](docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)), **onboard-human** (a
-  briefing generated from the map — [docs/generated/onboarding.md](docs/generated/onboarding.md) —
-  ring [0020](docs/rings/0020-onboard-human-generated-briefing.md)), **feedback** (ring
-  [0021](docs/rings/0021-feedback-composes-upstream-issue.md)) — and its exit criterion was
-  evidenced by [assessment 0001 — mottainapp](docs/assessments/0001-mottainapp.md), a read-only
-  Scout of a 691-file / 792-commit foreign product turned into an evidence-judgeable proposal, the
-  target proven byte-identical before and after (ring
+- **Correct first action for a fresh agent right now:** Stage 4 (Pollination) is underway
+  (transition approved 2026-07-17, ring
+  [0032](docs/rings/0032-stage-4-transition-first-host-dither.md)). The governing plan is
+  [plan 0006](docs/plans/active/0006-pollination.md) — continue from its `Next actions`. The seed
+  enters its **first external host, dither** (named by the Gardener at Stage 4 entry, ring 0032 —
+  which resolves [ring 0006](docs/rings/0006-solo-until-flowering.md): the seed is no longer solo),
+  and runs the genome's six-step per-host protocol (SEED.md §4): **Scout → Grill → Propose → Graft →
+  Metabolize → Independence.** **The live work is step 1 — Scout dither:** land the
+  [E-012](docs/plans/entropy-ledger.md) pre-flight fix (repo-fitness must count `git ls-files` before
+  it measures a real host), then deliver the read-only [repo-fitness](skills/repo-fitness/SKILL.md)
+  baseline + a new [assessment](docs/assessments/README.md). Every step's instrument was built across
+  Stages 2–3 (Scout / Propose proven read-only in
+  [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
+  the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose
+  step, and the per-host exit criterion governs — a positive fitness trend over a sustained window
+  with owners shipping through the agent workflow without the seed being special. Pollination is
+  terminal and ongoing (SEED.md §0: a repository is never "done").
+- **Stage 3 (Flowering), completed 2026-07-17** — packaged the portable subset as versioned
+  [`pollen/`](pollen/README.md) and proved the transplant on itself. The boundary + two version lines
+  + lineage (founding [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md)), the owned
+  `.seed/` release / graft CLI ([ring 0027](docs/rings/0027-release-graft-cli.md), paying off
+  [E-015](docs/plans/entropy-ledger.md); [.seed/checks/release.ts](.seed/checks/release.ts), `npm run
+  release`), and the installer + mandated uninstall path
+  ([ring 0028](docs/rings/0028-installer-uninstall.md); [.seed/lib/graft.ts](.seed/lib/graft.ts))
+  composed the first pollen release **v0.1.0**
+  ([pollen/releases/v0.1.0.md](pollen/releases/v0.1.0.md)); the recursive self-upgrade test
+  ([ring 0029](docs/rings/0029-recursive-self-upgrade-test.md)) grafted it into a sacrificial repo
+  with fitness measured before/after and uninstalled byte-identical — the exit proof
+  ([docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). Both Stage 3 → 4 gating
+  prerequisites paid: the seed's first inferential control, the [judge](skills/judge/SKILL.md)
+  ([ring 0030](docs/rings/0030-inferential-control-judge.md), [E-013](docs/plans/entropy-ledger.md)),
+  and the "Seed" name retained as a non-exclusive descriptive codename
+  ([ring 0031](docs/rings/0031-name-cleared-codename-retained.md),
+  [E-004](docs/plans/entropy-ledger.md)).
+- **Live organs (Stages 1–2), each shipping its own verification (LAW-6):** Stage 2's skill garden —
+  **grill-the-gardener** (ring [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)),
+  **repo-fitness** (ring [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)),
+  **postmortem** (ring [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)),
+  **parallel-worktrees** (ring [0019](docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)),
+  **onboard-human** (a briefing generated from the map —
+  [docs/generated/onboarding.md](docs/generated/onboarding.md) — ring
+  [0020](docs/rings/0020-onboard-human-generated-briefing.md)), **feedback** (ring
+  [0021](docs/rings/0021-feedback-composes-upstream-issue.md)) — evidenced by
+  [assessment 0001 — mottainapp](docs/assessments/0001-mottainapp.md) (ring
   [0022](docs/rings/0022-assessment-organ-exit-criterion.md), the
-  [docs/assessments/](docs/assessments/README.md) organ). Before Flowering the Gardener grew one
-  more organ: the [intake](skills/intake/SKILL.md) skill and the seed's first principle
-  [grounded-or-ask](docs/principles/grounded-or-ask.md), with
-  [validate-references](.seed/checks/validate-references.ts) binding every distilled source
-  ([docs/references/harness-engineering.md](docs/references/harness-engineering.md)) — landed by
-  [plan 0004](docs/plans/completed/0004-intake.md) (rings
-  [0023](docs/rings/0023-grounded-or-ask-first-principle.md)/[0024](docs/rings/0024-intake-network-free-metabolizer.md)).
-  Each capability shipped its own verification (LAW-6). Stage 1's self-maintenance organs — all
-  built and evidenced in [plan 0002](docs/plans/completed/0002-rooting.md) — remain live: the
-  self-tests (`npm test`), the traceability gate, the [doc-gardener](skills/doc-gardener/SKILL.md)
-  drift detector (`npm run garden`, advisory per ring
-  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`) with snapshots
-  in [docs/fitness/history/](docs/fitness/history/README.md), and the weekly
+  [docs/assessments/](docs/assessments/README.md) organ), plus **intake** and the seed's first
+  principle [grounded-or-ask](docs/principles/grounded-or-ask.md)
+  ([plan 0004](docs/plans/completed/0004-intake.md), rings
+  [0023](docs/rings/0023-grounded-or-ask-first-principle.md)/[0024](docs/rings/0024-intake-network-free-metabolizer.md);
+  [validate-references](.seed/checks/validate-references.ts) binding
+  [docs/references/harness-engineering.md](docs/references/harness-engineering.md)). Stage 1's
+  self-maintenance organs — all in [plan 0002](docs/plans/completed/0002-rooting.md) — remain live:
+  the self-tests (`npm test`), the traceability gate, the
+  [doc-gardener](skills/doc-gardener/SKILL.md) drift detector (`npm run garden`, advisory per ring
+  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`) with snapshots in
+  [docs/fitness/history/](docs/fitness/history/README.md), and the weekly
   [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow (ring
   [0012](docs/rings/0012-cadence-automation-mechanism.md)).
 

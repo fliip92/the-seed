@@ -205,7 +205,7 @@ and a stale generated artifact is a correctness defect, not a trend.
 
 [lib/pollen.ts](lib/pollen.ts) is the **pollen manifest** (founding ring
 [0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md), plan
-[0005](../docs/plans/active/0005-flowering.md) scope item 1): the single source of truth (LAW-3)
+[0005](../docs/plans/completed/0005-flowering.md) scope item 1): the single source of truth (LAW-3)
 for the Stage 3 portable boundary. It classifies every top-level repo entry into one tier —
 **portable** (the method: `skills/` and `.seed/`, grafted into descendants and locally
 adaptable), **sovereign** (the genome `SEED.md`, amended only the mother's way), or **local**

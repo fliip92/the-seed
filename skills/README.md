@@ -72,7 +72,7 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   composed, not committed (the Gardener ratifies). Wires intake's faithfulness residual to a judge and
   is the intake family's fourth engine. Verified by the envelope's self-tests + a standing verdict on
   [harness-engineering.md](../docs/references/harness-engineering.md) (Stage 3, plan
-  [0005](../docs/plans/active/0005-flowering.md); [E-013](../docs/plans/entropy-ledger.md); ring
+  [0005](../docs/plans/completed/0005-flowering.md); [E-013](../docs/plans/entropy-ledger.md); ring
   [0030](../docs/rings/0030-inferential-control-judge.md)).
 
 Every Stage 2 skill on the SEED.md §4 menu is planted (grill-the-gardener, repo-fitness, postmortem,

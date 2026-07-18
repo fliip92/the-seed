@@ -9,9 +9,9 @@ repository's own state, `npm run check` fails the moment this page drifts from t
 
 ## Where the Seed is now
 
-- **Stage:** 3 — Flowering.
+- **Stage:** 4 — Pollination.
 - **Active plan — where it is going:**
-  - [Plan 0005 — Flowering (Stage 3)](../plans/active/0005-flowering.md) — Advance from Stage 2 (Growth) to Stage 3 (Flowering, SEED.md §4): package the portable subset of the Seed — skills, scaffolding templates, protocols, an installer, and a mandated uninstall path — as versioned `pollen/`, then run the recursive test — **the seed is its own first host**: upgrade the seed using its own pollen — proving the transplant by installing pollen into a sacrificial test repo with fitness measured before and after. The delta is the proof (the Stage 3 exit criterion).
+  - [Plan 0006 — Pollination (Stage 4)](../plans/active/0006-pollination.md) — Advance from Stage 3 (Flowering) to Stage 4 (Pollination, SEED.md §4): enter a real foreign host and run the genome's six-step per-host protocol — **Scout → Grill → Propose → Graft → Metabolize → Independence** — bringing **method, not dogma** (the host's target architecture is discovered by grilling its owners, never imposed). Every step's instrument was built and proven during Stages 2–3; Stage 4 is the first time the whole organism is applied, mutating, to a repository that is not the Seed itself. Unlike every prior stage, Pollination is **terminal and ongoing** (SEED.md §0: a repository is never "done") — its exit criterion is judged *per host*, and the mother keeps pollinating indefinitely (SEED.md §7).
 
 ## How to get oriented
 

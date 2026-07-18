@@ -1,7 +1,7 @@
 # The recursive self-upgrade test — Stage 3 exit proof
 
 - Date: 2026-07-16
-- Test: **the seed is its own first host** (SEED.md §4; [plan 0005](../plans/active/0005-flowering.md)
+- Test: **the seed is its own first host** (SEED.md §4; [plan 0005](../plans/completed/0005-flowering.md)
   scope item 4, [ring 0029](../rings/0029-recursive-self-upgrade-test.md))
 - Verdict: **PASS** — the Stage 3 (Flowering) exit criterion is met.
 

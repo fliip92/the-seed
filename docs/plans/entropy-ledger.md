@@ -258,11 +258,11 @@ ledger is also a record of digestion.
 
 - First observed: 2026-07-06, worked out with the Gardener as the Stage 3 release/upgrade
   process; formalized into the ledger 2026-07-08 at the Stage 2 → 3 transition proposal
-  ([plan 0005](active/0005-flowering.md))
+  ([plan 0005](completed/0005-flowering.md))
 - Where: the design lived only in agent memory (tribal knowledge is entropy, SEED.md §0) until it
   was priced here, its forks decided (ring
   [0026](../rings/0026-pollen-boundary-versioning-lineage.md)), and the machinery built across
-  [plan 0005](active/0005-flowering.md) scope items 1–2 — the boundary + version lines + lineage,
+  [plan 0005](completed/0005-flowering.md) scope items 1–2 — the boundary + version lines + lineage,
   then the release/graft CLI: the seed can now cut a versioned pollen release, compute a version bump
   from committed intent, carry a migration, and let a descendant `sense`/`graft` an upstream improvement
 - Interest rate: low then, spiked to high at Stage 3 (Flowering's pollen work could not begin
@@ -280,7 +280,7 @@ ledger is also a record of digestion.
   Propagation is re-metabolization, not `npm update`: an adopted upstream change becomes the
   descendant's own ring (its `plan-traceability` gate already refuses ringless changes), so "propose,
   never force" falls out for free
-- Paid: 2026-07-15 ([plan 0005](active/0005-flowering.md) scope item 2, ring
+- Paid: 2026-07-15 ([plan 0005](completed/0005-flowering.md) scope item 2, ring
   [0027](../rings/0027-release-graft-cli.md)). The release model
   ([.seed/lib/release.ts](../../.seed/lib/release.ts)) — the single source of truth for how a release
   is composed, versioned, and recorded (read by the generator, the check, and the CLI) — plus the CLI
@@ -315,7 +315,7 @@ ledger is also a record of digestion.
 - Conversion path: invariant — build the inferential-control instrument alongside the first skill
   that needs it (intake); until then the mitigation is compose-not-commit plus human ratification
   (the grounded-or-ask discipline), a doc-only control that keeps fabrication visible and gated
-- Paid: 2026-07-17 ([plan 0005](active/0005-flowering.md), ring
+- Paid: 2026-07-17 ([plan 0005](completed/0005-flowering.md), ring
   [0030](../rings/0030-inferential-control-judge.md)) — a Stage 3 → 4 gating prerequisite cleared. The
   instrument is a **deterministic envelope around a probabilistic core**: the seed owns the envelope and
   never pretends the judgment is deterministic (the hard part, named above). The
@@ -350,7 +350,7 @@ ledger is also a record of digestion.
 - Conversion path: ring — the Gardener named it "The Seed" (ring
   [0004](../rings/0004-name-hosting-visibility.md)), which settles the name but not its
   legal clearance; a trademark search must still land before Stage 3 pollen distribution
-- Paid: 2026-07-17 ([plan 0005](active/0005-flowering.md), ring
+- Paid: 2026-07-17 ([plan 0005](completed/0005-flowering.md), ring
   [0031](../rings/0031-name-cleared-codename-retained.md)) — the last Stage 3 → 4 gating
   prerequisite cleared. The **trademark knockout search** landed (the priced work): "Seed" /
   "The Seed" is a crowded, weak name in and around AI/dev software — senior in-space users

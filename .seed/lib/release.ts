@@ -242,7 +242,7 @@ export function renderPendingNotes(root: string = REPO_ROOT): string {
       ...pending.intents.map((i) => `  - ${i.impact} — ring ${i.ring} — ${i.summary}`),
       '',
       `Cut it with \`node .seed/checks/release.ts cut-release --date YYYY-MM-DD\` — the first real cut is`,
-      'the recursive self-upgrade test ([plan 0005](../plans/active/0005-flowering.md) scope item 4).',
+      'the recursive self-upgrade test ([plan 0005](../plans/completed/0005-flowering.md) scope item 4).',
     );
   }
   lines.push(

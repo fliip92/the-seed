@@ -26,5 +26,17 @@ built, and the evidence trail behind every capability (LAW-6).
   and `validate-references`. Scouted by the first external-corpus intake
   ([harness-engineering.md](../../references/harness-engineering.md)); surfaced E-013/E-014. The
   inferential faithfulness judge (E-013) is deferred by design.
+- [0005 — Flowering (Stage 3)](0005-flowering.md) — completed 2026-07-17. Packaged the portable subset
+  as versioned [`pollen/`](../../../pollen/README.md) — the boundary + two version lines + lineage
+  (ring [0026](../../rings/0026-pollen-boundary-versioning-lineage.md)), the owned `.seed/`
+  release/graft CLI (ring [0027](../../rings/0027-release-graft-cli.md), paying off E-015), and the
+  installer + mandated uninstall path (ring [0028](../../rings/0028-installer-uninstall.md)) — then
+  proved the transplant on itself: the recursive self-upgrade test
+  (ring [0029](../../rings/0029-recursive-self-upgrade-test.md)) cut v0.1.0 and grafted it into a
+  sacrificial repo with fitness measured before/after and a byte-identical uninstall — the Stage 3
+  exit criterion. Both Stage 3 → 4 gating prerequisites paid: the inferential-control judge (E-013,
+  ring [0030](../../rings/0030-inferential-control-judge.md)) and the name (E-004,
+  ring [0031](../../rings/0031-name-cleared-codename-retained.md)). Closed by the Stage 3 → 4
+  transition (ring [0032](../../rings/0032-stage-4-transition-first-host-dither.md)).
 
 Format and procedure: [../README.md](../README.md).
