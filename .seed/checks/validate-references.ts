@@ -28,8 +28,10 @@
 //       silent truncation.
 // For an externally-pinned corpus — harness-engineering.md, whose 29 sources are all external —
 // the teeth are vacuous (there is no saved corpus to enumerate or quote-check), so provenance +
-// per-claim citation + the split carry the structural weight, and the faithfulness residual stays
-// doc-only: grounded-or-ask's compose-not-commit + Gardener ratification (E-013). This check must
+// per-claim citation + the split carry the structural weight. This check catches FABRICATION; the
+// faithfulness residual it cannot compute — whether a paraphrase outran its source — is now scored by
+// the INFERENTIAL judge (validate-judgments.ts + the judge skill, ring 0030; E-013 paid), with
+// compose-not-commit + Gardener ratification still the human half (grounded-or-ask). This check must
 // pass on the landed harness-engineering.md, its first real subject (the assessment-0001 pattern).
 //
 // Vacuous while docs/references/ holds only its README (the docs/architecture / docs/assessments

@@ -15,6 +15,7 @@ import { join, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { REPO_ROOT } from '../lib/repo.ts';
+import { pin } from '../lib/judge.ts';
 
 const ANATOMY = 'seed/validate-anatomy';
 const MAP = 'seed/validate-map';
@@ -28,6 +29,7 @@ const GENERATED = 'seed/validate-generated';
 const REFERENCES = 'seed/validate-references';
 const POLLEN = 'seed/validate-pollen';
 const RELEASE = 'seed/validate-release';
+const JUDGMENTS = 'seed/validate-judgments';
 const GATE = 'seed/ring-append-only';
 const RELEASE_GATE = 'seed/release-append-only';
 const TRACE = 'seed/plan-traceability';
@@ -37,6 +39,7 @@ const LAW2 = "LAW-2 — legible and enforceable, or it doesn't exist";
 const LAW3 = 'LAW-3 — invariants over implementations';
 const LAW4 = 'LAW-4 — the map is the entry point';
 const LAW5 = 'LAW-5 — plans are first-class artifacts';
+const LAW6 = 'LAW-6 — every capability ships with its own verification';
 const LAW8 = 'LAW-8 — entropy is paid continuously';
 const LAW10 = 'LAW-10 — escalate scarce judgment; never ask twice';
 
@@ -90,6 +93,12 @@ const POSTMORTEM_GAP = pad4(postmortemMax + 2);
 const assessmentMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/assessments')), /^(\d{4})-/);
 const ASSESS_NEXT = pad4(assessmentMax + 1);
 const ASSESS_GAP = pad4(assessmentMax + 2);
+
+// Judgments (ring 0030) are numbered like assessments and the organ ships non-empty (0001 lands with
+// the instrument), so a fixture verdict is seeded at NEXT (max+1) and a duplicate collides with a second
+// file at NEXT — both stay valid as more verdicts land (the derive-from-maxima discipline).
+const judgmentMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/judgments')), /^(\d{4})-/);
+const JUDGMENT_NEXT = pad4(judgmentMax + 1);
 
 function copyRepo(): string {
   const root = mkdtempSync(join(tmpdir(), 'seed-selftest-'));
@@ -504,6 +513,59 @@ function validLedgerEntry(num: string, opts: { drop?: string } = {}): string {
     '- Conversion path: deletion — fixture entry, delete on sight',
   ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
   return ['', `## E-${num} — Self-test fixture debt`, '', ...fields, ''].join('\n');
+}
+
+// --- judge / inferential-control fixtures (ring 0030). A valid verdict pins an existing, reachable
+// --- artifact (AGENTS.md) with its REAL content hash, so a valid fixture is FRESH; each opt breaks
+// --- exactly one envelope field. The link shown and the file pinned are decoupled (artifactLink vs
+// --- artifactPath), so a DANGLING-artifact case can point the link at a ghost while still pinning a
+// --- real file — isolating the resolve failure from the pin.
+function validVerdict(
+  root: string,
+  number: string,
+  opts: {
+    titleNumber?: string;
+    drop?: 'Rubric' | 'Artifact' | 'Source' | 'Model' | 'Date' | 'Score';
+    rubric?: string;
+    artifactLink?: string; // the [text](target) shown on the Artifact line
+    artifactPath?: string; // the real repo file whose content is pinned (default AGENTS.md)
+    noPin?: boolean; // keep the link, drop the sha256 pin
+    stalePin?: boolean; // write a pin that will not match the current content (staleness)
+    score?: string;
+    model?: string;
+    source?: string;
+    rationale?: string | null;
+  } = {},
+): string {
+  const artifactPath = opts.artifactPath ?? 'AGENTS.md';
+  const realPin = pin(readFileSync(join(root, artifactPath), 'utf8'));
+  const pinText = opts.noPin ? '' : ` — content ${opts.stalePin ? 'sha256:0000000000000000' : realPin}`;
+  const link = opts.artifactLink ?? `[${artifactPath}](../../${artifactPath})`;
+  const fields: Array<[string, string]> = [
+    ['Rubric', opts.rubric ?? 'faithfulness v1'],
+    ['Artifact', `${link}${pinText}`],
+    ['Source', opts.source ?? 'external — self-test fixture, unpinnable (ring 0024)'],
+    ['Model', opts.model ?? 'claude-opus-4-8'],
+    ['Date', '2026-07-17'],
+    ['Score', opts.score ?? '4 / 5'],
+  ];
+  const bullets = fields.filter(([n]) => n !== opts.drop).map(([n, v]) => `- ${n}: ${v}`);
+  const rationale =
+    opts.rationale === undefined
+      ? 'A self-test fixture verdict — it exists only inside a temp copy, judging the pinned fixture artifact.'
+      : opts.rationale;
+  return [
+    `# Judgment ${opts.titleNumber ?? number} — self-test fixture`,
+    '',
+    ...bullets,
+    '',
+    ...(rationale === null ? [] : ['## Rationale', '', rationale]),
+    '',
+  ].join('\n');
+}
+
+function seedVerdict(root: string, number: string, opts: Parameters<typeof validVerdict>[2] = {}, slug = 'fixture'): void {
+  write(root, `docs/judgments/${number}-${slug}.md`, validVerdict(root, number, opts));
 }
 
 // --- cases ---
@@ -1318,6 +1380,83 @@ const CASES: ViolationCase[] = [
       runNode(r, '.seed/checks/generate.ts');
     },
     expect: { check: RELEASE, law: LAW2, contains: ['composes no rings'] },
+  },
+
+  // --- judge / inferential control (ring 0030; E-013): the envelope's violation classes ---
+  {
+    name: 'judgments: a misfiled verdict (bad filename) is caught',
+    seed: (r) => write(r, 'docs/judgments/not-a-number.md', '# Judgment\n\nnot a verdict.\n'),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['does not match the verdict filename format'] },
+  },
+  {
+    name: 'judgments: duplicate verdict number is caught',
+    seed: (r) => {
+      seedVerdict(r, JUDGMENT_NEXT, {}, 'one');
+      seedVerdict(r, JUDGMENT_NEXT, {}, 'two');
+    },
+    expect: { check: JUDGMENTS, law: LAW2, contains: [`duplicate judgment number ${JUDGMENT_NEXT}`] },
+  },
+  {
+    name: 'judgments: title number not matching the filename is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { titleNumber: pad4(Number(JUDGMENT_NEXT) + 1) }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['does not match filename number'] },
+  },
+  {
+    name: 'judgments: an unknown rubric or version is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { rubric: 'faithfulness v9' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['names an unknown rubric or version'] },
+  },
+  {
+    name: 'judgments: a missing Rubric line is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { drop: 'Rubric' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['has no valid Rubric line'] },
+  },
+  {
+    name: 'judgments: an unfilled Model placeholder is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { model: '<the model id that judged>' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['names no judging model'] },
+  },
+  {
+    name: 'judgments: a missing Date is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { drop: 'Date' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['no valid YYYY-MM-DD Date'] },
+  },
+  {
+    name: 'judgments: an off-scale Score is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { score: '9 / 5' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['Score 9 is outside'] },
+  },
+  {
+    name: 'judgments: an unfilled Score placeholder is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { score: '<1-5> / 5' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['has no valid Score'] },
+  },
+  {
+    name: 'judgments: a missing Rationale is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { rationale: null }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['has no Rationale'] },
+  },
+  {
+    name: 'judgments: an artifact pin with no hash is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { noPin: true }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['pins no content hash'] },
+  },
+  {
+    name: 'judgments: a verdict pinning a nonexistent artifact is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { artifactLink: '[ghost](../../docs/ghost-artifact.md)' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['pins an artifact that does not exist'] },
+  },
+  {
+    name: 'judgments: a missing Source line is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { drop: 'Source' }),
+    expect: { check: JUDGMENTS, law: LAW2, contains: ['has no Source line'] },
+  },
+  {
+    // The deterministic tooth: a verdict whose pinned artifact hash no longer matches the current
+    // content is STALE and fails run-all (LAW-6) — the failure mode a probabilistic control must catch.
+    name: 'judgments: a STALE verdict (pin no longer matches the artifact) is caught',
+    seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { stalePin: true }),
+    expect: { check: JUDGMENTS, law: LAW6, contains: ['is STALE'] },
   },
 ];
 
@@ -3180,6 +3319,88 @@ inTempCopy((root) => {
   } finally {
     rmSync(seedish, { recursive: true, force: true });
   }
+});
+
+// --- judge CLI (ring 0030; E-013): the seam between the deterministic envelope and the host model.
+// --- Four proofs: a valid fixture verdict passes the envelope (so the negative cases isolate one
+// --- field); `prepare` WORKS and is SIDE-EFFECT-FREE (assembles the pinned prompt + skeleton, writes
+// --- nothing — the tree is byte-identical after, the cut-release/graft/feedback dry-run shape); it has
+// --- TEETH (refuses an unknown rubric and an absent artifact); and the ROUND-TRIP — a filled skeleton
+// --- validates — so the CLI and validate-judgments agree by construction (the generate.ts fixpoint shape).
+const runJudge = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/judge.ts', args);
+function parseJudge(output: string): Record<string, unknown> | null {
+  const line = output.split('\n').reverse().find((l) => l.trim().startsWith('{'));
+  try {
+    return line ? (JSON.parse(line) as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+}
+
+inTempCopy((root) => {
+  seedVerdict(root, JUDGMENT_NEXT, {});
+  append(root, 'docs/judgments/README.md', `\n- [fixture](${JUDGMENT_NEXT}-fixture.md) — self-test fixture verdict.\n`);
+  const { status, output } = runChecks(root);
+  report(
+    'judgments: a valid, fresh verdict passes the envelope (no false positive)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  const before = treeHash(root);
+  const { status, output } = runJudge(root, ['prepare', 'docs/references/harness-engineering.md', '--rubric', 'faithfulness', '--json']);
+  const after = treeHash(root);
+  const j = parseJudge(output);
+  const ok =
+    status === 0 &&
+    j !== null &&
+    j.ok === true &&
+    typeof j.artifactPin === 'string' &&
+    (j.artifactPin as string).startsWith('sha256:') &&
+    j.source === null && // harness-engineering.md's 29 sources are all external
+    typeof j.prompt === 'string' &&
+    (j.prompt as string).includes('# Judge task') &&
+    typeof j.skeleton === 'string' &&
+    (j.skeleton as string).includes('- Score:') &&
+    before === after;
+  report(
+    'judge: `prepare` assembles the pinned prompt + skeleton and writes nothing (works + side-effect-free)',
+    ok,
+    `expected exit 0, ok, a sha256 pin, external source, a prompt + skeleton, and a byte-identical tree; got exit ${status}, tree-unchanged ${before === after}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  const bogus = runJudge(root, ['prepare', 'docs/references/harness-engineering.md', '--rubric', 'nope', '--json']);
+  const ghost = runJudge(root, ['prepare', 'docs/nowhere.md', '--rubric', 'faithfulness', '--json']);
+  const jb = parseJudge(bogus.output);
+  const jg = parseJudge(ghost.output);
+  report(
+    'judge: `prepare` refuses an unknown rubric and an absent artifact (has teeth)',
+    bogus.status === 1 && jb?.ok === false && ghost.status === 1 && jg?.ok === false,
+    `expected both exit 1 + ok:false; bogus exit ${bogus.status}, ghost exit ${ghost.status}:\n${bogus.output}\n---\n${ghost.output}`,
+  );
+});
+
+inTempCopy((root) => {
+  const { output } = runJudge(root, ['prepare', 'docs/references/harness-engineering.md', '--rubric', 'faithfulness', '--json']);
+  const j = parseJudge(output);
+  const number = (j?.number as string) ?? JUDGMENT_NEXT;
+  const filled = ((j?.skeleton as string) ?? '')
+    .replace(/- Model: <[^>]*>/, '- Model: claude-opus-4-8')
+    .replace(/- Date: <[^>]*>/, '- Date: 2026-07-17')
+    .replace(/- Score: <[^>]*> \/ 5/, '- Score: 4 / 5')
+    .replace(/<Concrete justification[\s\S]*?>/, 'A filled round-trip fixture rationale, judging the pinned artifact against the rubric.');
+  write(root, `docs/judgments/${number}-roundtrip.md`, filled);
+  append(root, 'docs/judgments/README.md', `\n- [roundtrip](${number}-roundtrip.md) — self-test round-trip fixture.\n`);
+  const { status, output: checkOut } = runChecks(root);
+  report(
+    'judge: a filled `prepare` skeleton validates — the CLI and validate-judgments agree by construction',
+    status === 0 && checkOut.includes('all checks passed'),
+    `expected exit 0 + "all checks passed" after filling the skeleton; got exit ${status}:\n${filled}\n---\n${checkOut}`,
+  );
 });
 
 console.log(

@@ -45,6 +45,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-references.ts](checks/validate-references.ts) | The distilled-reference format (intake): a **Source** with a retrieval date + commit pin (for a pinnable repo), every claim cited, the `**Seed reading:**` grounded/inference split present — with quote-match + completeness teeth where the cited corpus is saved in-repo (plan 0004, ring 0024's pin-not-mirror) | LAW-2 |
 | [checks/validate-pollen.ts](checks/validate-pollen.ts) | The pollen boundary (ring 0026): the [manifest](lib/pollen.ts) classifies every top-level entry (portable / sovereign / local) so the Stage 3 boundary stays total, the two version lines (genome vs pollen) are well-formed, and the seed's [lineage](../pollen/lineage.json) (SEED.md §7) is present and well-formed | LAW-3, LAW-2 |
 | [checks/validate-release.ts](checks/validate-release.ts) | The pure release invariants (ring 0027): the [pending intents](../pollen/pending.md) are well-formed and name existing rings, every [release](../pollen/releases/README.md) is semver + dated + strictly increasing, `POLLEN_VERSION` tracks the latest release, and every major carries an existing migration | LAW-3, LAW-2 |
+| [checks/validate-judgments.ts](checks/validate-judgments.ts) | The inferential-control **envelope** (ring 0030; E-013): every [verdict](../docs/judgments/README.md) is well-formed, its input pins resolve, and it is **fresh** (a verdict whose judged artifact changed since it was scored fails `run-all`); the probabilistic score is trended, never gated (ring 0011); coverage is advisory | LAW-2, LAW-6 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
 [lib/repo.ts](lib/repo.ts). Runner: [checks/run-all.ts](checks/run-all.ts).
@@ -282,6 +283,34 @@ validate-map/doc-drift. Graft is **purely additive** — it refuses to overwrite
 (LAW-2) — which is what makes `uninstall` a clean inverse: it removes exactly the graft set and prunes
 the directories it emptied, restoring the target byte-identical. Being side-effecting the verbs stay out
 of `run-all.ts`; their verification is a hermetic round-trip pinned by the self-tests (below).
+
+## Judge (inferential control)
+
+The seed's first **inferential** control (ring [0030](../docs/rings/0030-inferential-control-judge.md);
+[E-013](../docs/plans/entropy-ledger.md)). Every other check above is a *computational* control — a
+deterministic structural gate. The judge scores a behavioral property none of them can: whether an
+agent's synthesis stayed **faithful** to its source. The design is a **deterministic envelope around a
+probabilistic core** — the seed owns the envelope, and the model call is a host act outside the genome
+(network-free, zero-dep, so no LLM client is baked in).
+
+[lib/judge.ts](lib/judge.ts) is the **judge model** — the single source of truth (LAW-3): the verdict
+schema, the rubric registry, the zero-dependency content pin (`sha256:`, node's `createHash`),
+staleness, the score scale, and the pinned-prompt/skeleton renderers. Three organs read it — the
+validator, the CLI, and the [judge skill](../skills/judge/SKILL.md) — so what a verdict *is* cannot drift.
+
+[checks/judge.ts](checks/judge.ts) (`npm run judge`) is the **CLI**: `prepare <artifact> [--rubric
+<name>] [--source <path>]` assembles the pinned inputs into the exact judge prompt + a verdict skeleton;
+`list` shows the recorded verdicts and their freshness. It is **side-effect-free** — it reads and prints,
+writing nothing; the host model fills the skeleton and lands the verdict in
+[../docs/judgments/](../docs/judgments/README.md). Being side-effecting only in the host's hands, it stays
+out of `run-all.ts` (the compose-not-commit boundary, ring 0021).
+
+[checks/validate-judgments.ts](checks/validate-judgments.ts) (in `run-all.ts`) gates the **envelope**:
+every verdict well-formed, its pins resolving, and **fresh** (a stale verdict — its judged artifact
+changed after scoring — fails, the deterministic tooth). The probabilistic score is trended, never
+gated (ring [0011](../docs/rings/0011-drift-advisory.md)); coverage is advisory. Rubrics are portable,
+versioned artifacts under [../skills/judge/rubrics/](../skills/judge/SKILL.md); v0 ships
+[faithfulness](../skills/judge/rubrics/faithfulness.md).
 
 ## Self-tests
 

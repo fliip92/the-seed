@@ -17,6 +17,7 @@
     "worktrees": "node .seed/checks/worktrees.ts",
     "generate": "node .seed/checks/generate.ts",
     "feedback": "node .seed/checks/feedback.ts",
-    "release": "node .seed/checks/release.ts"
+    "release": "node .seed/checks/release.ts",
+    "judge": "node .seed/checks/judge.ts"
   }
 }

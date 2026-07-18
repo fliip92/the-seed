@@ -59,9 +59,10 @@ read it as the worked example.
    will actually need (LAW-7).
 4. **Ratify.** Compose, do not commit. The distillation and any proposed rings, ledger
    entries, or skill-seeds are a *proposal*; the Gardener ratifies before it lands (SEED.md
-   §5). This is v0's control over the one thing the machinery cannot yet judge — whether a
-   paraphrase stayed *faithful* to its source
-   ([E-013](../../docs/plans/entropy-ledger.md)).
+   §5). This is the human half of the control over what a *structural* check cannot judge —
+   whether a paraphrase stayed *faithful* to its source; that residual now also has an
+   inferential judge (the [judge](../judge/SKILL.md) skill, [E-013](../../docs/plans/entropy-ledger.md)),
+   which scores the distillation against a rubric before the Gardener rules.
 5. **Land.** On ratification, the reference lands in
    [docs/references/](../../docs/references/README.md) and each secondary outcome in its organ;
    the reference is added to that directory's index (reachability, LAW-4).
@@ -113,12 +114,18 @@ on two surfaces:
   [harness-engineering.md](../../docs/references/harness-engineering.md) — all-external, so the
   teeth are vacuous there and provenance + citation + the split carry the weight.
 - **Faithfulness (inferential).** Whether a paraphrase stays true to its source is *not*
-  computationally checkable — it needs a judge the seed does not yet have
-  ([E-013](../../docs/plans/entropy-ledger.md)). v0's control is
-  [grounded-or-ask](../../docs/principles/grounded-or-ask.md)'s doc-only half —
-  compose-not-commit plus Gardener ratification (step 4) — which keeps every unfaithful claim
-  visible and gated rather than committed on the agent's authority. The judge is deferred,
-  named not dropped (plan 0004 scope item 4).
+  computationally checkable — it needs a judge, and the seed now has one. The
+  [judge](../judge/SKILL.md) skill scores a distilled reference against the
+  [faithfulness rubric](../judge/rubrics/faithfulness.md) and records a pinned, envelope-gated
+  verdict in [docs/judgments/](../../docs/judgments/README.md)
+  ([E-013](../../docs/plans/entropy-ledger.md) paid; ring
+  [0030](../../docs/rings/0030-inferential-control-judge.md)) — composing the two surfaces the
+  discipline needs: validate-references' structural teeth catch *fabrication*, the judge scores
+  *faithfulness*. The human half remains and is not replaced —
+  [grounded-or-ask](../../docs/principles/grounded-or-ask.md)'s compose-not-commit plus Gardener
+  ratification (step 4) — because the verdict is a proposal, never a gate landed on the agent's
+  authority. The standing evidence is the faithfulness verdict on this skill's own scout,
+  [harness-engineering.md](../../docs/references/harness-engineering.md).
 
 The committed scout — [harness-engineering.md](../../docs/references/harness-engineering.md) —
 is the standing evidence the loop already produces a faithful, useful artifact (it is what

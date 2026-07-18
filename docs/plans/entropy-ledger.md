@@ -91,29 +91,6 @@ ledger is also a record of digestion.
   self-test pinning that untracked files no longer inflate the count; fold into the next
   repo-fitness change, or a dedicated fix before the instrument is pointed at hosts in earnest
 
-## E-013 — the seed has only computational controls, no inferential ones
-
-- First observed: 2026-07-08, metabolizing the awesome-harness-engineering `Foundations` section
-  ([docs/references/harness-engineering.md](../references/harness-engineering.md)) — Böckeler's
-  computational-vs-inferential controls distinction
-- Where: every check in `.seed/checks/` is a deterministic structural gate
-  (a *computational* control). The seed has no *inferential* control — no LLM-as-judge — so it
-  cannot judge the quality of an agent's synthesis: whether a distilled reference stayed faithful
-  to its source, whether a grill elicited completely, whether a generated doc hallucinated.
-  Provenance + quote-match (the intake skill's mechanical guards) catch *fabrication*, but
-  paraphrase *faithfulness* is not computationally checkable — it needs a judge
-- Interest rate: low now, rising sharply the moment the seed ships knowledge-synthesis skills
-  (intake, PRD authoring) and again at Flowering, where pollen quality is a behavioral property,
-  not a structural one — an unjudged inferential output is trust taken on faith (LAW-6: a claim,
-  not a change)
-- Price: medium — an LLM-as-judge instrument that scores an inferential artifact against a stated
-  rubric, with its inputs pinned so the verdict is reproducible enough to trend (LAW-9); the hard
-  part is making a probabilistic control legible and enforceable (LAW-2) without pretending it is
-  deterministic
-- Conversion path: invariant — build the inferential-control instrument alongside the first skill
-  that needs it (intake); until then the mitigation is compose-not-commit plus human ratification
-  (the grounded-or-ask discipline), a doc-only control that keeps fabrication visible and gated
-
 ## E-014 — plans have no resumable, context-scoped work-unit format
 
 - First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
@@ -326,3 +303,50 @@ ledger is also a record of digestion.
   [release-append-only.ts](../../.seed/checks/release-append-only.ts)), and the side-effecting
   `cut-release` verified by its dry-run. `graft`/`uninstall` are reserved for scope item 3 (the
   installer). 18 self-tests pin it (LAW-6); the first real release (v0.1.0) is cut by scope item 4
+
+## E-013 — the seed has only computational controls, no inferential ones
+
+- First observed: 2026-07-08, metabolizing the awesome-harness-engineering `Foundations` section
+  ([docs/references/harness-engineering.md](../references/harness-engineering.md)) — Böckeler's
+  computational-vs-inferential controls distinction
+- Where: every check in `.seed/checks/` is a deterministic structural gate
+  (a *computational* control). The seed has no *inferential* control — no LLM-as-judge — so it
+  cannot judge the quality of an agent's synthesis: whether a distilled reference stayed faithful
+  to its source, whether a grill elicited completely, whether a generated doc hallucinated.
+  Provenance + quote-match (the intake skill's mechanical guards) catch *fabrication*, but
+  paraphrase *faithfulness* is not computationally checkable — it needs a judge
+- Interest rate: low now, rising sharply the moment the seed ships knowledge-synthesis skills
+  (intake, PRD authoring) and again at Flowering, where pollen quality is a behavioral property,
+  not a structural one — an unjudged inferential output is trust taken on faith (LAW-6: a claim,
+  not a change)
+- Price: medium — an LLM-as-judge instrument that scores an inferential artifact against a stated
+  rubric, with its inputs pinned so the verdict is reproducible enough to trend (LAW-9); the hard
+  part is making a probabilistic control legible and enforceable (LAW-2) without pretending it is
+  deterministic
+- Conversion path: invariant — build the inferential-control instrument alongside the first skill
+  that needs it (intake); until then the mitigation is compose-not-commit plus human ratification
+  (the grounded-or-ask discipline), a doc-only control that keeps fabrication visible and gated
+- Paid: 2026-07-17 ([plan 0005](active/0005-flowering.md), ring
+  [0030](../rings/0030-inferential-control-judge.md)) — a Stage 3 → 4 gating prerequisite cleared. The
+  instrument is a **deterministic envelope around a probabilistic core**: the seed owns the envelope and
+  never pretends the judgment is deterministic (the hard part, named above). The
+  [judge](../../skills/judge/SKILL.md) skill (portable) performs the LLM-as-judge as a **host act
+  outside the genome** — the seed carries no LLM client, so network-free + zero-dep + CI reproducibility
+  hold (the ring-0021 compose-not-commit boundary); it is given only the pinned inputs (artifact +
+  source + [rubric](../../skills/judge/rubrics/faithfulness.md)), blind to the composing context. The
+  pure model [.seed/lib/judge.ts](../../.seed/lib/judge.ts) (LAW-3) defines the verdict schema, the
+  rubric registry, the zero-dep content pin (`sha256:`, node's `createHash`), staleness, and the
+  pinned-prompt renderers. Verdicts land dated + scored + input-pinned in
+  [docs/judgments/](../judgments/README.md) (local history) — the LAW-9 trend record — and their
+  **envelope** is gated by [validate-judgments](../../.seed/checks/validate-judgments.ts) in `run-all`:
+  well-formed, pins resolve, and **fresh** (a stale verdict, whose judged artifact changed after
+  scoring, fails), while the probabilistic score is trended, never gated (ring
+  [0011](../rings/0011-drift-advisory.md)). The [judge CLI](../../.seed/checks/judge.ts) (`npm run
+  judge`, out of `run-all`) assembles the pinned prompt side-effect-free. Intake's faithfulness residual
+  — held doc-only until now — routes to it, composing the two-surface control (structural fabrication
+  guard + inferential faithfulness judge). Verification (LAW-6): 18 self-tests — 14 envelope violation
+  classes (incl. the staleness tooth) + the pristine-passes case + the CLI's works / teeth /
+  side-effect-free / round-trip shape — plus the standing verdict on
+  [harness-engineering.md](../references/harness-engineering.md). `npm run check` (13 checks) + `npm
+  test` (231 cases) green; `drift_count` 0. Only [E-004](entropy-ledger.md) (Gardener trademark) now
+  gates the Stage 3 → 4 transition proposal

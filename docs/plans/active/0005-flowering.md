@@ -246,6 +246,33 @@ item count.
   clear [E-004](../entropy-ledger.md) (Gardener trademark) and [E-013](../entropy-ledger.md) (inferential
   control), then propose the Stage 3 → 4 transition (a new plan, the
   [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape).
+- **2026-07-17** — **Gating prerequisite [E-013](../entropy-ledger.md) cleared — the seed's first
+  inferential control.** The build **[ring 0030](../../rings/0030-inferential-control-judge.md)** decides
+  the design: an LLM-as-judge as a **deterministic envelope around a probabilistic core**. The seed owns
+  the envelope and bakes in **no** LLM client — the model call is a **host act outside the genome** (the
+  [ring 0021](../../rings/0021-feedback-composes-upstream-issue.md) compose-not-commit boundary; the
+  [ring 0024](../../rings/0024-intake-network-free-metabolizer.md) network-free posture), so zero-dep + CI
+  reproducibility hold and the instrument stays harness-portable (SEED.md §8). Built: the
+  [judge](../../../skills/judge/SKILL.md) skill + the versioned
+  [faithfulness rubric](../../../skills/judge/rubrics/faithfulness.md) (portable, skills/); the pure model
+  [.seed/lib/judge.ts](../../../.seed/lib/judge.ts) (LAW-3 — the verdict schema, the rubric registry, the
+  zero-dep `sha256:` content pin, staleness, and the pinned-prompt renderers, read by the validator, the
+  CLI, and the skill); the envelope gate [validate-judgments](../../../.seed/checks/validate-judgments.ts)
+  (in `run-all`, now 13 checks) — every verdict well-formed, its pins resolving, and **fresh** (a stale
+  verdict, whose judged artifact changed after scoring, fails), the probabilistic **score trended, never
+  gated** (ring [0011](../../rings/0011-drift-advisory.md)); the side-effect-free
+  [judge CLI](../../../.seed/checks/judge.ts) (`npm run judge prepare`); and the
+  [docs/judgments/](../../judgments/README.md) organ (local history — the dated, scored, input-pinned
+  verdicts are the LAW-9 trend record). Intake's faithfulness residual — held doc-only until now — routes
+  to the judge, composing the two-surface control (validate-references' structural fabrication guard + the
+  inferential faithfulness judge); [grounded-or-ask](../../principles/grounded-or-ask.md) updated to match.
+  Verification (LAW-6): 18 new self-tests — the 14 envelope violation classes (including the **staleness
+  tooth**) + the pristine-passes case + the CLI's works / teeth / side-effect-free / round-trip shape —
+  and the standing verdict on [harness-engineering.md](../../references/harness-engineering.md)
+  ([docs/judgments/0001](../../judgments/0001-faithfulness-harness-engineering.md), faithfulness 4/5).
+  `npm run check` (13 checks) + `npm test` (231 cases) green; `drift_count` 0. **[E-013](../entropy-ledger.md)
+  is paid** — only [E-004](../entropy-ledger.md) (the Gardener's trademark search) now gates the Stage 3 →
+  4 transition proposal.
 
 ## Next actions
 
@@ -285,9 +312,19 @@ item count.
    (`map_reachability` null → 100% → null, byte-identical uninstall), recorded as
    [docs/fitness/recursive-upgrade.md](../../fitness/recursive-upgrade.md) and pinned by the
    `recursive test (ring 0029)` self-test. **The Stage 3 exit criterion is met.**
-6. **Clear the Stage 3 → 4 gating prerequisites, then propose the transition.**
-   [E-004](../entropy-ledger.md) — the Gardener's trademark search (pollen cannot ship *externally* under
-   an uncleared name); [E-013](../entropy-ledger.md) — the inferential control (at Flowering, pollen
-   quality is behavioral). Once both clear, propose the Stage 3 → 4 (Flowering → Pollination) transition
-   as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape). This plan stays
-   `active` until then — the exit criterion is evidenced, but the stage transition is the Gardener's.
+6. ✅ **Gating prerequisite [E-013](../entropy-ledger.md) cleared** (2026-07-17) — the seed's first
+   inferential control, decided in [ring 0030](../../rings/0030-inferential-control-judge.md): the
+   [judge](../../../skills/judge/SKILL.md) skill (a compose-not-commit LLM-as-judge, the model call a host
+   act outside the genome) + the [faithfulness rubric](../../../skills/judge/rubrics/faithfulness.md), the
+   pure model [.seed/lib/judge.ts](../../../.seed/lib/judge.ts), the envelope gate
+   [validate-judgments](../../../.seed/checks/validate-judgments.ts) (well-formed + pins-resolve +
+   **fresh**; the score trended, never gated — ring 0011), the [judge CLI](../../../.seed/checks/judge.ts),
+   and the [docs/judgments/](../../judgments/README.md) organ — 18 self-tests + a standing verdict on
+   [harness-engineering.md](../../judgments/0001-faithfulness-harness-engineering.md) (LAW-6). Intake's
+   faithfulness residual now routes to it.
+7. **Clear the last gating prerequisite, then propose the transition.** Only
+   [E-004](../entropy-ledger.md) remains — the Gardener's trademark search (pollen cannot ship
+   *externally* under an uncleared name). Once it clears, propose the Stage 3 → 4 (Flowering →
+   Pollination) transition as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md)
+   shape). This plan stays `active` until then — the exit criterion is evidenced, but the stage transition
+   is the Gardener's.

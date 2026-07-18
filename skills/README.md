@@ -62,6 +62,18 @@ that travels ships in [pollen/](../pollen/README.md) at Stage 3.
   first external-corpus intake ([harness-engineering.md](../docs/references/harness-engineering.md))
   (Stage 2, plan [0004](../docs/plans/active/0004-intake.md) scope item 2; ring
   [0024](../docs/rings/0024-intake-network-free-metabolizer.md)).
+- [judge](judge/SKILL.md) — the seed's first **inferential** control: an LLM-as-judge that scores
+  whether an artifact stayed **faithful** to its source, the residual no structural gate can compute
+  (fabrication is catchable mechanically, faithfulness is behavioral). A *deterministic envelope around
+  a probabilistic core*: the seed assembles the pinned inputs (artifact + source + [rubric](judge/rubrics/faithfulness.md))
+  and gates the recorded verdict — well-formed, pins resolve, and **fresh** (a verdict whose artifact
+  changed since it was judged fails `run-all`) — while the probabilistic score is trended, never gated
+  (ring 0011). The model call is a host act outside the genome (network-free, zero-dep); the verdict is
+  composed, not committed (the Gardener ratifies). Wires intake's faithfulness residual to a judge and
+  is the intake family's fourth engine. Verified by the envelope's self-tests + a standing verdict on
+  [harness-engineering.md](../docs/references/harness-engineering.md) (Stage 3, plan
+  [0005](../docs/plans/active/0005-flowering.md); [E-013](../docs/plans/entropy-ledger.md); ring
+  [0030](../docs/rings/0030-inferential-control-judge.md)).
 
 Every Stage 2 skill on the SEED.md §4 menu is planted (grill-the-gardener, repo-fitness, postmortem,
 parallel-worktrees, onboard-human, feedback), and the Stage 2 exit criterion is evidenced

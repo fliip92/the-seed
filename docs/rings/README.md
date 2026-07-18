@@ -35,6 +35,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0027 — the release / graft CLI: the determinism split made mechanical](0027-release-graft-cli.md)
 - [0028 — the installer + the mandated uninstall path: graft is a refuse-to-clobber beachhead, uninstall its byte-exact inverse](0028-installer-uninstall.md)
 - [0029 — the recursive self-upgrade test: self-hosting is self-versioning + a fitness-measured sacrificial graft; the exit proof is split reproducible/recorded; the internal cut runs now, the Stage 3 → 4 transition stays Gardener-gated](0029-recursive-self-upgrade-test.md)
+- [0030 — the inferential-control instrument: a compose-not-commit judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope](0030-inferential-control-judge.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

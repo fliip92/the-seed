@@ -30,8 +30,11 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   (the recursive self-upgrade test — the seed is its own first host) landed 2026-07-16 in
   [ring 0029](docs/rings/0029-recursive-self-upgrade-test.md), and the Stage 3 exit criterion is met**
   (proof: [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)); **the live work is now
-  clearing the Stage 3 → 4 gating prerequisites [E-004](docs/plans/entropy-ledger.md) /
-  [E-013](docs/plans/entropy-ledger.md), then proposing the transition**. Scope item 3
+  clearing the last Stage 3 → 4 gating prerequisite [E-004](docs/plans/entropy-ledger.md) (the Gardener's
+  trademark search), then proposing the transition** — [E-013](docs/plans/entropy-ledger.md) is **paid**,
+  the seed's first inferential control (the [judge](skills/judge/SKILL.md) skill: a compose-not-commit
+  LLM-as-judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope) landed
+  2026-07-17 in [ring 0030](docs/rings/0030-inferential-control-judge.md). Scope item 3
   (the installer + the mandated uninstall path) landed 2026-07-15 in
   [ring 0028](docs/rings/0028-installer-uninstall.md): the graft model
   ([.seed/lib/graft.ts](.seed/lib/graft.ts)) — the running seed copies its portable method + sovereign
@@ -65,10 +68,12 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   the recursive test (**the seed is its own first host**: upgrade the seed using its own pollen),
   proving the transplant by installing pollen into a sacrificial test repo with fitness measured
   before and after — the delta is the exit proof (SEED.md §4). Two gating prerequisites clear
-  *within* this stage before pollen ships: [E-004](docs/plans/entropy-ledger.md) (the "Seed" name
-  is an uncleared codename — a trademark search is owed) and
-  [E-013](docs/plans/entropy-ledger.md) (the seed has only computational controls; inferential
-  quality rises sharply at Flowering). Stage 2 grew the skill garden — **grill-the-gardener** (ring
+  *within* this stage before the transition: [E-013](docs/plans/entropy-ledger.md) (the seed had only
+  computational controls; inferential quality rises sharply at Flowering) — **paid 2026-07-17**, the
+  [judge](skills/judge/SKILL.md) inferential control (ring
+  [0030](docs/rings/0030-inferential-control-judge.md)); and [E-004](docs/plans/entropy-ledger.md) (the
+  "Seed" name is an uncleared codename — a trademark search is owed, the one still open). Stage 2 grew
+  the skill garden — **grill-the-gardener** (ring
   [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)), **repo-fitness** (ring
   [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), **postmortem** (ring
   [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)), **parallel-worktrees** (ring
@@ -110,6 +115,7 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 | [docs/assessments/](docs/assessments/README.md) | Read-only foreign-repo assessments — the Stage 2 exit criterion's artifact | [README](docs/assessments/README.md) |
 | [docs/fitness/](docs/fitness/FITNESS.md) | Fitness metrics, current scores, dated history | [FITNESS.md](docs/fitness/FITNESS.md) |
 | [docs/references/](docs/references/README.md) | Distilled external docs, curated for agents | [README](docs/references/README.md) |
+| [docs/judgments/](docs/judgments/README.md) | Inferential verdicts — the [judge](skills/judge/SKILL.md)'s LLM-as-judge scores (ring 0030, E-013) | [README](docs/judgments/README.md) |
 | [docs/generated/](docs/generated/README.md) | Regenerated-only artifacts — never hand-edit (enforced, ring 0020) | [README](docs/generated/README.md) |
 | [skills/](skills/README.md) | The skill garden (`SKILL.md` convention) | [README](skills/README.md) |
 | [pollen/](pollen/README.md) | Portable distribution, built at Stage 3 | [README](pollen/README.md) |
