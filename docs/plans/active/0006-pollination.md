@@ -184,21 +184,46 @@ reaching its exit while the mother continues to pollinate.
   tracked set equals its on-disk set, so its self-fitness is unchanged. A new self-test pins the contrast
   (untracked → not counted; committed → counted). `npm run check` (13 checks) + `npm test` (232 cases)
   green; `drift_count` 0. The Scout of dither can now proceed on tracked-file evidence.
+- **2026-07-17** — **Scout dither delivered — step 1 complete**
+  ([assessment 0002 — dither](../../assessments/0002-dither.md)). Pointed the
+  [repo-fitness](../../../skills/repo-fitness/SKILL.md) Scout at the first external host read-only
+  (334 tracked files, 49 commits) now that the E-012 pre-flight counts the committed repository. Baseline:
+  `map_reachability` null, `enforcement_ratio` null, `drift_count` **0**, `plan_traceability` null,
+  `escalation_rate` null, `ledger_trend` null. The read-only contract held — dither's HEAD (`93d02cd`),
+  tree (`d2f2b41`), and lone pre-existing untracked spike were byte-identical before and after. Unlike
+  [mottainapp](../../assessments/0001-mottainapp.md), dither is well-tended: a `CLAUDE.md` map +
+  `CONTEXT-MAP.md` + a one-page `architecture.md` (from its own 2026-07-02 grilling session) + eight ADRs
+  + CI enforcement + zero drift — so its nulls are mostly the seed's anatomy under other names, and the
+  four findings **formalize what dither already does** (a canonical reachable map, principles naming
+  `ci.yml`, a commit→decision gate over its ADRs/issues, an entropy ledger) rather than impose structure
+  (method, not dogma). The Scout sensed one new unit of entropy about the seed's own instrument —
+  `map_reachability` recognizes only `AGENTS.md`, so dither's `CLAUDE.md`-rooted map reads as a false
+  null — priced as [E-016](../entropy-ledger.md) (the E-012 pattern; the drift markdown-link blind spot
+  is the already-priced [E-009](../entropy-ledger.md)). `npm run check` (13 checks) + `npm test` (232
+  cases) green; `drift_count` 0; dither byte-identical after the run (HEAD/tree/status unchanged). The
+  mutating steps stay gated on the owner's approval of the Propose step (step 3); step 2 (Grill) is next.
 
 ## Next actions
 
 The Stage 3 → 4 transition is approved and enacted (ring 0032), dither is the first external host,
-and the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed. The live work is the genome's
-per-host protocol against dither, from step 1:
+the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed, and **step 1 (Scout) is delivered**
+([assessment 0002 — dither](../../assessments/0002-dither.md)). The live work is the next genome step:
 
-1. **Scout dither** (step 1) — deliver the read-only [repo-fitness](../../../skills/repo-fitness/SKILL.md)
-   baseline now that the pre-flight is paid (the engine counts the committed repository), and write it
-   up as a new [assessment](../../assessments/README.md) in the
-   [assessment 0001](../../assessments/0001-mottainapp.md) shape. The Scout modifies nothing (SEED.md §4).
-2. **Grill dither's owners** (step 2) — elicit the target architecture to one page + lintable rules and
-   make the human/agent ownership split explicit ([grill-the-gardener](../../../skills/grill-the-gardener/SKILL.md)
-   + the [architecture](../../architecture/README.md) organ). Ambiguity ends the interview only by
-   becoming a ring (SEED.md §5).
+1. **Scout dither** (step 1) — **done.** The read-only
+   [repo-fitness](../../../skills/repo-fitness/SKILL.md) baseline is delivered as
+   [assessment 0002](../../assessments/0002-dither.md) (byte-identical read-only run confirmed): a
+   well-tended host whose nulls are mostly the seed's anatomy under other names, four findings that
+   formalize rather than impose, one new instrument-entropy unit priced ([E-016](../entropy-ledger.md)).
+   The Scout modified nothing (SEED.md §4).
+2. **Grill dither's owners** (step 2) — **live.** Elicit the target architecture to one page + lintable
+   rules and make the human/agent ownership split explicit
+   ([grill-the-gardener](../../../skills/grill-the-gardener/SKILL.md) + the
+   [architecture](../../architecture/README.md) organ). dither is unusual — it already ran a 2026-07-02
+   grilling session that produced a one-page POC `architecture.md`, so the grill starts from a
+   largely-elicited product architecture; the open questions are the seed-organ ones named in the
+   [assessment 0002](../../assessments/0002-dither.md) Grill agenda (which file is the canonical map,
+   which of ADRs vs issues is authoritative, the skills-library posture, the post-POC shape). Ambiguity
+   ends the interview only by becoming a ring (SEED.md §5).
 3. **Propose** (step 3) — convert the Scout findings and the grilled architecture into the four products
    (target architecture, migration plan, workflows, responsibilities); **dither's owners review and
    approve**. This is the owner gate before any mutation — the mutating steps (Graft onward) do not begin

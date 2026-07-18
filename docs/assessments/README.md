@@ -82,3 +82,11 @@ holds only its README, and binds the moment an assessment lands.
   [0022](../rings/0022-assessment-organ-exit-criterion.md)): a read-only Scout of a real
   691-file / 792-commit product, its findings converted to the four products, its architecture
   left to a grill agenda rather than guessed.
+- [0002 — dither](0002-dither.md) — the first **Stage 4 Scout** (plan
+  [0006](../plans/active/0006-pollination.md) step 1,
+  [ring 0032](../rings/0032-stage-4-transition-first-host-dither.md)): a read-only baseline of the
+  first external pollination host — a well-tended 334-file / 49-commit monorepo whose seed-metric
+  nulls are mostly its own conventions (a `CLAUDE.md` map, ADRs for a decision log, CI enforcement),
+  so the findings formalize what it already does rather than impose structure. The `AGENTS.md`-only
+  map reading is priced back into the ledger as [E-016](../plans/entropy-ledger.md) — the
+  [E-012](../plans/entropy-ledger.md) pattern of a Scout surfacing entropy about its own instrument.

@@ -80,6 +80,35 @@ ledger is also a record of digestion.
   the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
   first principles
 
+## E-016 — `map_reachability` hard-codes `AGENTS.md`, so a differently-mapped host reads null
+
+- First observed: 2026-07-17, first Stage 4 *Scout* of a real host — the read-only
+  [assessment 0002 — dither](../assessments/0002-dither.md) (plan
+  [0006](active/0006-pollination.md) step 1)
+- Where: [.seed/lib/fitness-metrics.ts](../../.seed/lib/fitness-metrics.ts) hard-codes the map
+  filename (`const MAP = 'AGENTS.md'`); `mapReachability` returns null when the target has no
+  `AGENTS.md`, with the stated reason "LAW-4's map entry point is absent". But a foreign host may
+  carry an equally-conventional entry point under another name — dither's is `CLAUDE.md`
+  (Anthropic's own default) plus a `CONTEXT-MAP.md` and a `README.md` front door — so the metric
+  reports a well-mapped repo as mapless, and its null reason is factually wrong for that host. It
+  is the [E-012](entropy-ledger.md) shape: a Scout instrument systematically under-reading a real
+  host, surfaced by pointing it at one
+- Interest rate: medium — it misfires on the common case (most non-grafted repos map under
+  `CLAUDE.md` or `README.md`, not `AGENTS.md`), turning the single most load-bearing Scout reading
+  into a false null on well-tended hosts; the damage is bounded only because the Scout's narrative
+  catches it by hand (it did on dither), which does not scale to trend-tracking a fleet of hosts
+- Price: small–medium — resolve the host's entry point rather than assume a fixed filename: either
+  a known-name set (`AGENTS.md`, `CLAUDE.md`, `README.md`) tried in priority order, or an explicit
+  Scout parameter naming the map, reporting the resolved filename alongside the metric so the
+  reading stays legible (LAW-2); plus self-tests pinning that a `CLAUDE.md`-mapped repo computes a
+  real fraction instead of null
+- Conversion path: invariant — make the map filename a resolved input to `mapReachability` (the
+  ring [0016](../rings/0016-repo-fitness-generalizes-the-metric-engine.md) generalization already
+  isolated it to one constant), self-tested; fold into the next repo-fitness change, or a
+  dedicated fix before the reachability gate is grafted onto dither — the graft's first lint
+  depends on which file is canonical, a choice the [assessment 0002](../assessments/0002-dither.md)
+  Grill agenda routes to the owner
+
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
