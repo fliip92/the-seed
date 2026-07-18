@@ -2874,13 +2874,17 @@ inTempCopy((root) => {
 // A target carrying a broken .md symlink (dangling, and pointing at a directory) must still
 // produce an assessment: readFileSync would throw on both, so the engine skips symlinks
 // rather than crash (ring 0016 review). An AGENTS.md is present so the reachability read path
-// (which reads every .md) is exercised alongside the drift read path.
+// (which reads every .md) is exercised alongside the drift read path. The fixtures are
+// COMMITTED: the metrics count the tracked repository (E-012), so an uncommitted symlink would
+// simply be absent — the skip-filter is only exercised when the broken symlink is tracked
+// (a foreign host that committed one is exactly the crash risk this guards).
 inTempCopy((root) => {
   withForeignRepo({ git: true }, (foreign) => {
     writeFileSync(join(foreign, 'AGENTS.md'), '# Map\n\n[notes](notes.md) and [real](lib/real.ts).\n');
     mkdirSync(join(foreign, 'adir'));
     symlinkSync('does-not-exist.md', join(foreign, 'dangling.md')); // dangling → ENOENT on read
     symlinkSync('adir', join(foreign, 'todir.md')); // → directory → EISDIR on read
+    gitCommitAll(foreign, 'commit the map and broken symlinks so the tracked-file listing includes them');
     const { status, output } = runRepoFitness(root, [foreign, '--json']);
     report(
       'repo-fitness: a target with a dangling / directory .md symlink still assesses (no uncaught fs crash)',
@@ -2905,6 +2909,28 @@ inTempCopy((root) => {
       'repo-fitness: a run does not mutate the target (tree hash, HEAD, and status unchanged)',
       treeBefore === treeAfter && headBefore === headAfter && statusAfter === '',
       `expected byte-identical target after a run; tree ${treeBefore === treeAfter}, head ${headBefore === headAfter}, status ${JSON.stringify(statusAfter)}`,
+    );
+  });
+});
+
+// E-012 (plan 0006, Stage 4 step-1 pre-flight): the Scout counts the COMMITTED repository
+// (`git ls-files`), not the on-disk working tree — an UNTRACKED file (build output, a stray
+// `.claude/worktrees/` snapshot) must not inflate a metric (on mottainapp ~150 of 343 drift
+// references came from ten untracked worktree snapshots). The proof is the CONTRAST: the same
+// stray.md, whose stale `lib/phantom.ts` is a drift reference, is invisible while untracked and
+// counted only once committed — so it is git-tracking, not the filename, that decides. This is
+// the same file-listing basis the read-only case above proves does not mutate the target.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    // withForeignRepo already committed notes.md, whose `lib/ghost.ts` is drift #1.
+    writeFileSync(join(foreign, 'stray.md'), 'Stray output names `lib/phantom.ts`, which does not exist.\n');
+    const untracked = repoFitnessMetrics(runRepoFitness(root, [foreign, '--json']).output).drift_count;
+    gitCommitAll(foreign, 'track the stray file');
+    const tracked = repoFitnessMetrics(runRepoFitness(root, [foreign, '--json']).output).drift_count;
+    report(
+      'repo-fitness: an untracked file does not inflate the count; the same file counts once committed (git ls-files, not the on-disk walk — E-012)',
+      untracked === 1 && tracked === 2,
+      `expected drift_count 1 while stray.md is untracked and 2 once committed; got untracked ${untracked}, tracked ${tracked}`,
     );
   });
 });

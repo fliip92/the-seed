@@ -48,9 +48,15 @@ naming a path that does not exist is drift in any repository — so it always co
 ## Read-only is the contract
 
 The Scout step modifies nothing (SEED.md §4, Stage 4 step 1). The instrument only reads
-files and runs read-only git subcommands (`rev-parse`, `rev-list`, `log`, `show`) against the
-target with `git -C <root>`; it never writes, inits, stages, or commits. A run leaves the
-target byte-identical — which the verification proves, not merely asserts.
+files and runs read-only git subcommands (`rev-parse`, `ls-files`, `rev-list`, `log`, `show`)
+against the target with `git -C <root>`; it never writes, inits, stages, or commits. A run
+leaves the target byte-identical — which the verification proves, not merely asserts.
+
+For a git target the metrics are computed over the **committed repository** — the tracked files
+(`git ls-files`), not the on-disk working tree — so untracked build output and stray
+`.claude/worktrees/` snapshots never inflate `map_reachability`'s denominator or `drift_count`
+(E-012). A target that is not a git repository at its root, or a git repository with no commit
+yet, degrades to the on-disk walk — the only file listing there is.
 
 ## The report is the start of a proposal, not the end
 

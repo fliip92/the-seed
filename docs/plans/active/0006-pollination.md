@@ -165,22 +165,41 @@ reaching its exit while the mother continues to pollinate.
   entered, this plan becomes governing, [plan 0005](../completed/0005-flowering.md) completes and moves to
   `completed/`, and AGENTS.md `Current state` + `fitness.ts` (`CURRENT_STAGE`) flip to Stage 4.
   `npm run check` + `npm test` green; `drift_count` 0.
+- **2026-07-17** — **Transition approved and enacted**
+  ([ring 0032](../../rings/0032-stage-4-transition-first-host-dither.md)): the Gardener approved the
+  Stage 3 → 4 transition on this plan as proposed and designated the first external host — **dither**.
+  Enacted the [ring 0025](../../rings/0025-stage-3-transition-approved.md) pattern — transition ring cut,
+  Stage 4 entered, this plan now governing, [plan 0005](../completed/0005-flowering.md) completed and moved
+  to `completed/`, and AGENTS.md `Current state` + `fitness.ts` (`CURRENT_STAGE`) bumped to Stage 4.
+  [Ring 0006](../../rings/0006-solo-until-flowering.md) (solo-until-Flowering) is resolved: the seed is no
+  longer solo.
+- **2026-07-17** — **Scout pre-flight landed — [E-012](../entropy-ledger.md) paid** (step 1, owed before the
+  instrument is pointed at dither in earnest). The [repo-fitness](../../../skills/repo-fitness/SKILL.md)
+  metric engine ([.seed/lib/fitness-metrics.ts](../../../.seed/lib/fitness-metrics.ts)) now counts the
+  **committed repository** for a git target (tracked files via `git ls-files`), not the on-disk working
+  tree, so untracked build output and stray `.claude/worktrees/` snapshots no longer inflate
+  `map_reachability`'s denominator or `drift_count`; a non-git target — or a git repo with no commit yet —
+  degrades to the on-disk walk (so the recursive-upgrade proof's freshly-`git init`'d target still measures
+  its uncommitted graft). Scoped to the metrics engine, not the seed's own working-tree gates; the seed's
+  tracked set equals its on-disk set, so its self-fitness is unchanged. A new self-test pins the contrast
+  (untracked → not counted; committed → counted). `npm run check` (13 checks) + `npm test` (232 cases)
+  green; `drift_count` 0. The Scout of dither can now proceed on tracked-file evidence.
 
 ## Next actions
 
-1. **Await Gardener approval** of the Stage 3 → 4 (Flowering → Pollination) transition (SEED.md §4).
-   On approval, enact the [ring 0025](../../rings/0025-stage-3-transition-approved.md) pattern: cut
-   the transition ring, enter Stage 4, make this plan governing, set
-   [plan 0005](../completed/0005-flowering.md) to `completed YYYY-MM-DD` and `git mv` it to `completed/`
-   (repointing non-ring references; the append-only rings resolve through validate-map's
-   active/⇄completed/ plan-link flex, [ring 0013](../../rings/0013-plan-links-resolve-across-active-completed.md)),
-   and flip AGENTS.md `Current state` + `fitness.ts` (`CURRENT_STAGE`) to Stage 4.
-2. **Gardener input required at approval — name the first external host**
-   ([ring 0006](../../rings/0006-solo-until-flowering.md): the Gardener's selection at Stage 4
-   entry). [Mottainapp](../../assessments/0001-mottainapp.md) is the pre-Scouted candidate
-   (assessment 0001); the choice is the Gardener's.
-3. **First in-stage work, once live — Scout the named host** (step 1): land the
-   [E-012](../entropy-ledger.md) pre-flight fix (count `git ls-files`), then deliver the read-only
-   [repo-fitness](../../../skills/repo-fitness/SKILL.md) baseline + a new
-   [assessment](../../assessments/README.md). The mutating steps (Graft onward) gate on the owners'
-   review and approval of the Propose step. Per-step build decisions are cut as rings when designed.
+The Stage 3 → 4 transition is approved and enacted (ring 0032), dither is the first external host,
+and the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed. The live work is the genome's
+per-host protocol against dither, from step 1:
+
+1. **Scout dither** (step 1) — deliver the read-only [repo-fitness](../../../skills/repo-fitness/SKILL.md)
+   baseline now that the pre-flight is paid (the engine counts the committed repository), and write it
+   up as a new [assessment](../../assessments/README.md) in the
+   [assessment 0001](../../assessments/0001-mottainapp.md) shape. The Scout modifies nothing (SEED.md §4).
+2. **Grill dither's owners** (step 2) — elicit the target architecture to one page + lintable rules and
+   make the human/agent ownership split explicit ([grill-the-gardener](../../../skills/grill-the-gardener/SKILL.md)
+   + the [architecture](../../architecture/README.md) organ). Ambiguity ends the interview only by
+   becoming a ring (SEED.md §5).
+3. **Propose** (step 3) — convert the Scout findings and the grilled architecture into the four products
+   (target architecture, migration plan, workflows, responsibilities); **dither's owners review and
+   approve**. This is the owner gate before any mutation — the mutating steps (Graft onward) do not begin
+   until it is approved. Per-step build decisions are cut as rings when designed.

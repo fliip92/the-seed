@@ -60,26 +60,6 @@ ledger is also a record of digestion.
   mechanizing the decision fitness.ts deliberately keeps manual, so it respects that comment
   while closing the LAW-2 gap. Fold into the next change touching either
 
-## E-012 — repo-fitness walks the on-disk working tree, not `git ls-files`
-
-- First observed: 2026-07-06, first exercise of the Stage 2 exit criterion — the read-only
-  Scout of a foreign repo ([assessment 0001 — mottainapp](../assessments/0001-mottainapp.md),
-  ring [0022](../rings/0022-assessment-organ-exit-criterion.md))
-- Where: [.seed/lib/repo.ts](../../.seed/lib/repo.ts) `listRepoFiles` walks the directory tree
-  with `readdirSync`, excluding only `.git`/`node_modules`/OS-noise dirs — it never consults
-  `git ls-files`. So untracked files (build output, stray `.claude/worktrees/` snapshots) count
-  toward `map_reachability`'s denominator and `drift_count`. On mottainapp the on-disk walk saw
-  18,736 files against 691 git-tracked, and ~150 of 343 drift references came from ten untracked
-  `.claude/worktrees/moire-*/` snapshots that git tracks zero files under
-- Interest rate: low (it changed no verdict in assessment 0001 — each reading was robust against
-  the tracked-only recount — but it would mislead on a target with a real map buried under
-  untracked output, and the gap grows with a repo's untracked surface)
-- Price: small — list files via `git ls-files` when the target is a git repo, falling back to the
-  on-disk walk otherwise, so the metric denominators match the committed repository
-- Conversion path: invariant — make the file listing tracked-files-aware for git targets, with a
-  self-test pinning that untracked files no longer inflate the count; fold into the next
-  repo-fitness change, or a dedicated fix before the instrument is pointed at hosts in earnest
-
 ## E-014 — plans have no resumable, context-scoped work-unit format
 
 - First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
@@ -366,3 +346,44 @@ ledger is also a record of digestion.
   decision to register / adopt a distinct outward brand — with professional counsel — arises.
   With [E-013](entropy-ledger.md) also paid, the Stage 3 → 4 transition is no longer gated on a
   prerequisite; proposing it is the Gardener's (SEED.md §4)
+
+## E-012 — repo-fitness walks the on-disk working tree, not `git ls-files`
+
+- First observed: 2026-07-06, first exercise of the Stage 2 exit criterion — the read-only
+  Scout of a foreign repo ([assessment 0001 — mottainapp](../assessments/0001-mottainapp.md),
+  ring [0022](../rings/0022-assessment-organ-exit-criterion.md))
+- Where: [.seed/lib/repo.ts](../../.seed/lib/repo.ts) `listRepoFiles` walks the directory tree
+  with `readdirSync`, excluding only `.git`/`node_modules`/OS-noise dirs — it never consults
+  `git ls-files`. So untracked files (build output, stray `.claude/worktrees/` snapshots) count
+  toward `map_reachability`'s denominator and `drift_count`. On mottainapp the on-disk walk saw
+  18,736 files against 691 git-tracked, and ~150 of 343 drift references came from ten untracked
+  `.claude/worktrees/moire-*/` snapshots that git tracks zero files under
+- Interest rate: low (it changed no verdict in assessment 0001 — each reading was robust against
+  the tracked-only recount — but it would mislead on a target with a real map buried under
+  untracked output, and the gap grows with a repo's untracked surface)
+- Price: small — list files via `git ls-files` when the target is a git repo, falling back to the
+  on-disk walk otherwise, so the metric denominators match the committed repository
+- Conversion path: invariant — make the file listing tracked-files-aware for git targets, with a
+  self-test pinning that untracked files no longer inflate the count; fold into the next
+  repo-fitness change, or a dedicated fix before the instrument is pointed at hosts in earnest
+- Paid: 2026-07-17 ([plan 0006](active/0006-pollination.md), Stage 4 step-1 pre-flight — owed
+  before the Scout is pointed at the first real host, dither, in earnest). The metric engine now
+  counts the **committed repository** for a git target:
+  [.seed/lib/fitness-metrics.ts](../../.seed/lib/fitness-metrics.ts) lists the tracked files
+  (`git ls-files -z`, read-only — it consults the index, so the Scout's byte-identical contract
+  holds) via a new `trackedFiles(root)`, guarded by the same `gitRootStatus` the history metrics
+  use. Untracked build output and stray `.claude/worktrees/` snapshots no longer inflate
+  `map_reachability`'s denominator or `drift_count`. A non-git target, a nested subdirectory
+  (measures itself, not the enclosing repo), or a git repo with no commit yet (nothing committed
+  to match) degrades to the on-disk walk ([`listRepoFiles`](../../.seed/lib/repo.ts)) — so the
+  recursive-upgrade proof's freshly-`git init`'d target still measures its uncommitted graft.
+  Scoped to the metrics engine, not the seed's own working-tree gates (`run-all`, `doc-drift`),
+  which must still validate uncommitted files; the seed's own tracked set equals its on-disk set,
+  so its self-fitness is unchanged (self-equivalence with `fitness.ts` still pinned). Verification
+  (LAW-6): a new self-test pins the contrast — an untracked file does not inflate `drift_count`,
+  and the same file counts once committed — and the dangling-symlink crash-guard case now commits
+  its broken symlinks so the tracked listing still exercises the skip-filter. `npm run check` (13
+  checks) + `npm test` (232 cases) green; `drift_count` 0. End-to-end, a scratch host with ten
+  untracked `.claude/worktrees/moire-*` snapshots (225 on-disk files vs 4 tracked) reported
+  identical metrics before and after the junk (`map_reachability` 0.75, `drift_count` 0) — the
+  mottainapp shape reproduced.

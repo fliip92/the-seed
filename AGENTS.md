@@ -34,10 +34,11 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   enters its **first external host, dither** (named by the Gardener at Stage 4 entry, ring 0032 —
   which resolves [ring 0006](docs/rings/0006-solo-until-flowering.md): the seed is no longer solo),
   and runs the genome's six-step per-host protocol (SEED.md §4): **Scout → Grill → Propose → Graft →
-  Metabolize → Independence.** **The live work is step 1 — Scout dither:** land the
-  [E-012](docs/plans/entropy-ledger.md) pre-flight fix (repo-fitness must count `git ls-files` before
-  it measures a real host), then deliver the read-only [repo-fitness](skills/repo-fitness/SKILL.md)
-  baseline + a new [assessment](docs/assessments/README.md). Every step's instrument was built across
+  Metabolize → Independence.** **The live work is step 1 — Scout dither:** the
+  [E-012](docs/plans/entropy-ledger.md) pre-flight fix landed (repo-fitness now counts `git ls-files` —
+  the committed repository — before it measures a real host; paid 2026-07-17), so the next move is to
+  deliver the read-only [repo-fitness](skills/repo-fitness/SKILL.md) baseline + a new
+  [assessment](docs/assessments/README.md). Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

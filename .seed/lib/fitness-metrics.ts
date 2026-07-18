@@ -14,9 +14,12 @@
 // naming a path that does not exist is drift in any repository.
 //
 // STRICTLY READ-ONLY. It reads files and runs only read-only git subcommands (rev-parse,
-// rev-list, log, show) against the target with `git -C <root>`; it never writes, inits,
-// stages, or commits. repo-fitness's verification proves the target tree is byte-identical
-// before and after (LAW-6).
+// ls-files, rev-list, log, show) against the target with `git -C <root>`; it never writes,
+// inits, stages, or commits. For a git target the metrics are computed over the TRACKED files
+// (`git ls-files` — the committed repository), so untracked build output and stray worktree
+// snapshots never inflate a metric denominator (E-012); a non-git target — or a git repo with
+// no commit yet — degrades to the on-disk walk. repo-fitness's verification proves the target
+// tree is byte-identical before and after (LAW-6).
 import { execFileSync } from 'node:child_process';
 import { lstatSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
@@ -90,6 +93,31 @@ function gitRootStatus(root: string): GitRootStatus {
     };
   }
   return { ok: true };
+}
+
+// The file set the metrics are computed over, for a git target: its TRACKED files, listed via
+// `git ls-files` (read-only — it consults the index, so the Scout's byte-identical contract
+// holds). This is "the committed repository", so untracked files — build output, stray
+// `.claude/worktrees/` snapshots — never reach map_reachability's denominator or drift_count
+// (E-012: on mottainapp the on-disk walk saw 18,736 files against 691 tracked, and ~150 of 343
+// drift references came from ten untracked worktree snapshots git tracks zero files under).
+//
+// Null (→ the caller falls back to the on-disk walk, listRepoFiles) in the three cases where no
+// committed repository is defined to match:
+//   • not a git repository at its ROOT — the SAME gitRootStatus guard the history metrics use,
+//     so a nested subdirectory measures itself, not the enclosing repo;
+//   • a git repository with no commit yet (unborn HEAD) — nothing is committed to match, so the
+//     working tree is the only listing there is (a real Scout target always has history; this is
+//     the freshly-`git init`'d case);
+//   • git cannot list the tracked files for any other reason.
+// `-z` NUL-delimits so a newline in a path cannot split one entry into two; the sort matches
+// listRepoFiles' ordering.
+function trackedFiles(root: string): string[] | null {
+  if (!gitRootStatus(root).ok) return null;
+  if (git(root, ['rev-parse', '--verify', 'HEAD']) === null) return null;
+  const out = git(root, ['ls-files', '-z']);
+  if (out === null) return null;
+  return out.split('\0').filter((f) => f !== '').sort();
 }
 
 // % files reachable ≤3 hops from AGENTS.md. Null when the target has no AGENTS.md at all —
@@ -206,13 +234,16 @@ function ledgerTrend(files: string[], root: string): { value: number | null; not
 
 /** Compute all six SEED.md §6 metrics against `root`, with a reason for every null. */
 export function computeMetrics(root: string): MetricsResult {
-  // Skip symbolic links: a foreign target may contain them (the seed bans its own —
-  // validate-anatomy), and a dangling link or a link to a directory would make the
-  // downstream readFileSync throw and crash the whole read-only assessment. They are simply
-  // not counted (ring 0016 review). This filter is local to metric computation, so
-  // validate-anatomy's own symlink ban — which relies on symlinks appearing in its file list
-  // — is untouched; and the seed has no symlinks, so its own metrics are unchanged.
-  const files = listRepoFiles(root).filter((f) => {
+  // Count the COMMITTED repository (tracked files) for a git target, not the on-disk working
+  // tree — untracked output must not inflate map_reachability's denominator or drift_count
+  // (E-012). A non-git target has only the on-disk walk. Skip symbolic links regardless of
+  // source: a foreign target may contain them (the seed bans its own — validate-anatomy), and a
+  // dangling link or a link to a directory would make the downstream readFileSync throw and
+  // crash the whole read-only assessment. They are simply not counted (ring 0016 review). This
+  // filter is local to metric computation, so validate-anatomy's own symlink ban — which relies
+  // on symlinks appearing in its file list — is untouched; and the seed has no symlinks, so its
+  // own metrics are unchanged.
+  const files = (trackedFiles(root) ?? listRepoFiles(root)).filter((f) => {
     try {
       return !lstatSync(join(root, f)).isSymbolicLink();
     } catch {
