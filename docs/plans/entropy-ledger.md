@@ -109,6 +109,62 @@ ledger is also a record of digestion.
   depends on which file is canonical, a choice the [assessment 0002](../assessments/0002-dither.md)
   Grill agenda routes to the owner
 
+## E-017 — the seed asserts LLM/context efficiency but never measures it
+
+- First observed: 2026-07-18, Gardener question comparing the seed's map/reference graph to
+  graphify's token-optimization skill ("does our graph make the LLM more efficient?")
+- Where: SEED.md §6 names no token/context-cost metric — the six v0 metrics measure structure
+  (`map_reachability`, `enforcement_ratio`, `drift_count`, `plan_traceability`, `ledger_trend`)
+  and human friction (`escalation_rate`), none the agent's own operating cost. The efficiency the
+  seed's navigation graph is claimed to buy — bounded ≤3-hop reachability (LAW-4), curated
+  compression ([docs/references/](../references/README.md) + the onboard-human briefing),
+  never-re-derive (LAW-10 + rings) — is a design assertion, unmeasured, so LAW-9 (measure to
+  judge) cannot arbitrate it. The blocking prerequisite is the very instrument `escalation_rate`
+  already waits on: [.seed/lib/fitness-metrics.ts](../../.seed/lib/fitness-metrics.ts) returns it
+  null with reason "no run-log instrument yet" — no per-task record captures tokens, context, or
+  escalations
+- Interest rate: low now (solo, small corpus the map already makes cheap to read), rising sharply
+  at Pollination — proving the seed's value on a host is a before/after fitness trend (SEED.md §6),
+  and "agents operate more cheaply after graft" is exactly the claim a fleet of hosts needs
+  measured, not asserted
+- Price: medium — the run-log instrument `escalation_rate` is already null on, recording per-task
+  cost (tokens/context + escalations), plus a §6 metric defined over it; the hard part is a
+  legible, reproducible-enough-to-trend reading of a noisy per-run quantity (LAW-2/LAW-9). Likely
+  amends SEED.md §6, so Gardener-approved PR + ring (AGENTS.md Protocols)
+- Conversion path: ring then invariant — decide the metric + instrument as a ring (it touches the
+  §6 set and probably amends SEED.md, both Gardener-gated), then build the run-log instrument once
+  and compute both this and the already-priced-null `escalation_rate` from it (one instrument, two
+  metrics). Sequence against live [plan 0006](active/0006-pollination.md); the dither Scout
+  ([assessment 0002](../assessments/0002-dither.md)) is the first real task whose cost it could
+  record. Distinct from [E-014](entropy-ledger.md), which *reduces* re-derivation cost via a
+  work-unit format — this *measures* the cost
+
+## E-018 — no query-instead-of-read retrieval for scouting large hosts
+
+- First observed: 2026-07-18, same Gardener question (graphify's "query the graph instead of
+  grepping" token play), during the live Stage 4 Scout of dither
+  ([assessment 0002](../assessments/0002-dither.md))
+- Where: the seed's graph is navigational (follow the map to the artifact) and its compression is
+  curated ([docs/references/](../references/README.md) distillations + the onboard-human briefing) —
+  there is no queryable *content* surrogate: no `query "how does X work"` that traverses an index
+  and returns a compact, budgeted answer instead of reading files. On the mother seed this is fine
+  (small, map-indexed corpus — reading is already cheap). On a large foreign host it is not:
+  Scout/Grill/Metabolize (SEED.md §4) read an unknown codebase — exactly where "query instead of
+  grep" pays — and [repo-fitness](../../skills/repo-fitness/SKILL.md) returns mostly null against an
+  ungrafted host (it measures absent seed-anatomy, not what the host does), so orientation cost
+  falls on raw reading
+- Interest rate: low now (first host; the scouting agent already has external graph/query tools at
+  zero repo cost), rising as host size and the host fleet grow
+- Price: medium–large for a native organ (an owned index + budgeted query/traverse, self-tested —
+  LAW-6/LAW-7); ~zero to instead lean on an external graph tool during a Scout as a throwaway
+  reading aid (no seed artifact, no dependency grafted)
+- Conversion path: measure-then-decide — treat the live dither Scout as the experiment: use an
+  external graph/query aid while scouting and record whether query-instead-of-read actually cut
+  reading cost (the same measurement [E-017](entropy-ledger.md) is about); only if the saving is
+  real and recurs across hosts, grow a native `query` organ via a plan + ring. Do not build it
+  speculatively (LAW-7: own the small subset, and only once the need is evidenced). Host-facing
+  tooling, not the mother seed's corpus
+
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
