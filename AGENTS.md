@@ -29,12 +29,16 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   [plan 0005](docs/plans/active/0005-flowering.md) — continue from its `Next actions`: **scope item 4
   (the recursive self-upgrade test — the seed is its own first host) landed 2026-07-16 in
   [ring 0029](docs/rings/0029-recursive-self-upgrade-test.md), and the Stage 3 exit criterion is met**
-  (proof: [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)); **the live work is now
-  clearing the last Stage 3 → 4 gating prerequisite [E-004](docs/plans/entropy-ledger.md) (the Gardener's
-  trademark search), then proposing the transition** — [E-013](docs/plans/entropy-ledger.md) is **paid**,
-  the seed's first inferential control (the [judge](skills/judge/SKILL.md) skill: a compose-not-commit
-  LLM-as-judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope) landed
-  2026-07-17 in [ring 0030](docs/rings/0030-inferential-control-judge.md). Scope item 3
+  (proof: [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)); **both Stage 3 → 4
+  gating prerequisites are now paid, so the live work is proposing the transition.** [E-013](docs/plans/entropy-ledger.md)
+  — the seed's first inferential control (the [judge](skills/judge/SKILL.md) skill: a compose-not-commit
+  LLM-as-judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope) — landed
+  2026-07-17 in [ring 0030](docs/rings/0030-inferential-control-judge.md), and [E-004](docs/plans/entropy-ledger.md)
+  (the "Seed" name, an uncleared codename) is **paid** 2026-07-17 in
+  [ring 0031](docs/rings/0031-name-cleared-codename-retained.md): the Gardener's trademark knockout search
+  landed and the name is retained as a non-exclusive descriptive codename, no registration claimed. **The
+  correct next action: propose the Stage 3 → 4 (Flowering → Pollination) transition as a new plan** (the
+  [ring 0025](docs/rings/0025-stage-3-transition-approved.md) shape) for Gardener approval. Scope item 3
   (the installer + the mandated uninstall path) landed 2026-07-15 in
   [ring 0028](docs/rings/0028-installer-uninstall.md): the graft model
   ([.seed/lib/graft.ts](.seed/lib/graft.ts)) — the running seed copies its portable method + sovereign
@@ -72,7 +76,10 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   computational controls; inferential quality rises sharply at Flowering) — **paid 2026-07-17**, the
   [judge](skills/judge/SKILL.md) inferential control (ring
   [0030](docs/rings/0030-inferential-control-judge.md)); and [E-004](docs/plans/entropy-ledger.md) (the
-  "Seed" name is an uncleared codename — a trademark search is owed, the one still open). Stage 2 grew
+  "Seed" name is an uncleared codename) — **also paid 2026-07-17** in
+  [ring 0031](docs/rings/0031-name-cleared-codename-retained.md): the Gardener's trademark knockout search
+  landed and the name is retained as a non-exclusive descriptive codename (no registration claimed).
+  **Both gating prerequisites are now clear; the Stage 3 → 4 transition awaits its proposal.** Stage 2 grew
   the skill garden — **grill-the-gardener** (ring
   [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)), **repo-fitness** (ring
   [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)), **postmortem** (ring

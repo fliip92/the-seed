@@ -7,17 +7,6 @@ ledger is also a record of digestion.
 
 ## Open
 
-## E-004 — "Seed" is an uncleared working codename
-
-- First observed: 2026-07-03, planted in SEED.md §8
-- Where: SEED.md §8, [ring 0001](../rings/0001-founding-defaults.md)
-- Interest rate: low now, spikes to high at Stage 3 (pollen cannot ship under an uncleared
-  name)
-- Price: Gardener judgment plus a trademark search
-- Conversion path: ring — the Gardener named it "The Seed" (ring
-  [0004](../rings/0004-name-hosting-visibility.md)), which settles the name but not its
-  legal clearance; a trademark search must still land before Stage 3 pollen distribution
-
 ## E-006 — Fragment links pass validation without anchor checking
 
 - First observed: 2026-07-04, adversarial drift hunt during germination verification
@@ -350,3 +339,30 @@ ledger is also a record of digestion.
   [harness-engineering.md](../references/harness-engineering.md). `npm run check` (13 checks) + `npm
   test` (231 cases) green; `drift_count` 0. Only [E-004](entropy-ledger.md) (Gardener trademark) now
   gates the Stage 3 → 4 transition proposal
+
+## E-004 — "Seed" is an uncleared working codename
+
+- First observed: 2026-07-03, planted in SEED.md §8
+- Where: SEED.md §8, [ring 0001](../rings/0001-founding-defaults.md)
+- Interest rate: low now, spikes to high at Stage 3 (pollen cannot ship under an uncleared
+  name)
+- Price: Gardener judgment plus a trademark search
+- Conversion path: ring — the Gardener named it "The Seed" (ring
+  [0004](../rings/0004-name-hosting-visibility.md)), which settles the name but not its
+  legal clearance; a trademark search must still land before Stage 3 pollen distribution
+- Paid: 2026-07-17 ([plan 0005](active/0005-flowering.md), ring
+  [0031](../rings/0031-name-cleared-codename-retained.md)) — the last Stage 3 → 4 gating
+  prerequisite cleared. The **trademark knockout search** landed (the priced work): "Seed" /
+  "The Seed" is a crowded, weak name in and around AI/dev software — senior in-space users
+  (ByteDance's Seed family incl. the open-source `seed-oss`; seed.run's SEED CI/CD; SeedsAI /
+  Seed AI / Seed Innovations), a registered bare wordmark (SEED, Seed Health, Inc., US Reg.
+  5629609, another class), and a phonetic twin (Seeed Studio) — so a bare "Seed" wordmark for
+  Nice Class 9/42 is realistically not registrable, and it is not needed. **The Gardener's
+  judgment:** retain "The Seed" as a **non-exclusive, descriptive codename** — claim no
+  trademark, seek no registration — cleared *for use* in the seed's open-source, non-commercial,
+  private-repos posture (SEED.md §7), not owned as an exclusive mark. Enforcement is doc-only
+  (the [ring 0004](../rings/0004-name-hosting-visibility.md) naming precedent): the seed makes no
+  ™/® claim. Revisit-when a public *commercial* launch, a conflict/cease-and-desist, or a
+  decision to register / adopt a distinct outward brand — with professional counsel — arises.
+  With [E-013](entropy-ledger.md) also paid, the Stage 3 → 4 transition is no longer gated on a
+  prerequisite; proposing it is the Gardener's (SEED.md §4)

@@ -66,11 +66,13 @@ reversibly, and proved the method runs in the descendant. The exit criterion is 
 
 ## What remains (outside this proof)
 
-The **Stage 3 → 4 transition** — pollinating a *foreign* host, where pollen ships *externally* — stays
-gated on [E-004](../plans/entropy-ledger.md) (trademark) and [E-013](../plans/entropy-ledger.md)
-(inferential control), and is a Gardener-approved stage transition
-([ring 0029](../rings/0029-recursive-self-upgrade-test.md)). Meeting the exit criterion (this artifact)
-is the seed's work; proposing the transition is the Gardener's, once those two clear.
+The **Stage 3 → 4 transition** — pollinating a *foreign* host, where pollen ships *externally* — was
+gated on [E-004](../plans/entropy-ledger.md) (name/trademark) and [E-013](../plans/entropy-ledger.md)
+(inferential control); **both cleared 2026-07-17** ([ring 0031](../rings/0031-name-cleared-codename-retained.md)
+and [ring 0030](../rings/0030-inferential-control-judge.md)). The transition itself is a Gardener-approved
+stage transition ([ring 0029](../rings/0029-recursive-self-upgrade-test.md)): meeting the exit criterion
+(this artifact) was the seed's work; proposing the transition is the Gardener's, now that both
+prerequisites are clear.
 
 ## Reproducibility
 

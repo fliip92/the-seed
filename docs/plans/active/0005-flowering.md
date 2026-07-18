@@ -273,6 +273,26 @@ item count.
   `npm run check` (13 checks) + `npm test` (231 cases) green; `drift_count` 0. **[E-013](../entropy-ledger.md)
   is paid** — only [E-004](../entropy-ledger.md) (the Gardener's trademark search) now gates the Stage 3 →
   4 transition proposal.
+- **2026-07-17** — **Last gating prerequisite [E-004](../entropy-ledger.md) cleared — the "Seed" name is
+  settled; both Stage 3 → 4 gates are now clear.** [Ring 0031](../../rings/0031-name-cleared-codename-retained.md)
+  records the two halves the ledger priced — the **trademark knockout search** and the **Gardener's
+  judgment**. The search (US register mirrors + the AI/developer-tools landscape; a preliminary knockout,
+  explicitly *not* a legal opinion) found "Seed" / "The Seed" to be a crowded, weak name in-space: senior
+  users **ByteDance Seed** (the AI model family, incl. the open-source `seed-oss`), **seed.run** (a
+  YC-backed serverless CI/CD SaaS branded SEED), and **SeedsAI / Seed AI / Seed Innovations**; a
+  registered bare wordmark (**SEED**, Seed Health, Inc., US Reg. 5629609, another class); and a phonetic
+  twin (**Seeed Studio**) — so a bare "Seed" wordmark for Nice Class 9/42 is realistically not
+  registrable, and it is not needed. **The Gardener's ruling:** retain "The Seed" as a **non-exclusive,
+  descriptive codename** — claim no trademark, seek no registration — cleared *for use* in the seed's
+  open-source / non-commercial / private-repos posture (SEED.md §7), not owned as an exclusive mark;
+  enforcement doc-only (the [ring 0004](../../rings/0004-name-hosting-visibility.md) naming precedent),
+  revisit-when a public *commercial* launch, a conflict/cease-and-desist, or a decision to register or
+  rebrand arises (with counsel). [E-004](../entropy-ledger.md) moved to the ledger's **Paid** section.
+  `npm run check` (13 checks) + `npm test` (231 cases) green; `drift_count` 0. **Both Stage 3 → 4 gating
+  prerequisites ([E-013](../entropy-ledger.md), [E-004](../entropy-ledger.md)) are now clear and the exit
+  criterion is evidenced — the remaining Stage-3 work is to propose the Stage 3 → 4 (Flowering →
+  Pollination) transition as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md)
+  shape) for Gardener approval.**
 
 ## Next actions
 
@@ -322,9 +342,14 @@ item count.
    and the [docs/judgments/](../../judgments/README.md) organ — 18 self-tests + a standing verdict on
    [harness-engineering.md](../../judgments/0001-faithfulness-harness-engineering.md) (LAW-6). Intake's
    faithfulness residual now routes to it.
-7. **Clear the last gating prerequisite, then propose the transition.** Only
-   [E-004](../entropy-ledger.md) remains — the Gardener's trademark search (pollen cannot ship
-   *externally* under an uncleared name). Once it clears, propose the Stage 3 → 4 (Flowering →
-   Pollination) transition as a new plan (the [ring 0025](../../rings/0025-stage-3-transition-approved.md)
-   shape). This plan stays `active` until then — the exit criterion is evidenced, but the stage transition
-   is the Gardener's.
+7. ✅ **Last gating prerequisite [E-004](../entropy-ledger.md) cleared** (2026-07-17) — the Gardener's
+   trademark knockout search landed and the naming judgment is recorded in
+   [ring 0031](../../rings/0031-name-cleared-codename-retained.md): "The Seed" is retained as a
+   non-exclusive, descriptive codename (no trademark claimed, no registration sought), cleared for the
+   seed's open-source / non-commercial / private-repos posture; E-004 moved to the ledger's Paid section.
+8. **Propose the Stage 3 → 4 transition.** Both gating prerequisites ([E-013](../entropy-ledger.md),
+   [E-004](../entropy-ledger.md)) are now clear and the exit criterion is evidenced (item 5), so the
+   remaining Stage-3 work is to propose the Stage 3 → 4 (Flowering → Pollination) transition as a new plan
+   (the [ring 0025](../../rings/0025-stage-3-transition-approved.md) shape) for Gardener approval. This
+   plan stays `active` until that transition plan is opened; the stage transition is the Gardener's
+   (SEED.md §4).
