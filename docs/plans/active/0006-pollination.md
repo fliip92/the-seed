@@ -218,6 +218,11 @@ reaching its exit while the mother continues to pollinate.
   delivers host orientation, so no native `query` organ is built yet (LAW-7). dither left byte-identical (snapshot
   only). The mutating steps stay gated on the owner's approval of the Propose step (step 3); **step 3 (Propose) is
   next.** `npm run check` + `npm test` green.
+- **2026-07-18** — **Propose opened as [plan 0007](0007-dither-graft.md)** (step 3). Converted the Scout + Grill into
+  the four products — target architecture ([docs/architecture/dither.md](../../architecture/dither.md)), the ordered
+  migration (map + reachability/dead-link gate paying [E-016](../entropy-ledger.md), commit→ADR gate, `ci.yml`
+  principles, seeded ledger), workflows, and responsibilities — awaiting the owner's approval, the gate before any
+  Graft mutation of dither (LAW-1). `npm run check` + `npm test` green.
 
 ## Next actions
 
@@ -241,7 +246,7 @@ the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed, and **step 1 (S
    with a commit→ADR gate; lazy context coverage; seed skills separate from the pinned vendored
    `.agents/skills/` — each distilled into a Rule naming the graft lint it seeds. Ambiguity ended only by
    becoming a ring (SEED.md §5).
-3. **Propose** (step 3) — **live.** Convert the Scout findings and the grilled architecture into the four products
+3. **Propose** (step 3) — **live** ([plan 0007](0007-dither-graft.md)). Convert the Scout findings and the grilled architecture into the four products
    (target architecture, migration plan, workflows, responsibilities); **dither's owners review and
    approve**. This is the owner gate before any mutation — the mutating steps (Graft onward) do not begin
    until it is approved. Per-step build decisions are cut as rings when designed.
