@@ -58,7 +58,9 @@ binds the moment `grill-the-gardener` lands a doc.
 
 ## Architecture docs
 
-None yet. The first is produced when the Gardener is grilled — for this repository, the
-seed's own target architecture is already recorded across [SEED.md](../../SEED.md) and the
+- [dither](dither.md) — the first external pollination host; the four open seed-organ decisions
+  resolved in its Grill (ring 0033) distilled to Shape / Rules / Ownership.
+
+The seed's *own* target architecture is already recorded across [SEED.md](../../SEED.md) and the
 rings, so its distillation is a follow-on run of the skill rather than a fresh interview
 (SEED.md §0: the seed applies its method to itself first).

@@ -202,6 +202,22 @@ reaching its exit while the mother continues to pollinate.
   is the already-priced [E-009](../entropy-ledger.md)). `npm run check` (13 checks) + `npm test` (232
   cases) green; `drift_count` 0; dither byte-identical after the run (HEAD/tree/status unchanged). The
   mutating steps stay gated on the owner's approval of the Propose step (step 3); step 2 (Grill) is next.
+- **2026-07-18** — **Grill dither delivered — step 2 complete** ([ring 0033](../../rings/0033-dither-grill-outcomes.md);
+  [docs/architecture/dither.md](../../architecture/dither.md)). dither's *product* architecture was already elicited
+  (its own 2026-07-02 grilling session → `architecture.md` + nine ADRs), so the Grill (SEED.md §4 step 2) resolved the
+  four open *seed-organ* decisions the Scout left to the owner ([assessment 0002](../../assessments/0002-dither.md)
+  Grill agenda): canonical map = root `CLAUDE.md` (the seed teaches `map_reachability` the filename, paying
+  [E-016](../entropy-ledger.md), not imposing `AGENTS.md`); authoritative record = the nine in-repo ADRs with a
+  commit→ADR citation gate; context-doc coverage stays lazy (the dead-link gate covers referenced ones); the seed's
+  skills sit in a separate path with the vendored `.agents/skills/` pinned and excluded from seed gates. Distilled to
+  the one-page [architecture doc](../../architecture/dither.md) — Shape / Rules / Ownership, each rule naming the graft
+  lint it seeds — validated by `validate-architecture`. During the grill an external graph aid (graphify) was run
+  read-only over a `git archive` snapshot of dither as the [E-017](../entropy-ledger.md)/[E-018](../entropy-ledger.md)
+  evidence probe (approach A): the full code+markdown structural graph cost **0 LLM tokens**, and its god-nodes +
+  ADR→code clusters sharpened this grill's agenda — confirming E-018's finding that the free external tool already
+  delivers host orientation, so no native `query` organ is built yet (LAW-7). dither left byte-identical (snapshot
+  only). The mutating steps stay gated on the owner's approval of the Propose step (step 3); **step 3 (Propose) is
+  next.** `npm run check` + `npm test` green.
 
 ## Next actions
 
@@ -215,16 +231,17 @@ the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed, and **step 1 (S
    well-tended host whose nulls are mostly the seed's anatomy under other names, four findings that
    formalize rather than impose, one new instrument-entropy unit priced ([E-016](../entropy-ledger.md)).
    The Scout modified nothing (SEED.md §4).
-2. **Grill dither's owners** (step 2) — **live.** Elicit the target architecture to one page + lintable
-   rules and make the human/agent ownership split explicit
+2. **Grill dither's owners** (step 2) — **done** ([ring 0033](../../rings/0033-dither-grill-outcomes.md);
+   [docs/architecture/dither.md](../../architecture/dither.md)). dither's product architecture was already
+   elicited by its own 2026-07-02 grill (`architecture.md` + nine ADRs), so this Grill
    ([grill-the-gardener](../../../skills/grill-the-gardener/SKILL.md) + the
-   [architecture](../../architecture/README.md) organ). dither is unusual — it already ran a 2026-07-02
-   grilling session that produced a one-page POC `architecture.md`, so the grill starts from a
-   largely-elicited product architecture; the open questions are the seed-organ ones named in the
-   [assessment 0002](../../assessments/0002-dither.md) Grill agenda (which file is the canonical map,
-   which of ADRs vs issues is authoritative, the skills-library posture, the post-POC shape). Ambiguity
-   ends the interview only by becoming a ring (SEED.md §5).
-3. **Propose** (step 3) — convert the Scout findings and the grilled architecture into the four products
+   [architecture](../../architecture/README.md) organ) resolved the four open seed-organ decisions the
+   Scout left to the owner ([assessment 0002](../../assessments/0002-dither.md) Grill agenda) — canonical
+   map = root `CLAUDE.md` (teach `map_reachability`, pay [E-016](../entropy-ledger.md)); ADRs authoritative
+   with a commit→ADR gate; lazy context coverage; seed skills separate from the pinned vendored
+   `.agents/skills/` — each distilled into a Rule naming the graft lint it seeds. Ambiguity ended only by
+   becoming a ring (SEED.md §5).
+3. **Propose** (step 3) — **live.** Convert the Scout findings and the grilled architecture into the four products
    (target architecture, migration plan, workflows, responsibilities); **dither's owners review and
    approve**. This is the owner gate before any mutation — the mutating steps (Graft onward) do not begin
    until it is approved. Per-step build decisions are cut as rings when designed.

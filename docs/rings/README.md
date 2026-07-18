@@ -38,6 +38,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0030 — the inferential-control instrument: a compose-not-commit judge whose probabilistic verdict rides in a deterministic, staleness-gated envelope](0030-inferential-control-judge.md)
 - [0031 — the "Seed" name is cleared as a non-exclusive descriptive codename: the trademark knockout search landed, no registration is claimed, E-004 paid](0031-name-cleared-codename-retained.md)
 - [0032 — Stage 3 → 4 transition approved; dither is the first external host (resolving ring 0006's Gardener-designates-a-host revisit)](0032-stage-4-transition-first-host-dither.md)
+- [0033 — dither grill: canonical map, decision record, context-doc coverage, skills coexistence](0033-dither-grill-outcomes.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 
