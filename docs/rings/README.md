@@ -45,6 +45,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0037 — dither's map gate (graft item 1): the Seed's engine copied verbatim + a thin host-owned runner; dead links gated repo-wide, reachability measured; the committed-tree scope; the 6 pre-existing links fixed; not ring 0028's pure-additive beachhead](0037-dither-map-gate-graft.md)
 - [0038 — dither's commit→ADR gate (graft item 2): the Seed's plan-traceability shape adapted to dither's decision surface — two clauses (cited-ADR-must-exist + a new-ADR commit names it), the ADD-not-modify trigger grounded in dither's own history, no universal-citation clause](0038-dither-adr-gate-graft.md)
 - [0039 — dither's principles gate (graft item 3): every norm CI enforces stated as a principle naming a command ci.yml runs; the enforcer-exists check adapted to dither's CI-step surface (stronger than link-exists); all five gates covered, not the plan's three; enforcement_ratio null→100%](0039-dither-principles-gate-graft.md)
+- [0040 — dither's entropy ledger (graft item 4): 8 entries seeded from its pre-sensed entropy + graft-surfaced items; a ledger-only gate over the verbatim engine (no plan system imposed); fire-when-present; the risk-register honesty filter; ledger_trend null→+8, map_reachability 6.1%→11.3% — the dither Propose→Graft completes](0040-dither-ledger-graft.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

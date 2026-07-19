@@ -38,11 +38,16 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   ([assessment 0002](docs/assessments/0002-dither.md)), Grill
   ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), and Propose
   ([plan 0007](docs/plans/active/0007-dither-graft.md), approved
-  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **graft items 1–2 have landed on
-  dither** — the map reachability + dead-link gate ([ring 0037](docs/rings/0037-dither-map-gate-graft.md):
-  the first mutation of a real external host, hosted CI green) and the commit→ADR traceability gate
-  ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md): committed, its push Gardener-gated) — items
-  3–4 next. Every step's instrument was built across
+  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **all four graft items have landed on
+  dither, completing the Propose→Graft** — the map reachability + dead-link gate
+  ([ring 0037](docs/rings/0037-dither-map-gate-graft.md): the first mutation of a real external host,
+  hosted CI green), the commit→ADR traceability gate ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md):
+  hosted CI green), the principles + `enforcement_ratio` organ
+  ([ring 0039](docs/rings/0039-dither-principles-gate-graft.md)), and the seeded entropy ledger
+  ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend` null → +8) — items 3–4 committed
+  locally, their push Gardener-gated. **The next SEED.md §4 step is Metabolize (step 5)**, whose first
+  refactor candidate (the app→package import-boundary test) is already priced in dither's new ledger.
+  Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

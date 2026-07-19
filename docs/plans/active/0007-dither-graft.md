@@ -147,6 +147,31 @@ and their verification.
   landing range `95dd09a..8a9eec1` green on all three gates; `.seed/` outside dither's pnpm workspace so lint/typecheck/test
   are unaffected. `npm run check` + `npm test` green seed-side.
 
+- **2026-07-19** — **Graft item 4 DONE — the seeded entropy ledger; the dither Propose→Graft completes.** The
+  Gardener started item 4 and it landed in dither (`8ce4e11`, local; push Gardener-gated;
+  [ring 0040](../../rings/0040-dither-ledger-graft.md)).
+  [`.seed/checks/ledger-gate.ts`](https://github.com/fliip92/dither/blob/main/.seed/checks/ledger-gate.ts) is
+  dither's runner over the verbatim engine (`.seed/lib/repo.ts`, byte-identical — no re-copy), validating the
+  **ledger only** (dither has no plan/ring system — decisions are ADRs, work is Issues), **fire-when-present**
+  (ring 0035 shape). The ledger
+  ([`docs/plans/entropy-ledger.md`](https://github.com/fliip92/dither/blob/main/docs/plans/entropy-ledger.md) —
+  the path `ledger_trend` hard-codes; `docs/plans/` scoped to the ledger, no plan format imposed, so
+  `plan_traceability` stays null) carries **8 entries** seeded from dither's own pre-sensed entropy plus the four
+  graft-surfaced items: E-001 import-boundary test unbuilt (dither.md Rule 5, deferred to Metabolize), E-002 the
+  `.seed/` gates have no committed self-test (ring 0038), E-003 wgpu unproven on tester hardware + E-004 `.droid`
+  file-association un-OTA-able (the **risk-register honesty filter**: only a risk whose mitigation is a *pending
+  action* becomes an entry; the three mitigated-by-decision risks — voice/cost/edge — excluded as managed), E-005
+  local-brain productization parked (reframed after ADR-0009 cleared the *experience* level; the unknown is
+  separate-file quantized-LoRA-adapter composition), E-006 the 2 `docs/spikes/` drift refs (named in prose so they
+  add no drift), E-007 the reachability sweep, E-008 the deferred build-time decisions. A **sixth principle**
+  (`entropy-is-priced`) keeps [ring 0039](../../rings/0039-dither-principles-gate-graft.md)'s completeness claim
+  honest; a `CLAUDE.md` pointer lands the ledger on the map. Verified: ledger-gate **GREEN** (8 priced) + **TEETH**
+  9/9 on a throwaway repo (missing field, bad interest-rate enum, numbering gap, duplicate number, malformed
+  heading, missing `## Open`, missing `## Paid` fire; valid + absent hold); `ledger_trend` **null → +8**,
+  `enforcement_ratio` 100%, `map_reachability` **6.1% → 11.3%** (cascade), `drift_count` held at 2; landing range
+  `da6bb24..8ce4e11` green on all four gates (map, ADR, principles, ledger). `.seed/` outside dither's pnpm
+  workspace so lint/typecheck/test unaffected. `npm run check` + `npm test` green seed-side.
+
 ## Next actions
 
 1. **Graft item 1 — DONE** ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`,
@@ -162,12 +187,21 @@ and their verification.
    green + teeth (phantom enforcer, missing field, prose-only, non-kebab name, removed `ci.yml` step); landing
    range `95dd09a..8a9eec1` green on all three gates. **Owner action: `git -C <dither> push origin main`** to run
    hosted CI (as with items 1–2).
-4. **Graft item 4 — entropy ledger, seeded** (next; authorized under
-   [ring 0034](../../rings/0034-dither-graft-approved.md); a ring + its verification). Create dither's ledger
-   from its own pre-sensed entropy — architecture.md's "Deferred to build time" list, the risk register, the
-   `docs/spikes/` feasibility notes — each an interest rate + conversion path. Price into it: the deferred
-   import-boundary test (dither.md Rule 5), the "dither's `.seed/` gates have no committed self-test" gap
-   (ring 0038), the **2 pre-existing `docs/spikes/` drift references** the fitness scan surfaces (repo-fitness
-   `drift_count` = 2), and dither's low `map_reachability` (6.1%) as a deliberate reachability sweep.
-   Verification: ledger validates; `ledger_trend` computable. The two Metabolize tracks (SEED.md §4 step 5)
-   open once the graft is in.
+4. **Graft item 4 — DONE** ([ring 0040](../../rings/0040-dither-ledger-graft.md); dither `8ce4e11`,
+   local — **push Gardener-gated**). The seeded entropy ledger: 8 entries priced from dither's own
+   pre-sensed entropy (risk register — filtered to pending-action risks only — the deferred list, the
+   spikes) + the four graft-surfaced items (import-boundary test, `.seed/` self-test gap, the 2 drift
+   refs, the reachability sweep); a ledger-only gate over the verbatim engine (no plan system imposed),
+   fire-when-present; a sixth principle keeps ring 0039's completeness honest. Verified green + teeth
+   (9/9); `ledger_trend` **null → +8**, `map_reachability` 6.1% → 11.3%, `drift_count` held at 2;
+   landing range `da6bb24..8ce4e11` green on all four gates. **Owner action: `git -C <dither> push
+   origin main`** to run hosted CI (as with items 1–2).
+
+**Migration complete.** All four graft organs have landed on dither (the map+reachability gate, the
+commit→ADR gate, the principles+`enforcement_ratio` organ, and the seeded ledger) — the Propose→Graft
+of SEED.md §4 steps 3–4 is done. Remaining before this plan closes: the Gardener pushes items 3–4 to
+run hosted CI (items 1–2 are pushed + green). **Next SEED.md §4 step: Metabolize (step 5)** — the two
+tracks (refactor-toward-[architecture](../../architecture/dither.md) + feature work, fitness arbitrating
+pace) open as new work; the first refactor candidate is already priced in dither's ledger (E-001, the
+import-boundary test). The per-host **exit criterion** governs from here: a positive fitness trend over
+a sustained window with the owner shipping through the agent workflow, the seed no longer special.
