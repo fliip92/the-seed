@@ -44,8 +44,10 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   hosted CI green), the commit→ADR traceability gate ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md):
   hosted CI green), the principles + `enforcement_ratio` organ
   ([ring 0039](docs/rings/0039-dither-principles-gate-graft.md)), and the seeded entropy ledger
-  ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend` null → +8) — items 3–4 committed
-  locally, their push Gardener-gated. **The next SEED.md §4 step is Metabolize (step 5)**, whose first
+  ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend` null → +8) — all four pushed to
+  dither's `main`, hosted CI green (items 3–4 confirmed by run
+  [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339), the Ledger gate live beside
+  the map, ADR, and principles gates). **The next SEED.md §4 step is Metabolize (step 5)**, whose first
   refactor candidate (the app→package import-boundary test) is already priced in dither's new ledger.
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in

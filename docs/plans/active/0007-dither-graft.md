@@ -181,21 +181,21 @@ and their verification.
    pushed to `main`, hosted CI green). The commit→ADR traceability gate: a cited ADR must exist, and a
    commit adding a new `docs/adr/NNNN-*` must name it; the ADD-not-modify trigger and no-universal-citation
    clause are grounded in dither's product-repo history. Verified across 9 fire/hold scenarios.
-3. **Graft item 3 — DONE** ([ring 0039](../../rings/0039-dither-principles-gate-graft.md); dither `8a9eec1`,
-   local — **push Gardener-gated**). The principles organ + `enforcement_ratio` gate: all five CI-enforced
+3. **Graft item 3 — DONE, live** ([ring 0039](../../rings/0039-dither-principles-gate-graft.md); dither `8a9eec1`,
+   pushed to `main`, hosted CI green). The principles organ + `enforcement_ratio` gate: all five CI-enforced
    norms stated as principles, each naming a command `ci.yml` runs; `enforcement_ratio` null → 100%. Verified
    green + teeth (phantom enforcer, missing field, prose-only, non-kebab name, removed `ci.yml` step); landing
-   range `95dd09a..8a9eec1` green on all three gates. **Owner action: `git -C <dither> push origin main`** to run
-   hosted CI (as with items 1–2).
-4. **Graft item 4 — DONE** ([ring 0040](../../rings/0040-dither-ledger-graft.md); dither `8ce4e11`,
-   local — **push Gardener-gated**). The seeded entropy ledger: 8 entries priced from dither's own
-   pre-sensed entropy (risk register — filtered to pending-action risks only — the deferred list, the
-   spikes) + the four graft-surfaced items (import-boundary test, `.seed/` self-test gap, the 2 drift
-   refs, the reachability sweep); a ledger-only gate over the verbatim engine (no plan system imposed),
-   fire-when-present; a sixth principle keeps ring 0039's completeness honest. Verified green + teeth
-   (9/9); `ledger_trend` **null → +8**, `map_reachability` 6.1% → 11.3%, `drift_count` held at 2;
-   landing range `da6bb24..8ce4e11` green on all four gates. **Owner action: `git -C <dither> push
-   origin main`** to run hosted CI (as with items 1–2).
+   range `95dd09a..8a9eec1` green on all three gates.
+4. **Graft item 4 — DONE, live** ([ring 0040](../../rings/0040-dither-ledger-graft.md); dither `8ce4e11`,
+   pushed to `main`, hosted CI green — run
+   [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339), the Ledger gate step among
+   the green steps). The seeded entropy ledger: 8 entries priced from dither's own pre-sensed entropy
+   (risk register — filtered to pending-action risks only — the deferred list, the spikes) + the four
+   graft-surfaced items (import-boundary test, `.seed/` self-test gap, the 2 drift refs, the reachability
+   sweep); a ledger-only gate over the verbatim engine (no plan system imposed), fire-when-present; a
+   sixth principle keeps ring 0039's completeness honest. Verified green + teeth (9/9); `ledger_trend`
+   **null → +8**, `map_reachability` 6.1% → 11.3%, `drift_count` held at 2; landing range
+   `da6bb24..8ce4e11` green on all four gates.
 
 **Migration complete.** All four graft organs have landed on dither (the map+reachability gate, the
 commit→ADR gate, the principles+`enforcement_ratio` organ, and the seeded ledger) — the Propose→Graft
