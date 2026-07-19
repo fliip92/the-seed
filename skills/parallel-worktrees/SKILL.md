@@ -30,9 +30,12 @@ knows only the contract, never the answer (SEED.md §4).
 Work the cycle; the value is that every step is isolated and every worktree is accounted for at
 the end.
 
-1. **Decompose.** Split the task into sub-tasks that can each own a worktree. If they cannot be
-   made independent, that is the finding — they belong in one tree, or the decomposition is
-   wrong.
+1. **Decompose.** Split the task into sub-tasks that can each own a worktree. When the task is
+   driven by a [plan](../../docs/plans/README.md), its `## Work units` section (ring
+   [0036](../../docs/rings/0036-work-unit-format.md)) *is* this decomposition: each unit with no
+   unmet `Depends-on` can own a worktree, and its `Entry-context` is exactly what that worktree's
+   agent reads to start cold — no re-deriving the whole plan. If sub-tasks cannot be made
+   independent, that is the finding — they belong in one tree, or the decomposition is wrong.
 2. **Create.** One worktree per sub-task, each on its own branch (`seed/wt-<i>`), off the base
    commit. `git worktree add` gives each a separate working directory; a change in one is
    invisible in the others and in the base until you merge it.

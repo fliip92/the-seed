@@ -41,6 +41,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0033 — dither grill: canonical map, decision record, context-doc coverage, skills coexistence](0033-dither-grill-outcomes.md)
 - [0034 — dither graft approved: the Propose is accepted; E-016 paid seed-side; the first dither mutation stays Gardener-gated](0034-dither-graft-approved.md)
 - [0035 — the stage-agreement invariant: validate-stage checks AGENTS.md against fitness.ts's CURRENT_STAGE, firing only on disagreement so a grafted host is not bound](0035-stage-agreement-invariant.md)
+- [0036 — the work-unit format: an optional, context-scoped `## Work units` section a plan decomposes into and parallel-worktrees consumes, conditionally enforced so small plans stay valid](0036-work-unit-format.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

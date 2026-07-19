@@ -212,7 +212,7 @@ function validRing(num: string, opts: { title?: string; drop?: string; enforceme
   return [`# Ring ${opts.title ?? `${num} — Self-test fixture`}`, '', ...fields, ''].join('\n');
 }
 
-function validPlan(num: string, opts: { title?: string; status?: string | null; dropSection?: string; progress?: string[] } = {}): string {
+function validPlan(num: string, opts: { title?: string; status?: string | null; dropSection?: string; progress?: string[]; workUnits?: string[] } = {}): string {
   const sections: string[] = [
     `# Plan ${opts.title ?? `${num} — Self-test fixture`}`,
     '',
@@ -233,10 +233,28 @@ function validPlan(num: string, opts: { title?: string; status?: string | null; 
     '',
     '1. None — fixture.',
     '',
+    ...(opts.workUnits ? ['## Work units', '', ...opts.workUnits.flatMap((u) => [u, ''])] : []),
   ];
   return sections
     .filter((l) => (opts.dropSection === undefined ? true : l !== opts.dropSection))
     .join('\n');
+}
+
+// A valid work unit (ring 0036): the `### U<n> — <title>` heading + the five required fields
+// (Status, Scope, Entry-context, Done-when, Owner). Each opt breaks exactly one completion
+// condition — `heading` rewrites the H3 (e.g. an id-less heading), `drop` removes a required
+// field, `status` overrides the Status VALUE (an invalid enum). Appended to a plan's optional
+// `## Work units` section by validPlan({ workUnits }); an empty workUnits array seeds a
+// present-but-empty section.
+function validWorkUnit(id: string, opts: { heading?: string; drop?: string; status?: string } = {}): string {
+  const fields = [
+    `- Status: ${opts.status ?? 'todo'}`,
+    '- Scope: A fixture unit that exists only inside a self-test temp copy.',
+    '- Entry-context: this fixture; nothing else to read to start it cold.',
+    '- Done-when: the self-test asserts on it.',
+    '- Owner: agent',
+  ].filter((f) => (opts.drop === undefined ? true : !f.startsWith(`- ${opts.drop}:`)));
+  return [opts.heading ?? `### ${id} — Self-test fixture unit`, ...fields].join('\n');
 }
 
 // A valid principle (ring 0023): an H1 title, the four §2 fields, and an Enforcement clause that
@@ -722,6 +740,35 @@ const CASES: ViolationCase[] = [
     name: 'plans: numbering gap',
     seed: (r) => write(r, `docs/plans/active/${PLAN_GAP}-fixture.md`, validPlan(PLAN_GAP)),
     expect: { check: PLANS, law: LAW5, contains: [`plan numbering gap: found ${PLAN_GAP} where ${PLAN_NEXT} was expected`] },
+  },
+  // --- work-unit format (ring 0036 / E-014): a plan carrying a `## Work units` section must hold
+  // --- well-formed `### U<n>` units. Each writes an UNLINKED plan to active/, so validate-map also
+  // --- fires (unreachable) — harmless: the assertion only requires the PLANS marker + message +
+  // --- exit 1. The valid-units-pass and no-section-pass paths run as an exit-0 block below.
+  {
+    name: 'plans: a work unit missing a required field',
+    seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [validWorkUnit('U1', { drop: 'Done-when' })] })),
+    expect: { check: PLANS, law: LAW5, contains: ['work unit U1 is missing field: Done-when'] },
+  },
+  {
+    name: 'plans: a work unit with an id-less heading',
+    seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [validWorkUnit('U1', { heading: '### A unit with no id' })] })),
+    expect: { check: PLANS, law: LAW5, contains: ['work unit heading is malformed'] },
+  },
+  {
+    name: 'plans: a work unit with an invalid Status value',
+    seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [validWorkUnit('U1', { status: 'nearly there' })] })),
+    expect: { check: PLANS, law: LAW5, contains: ['work unit U1 has no valid'] },
+  },
+  {
+    name: 'plans: duplicate work unit ids',
+    seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [validWorkUnit('U1'), validWorkUnit('U1')] })),
+    expect: { check: PLANS, law: LAW5, contains: ['duplicate work unit id U1'] },
+  },
+  {
+    name: 'plans: a present-but-empty Work units section',
+    seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [] })),
+    expect: { check: PLANS, law: LAW5, contains: ['section with no units'] },
   },
   {
     name: 'ledger: missing ## Paid section',
@@ -1559,6 +1606,29 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'map: an active plan linked by its completed/ path resolves — no dead link (ring 0013)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- work-unit format, the exit-0 side (ring 0036 / E-014): a plan carrying a well-formed
+// --- `## Work units` section must pass all checks, so the fixture plan is linked from the active/
+// --- README (reachability) and every unit honors the format. The pristine copy already proves both
+// --- the vacuous path (the plans with no such section) and a real multi-unit plan (0008) passing.
+inTempCopy((root) => {
+  write(
+    root,
+    `docs/plans/active/${PLAN_NEXT}-fixture.md`,
+    validPlan(PLAN_NEXT, { workUnits: [validWorkUnit('U1'), validWorkUnit('U2', { status: 'in progress (agent)' })] }),
+  );
+  append(
+    root,
+    'docs/plans/active/README.md',
+    `\n- [${PLAN_NEXT} fixture](${PLAN_NEXT}-fixture.md) — self-test fixture: a plan with well-formed work units.\n`,
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'plans: a plan with well-formed work units passes all checks (ring 0036)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );

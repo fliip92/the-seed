@@ -38,5 +38,12 @@ built, and the evidence trail behind every capability (LAW-6).
   ring [0030](../../rings/0030-inferential-control-judge.md)) and the name (E-004,
   ring [0031](../../rings/0031-name-cleared-codename-retained.md)). Closed by the Stage 3 → 4
   transition (ring [0032](../../rings/0032-stage-4-transition-first-host-dither.md)).
+- [0008 — work-unit format (pay E-014)](0008-work-unit-format.md) — completed 2026-07-19. Paid
+  [E-014](../entropy-ledger.md) during the dither-graft pause (LAW-8): plans gained an **optional,
+  context-scoped `## Work units` format** (ring [0036](../../rings/0036-work-unit-format.md)) — each
+  `### U<n>` unit carrying Status / Scope / Entry-context / Done-when / Owner so a fresh session or a
+  parallel-worktrees agent can pick it up cold without re-deriving the plan. Enforced conditionally in
+  [validate-plans.ts](../../../.seed/checks/validate-plans.ts) (only when a plan has the section, so
+  small single-session plans stay valid); dogfooded as this plan's own U1–U4.
 
 Format and procedure: [../README.md](../README.md).

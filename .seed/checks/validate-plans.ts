@@ -17,6 +17,21 @@ const DATED_ENTRY_RE = /^- \*\*(\d{4}-\d{2}-\d{2})\*\*/;
 
 const REQUIRED_SECTIONS = ['## Goal', '## Progress log', '## Decision log', '## Next actions'];
 
+// Work units (optional, ring 0036 / E-014): a plan MAY decompose into `### U<n> — <title>`
+// units under a `## Work units` section, each self-contained enough for a fresh session or a
+// parallel-worktrees agent to pick up cold. Validated only when the section is present, so a
+// small single-session plan is unconstrained (the ring-0035 fire-only-when-present shape).
+const WORK_UNITS = '## Work units';
+const WORK_UNITS_RE = /^## Work units\s*$/m;
+const UNIT_HEADING_RE = /^### (U\d+) — .+/;
+const UNIT_STATUS_RE = /^- Status: (todo|done|in progress\b.*|blocked: .+)\s*$/m;
+const UNIT_FIELDS: Array<{ re: RegExp; name: string; hint: string }> = [
+  { re: /^- Scope: .+/m, name: 'Scope', hint: '`- Scope: <what this unit changes, bounded>`' },
+  { re: /^- Entry-context: .+/m, name: 'Entry-context', hint: '`- Entry-context: <the exact files/rings/units to read to start cold, without re-deriving>`' },
+  { re: /^- Done-when: .+/m, name: 'Done-when', hint: '`- Done-when: <verifiable acceptance criterion — the check/test/command that proves it>`' },
+  { re: /^- Owner: .+/m, name: 'Owner', hint: '`- Owner: human | agent` (optionally a `· seed/wt-<i>` worktree handle)' },
+];
+
 const LEDGER_FIELDS: Array<{ re: RegExp; name: string; hint: string }> = [
   { re: /^- First observed: .+/m, name: 'First observed', hint: '`- First observed: <date, context>`' },
   { re: /^- Where: .+/m, name: 'Where', hint: '`- Where: <file/place the entropy lives>`' },
@@ -152,6 +167,66 @@ export const check: Check = {
               fix: 'keep progress entries in chronological order, newest last — an agent reads the log bottom-up for the latest state.',
             });
             break;
+          }
+        }
+      }
+
+      // Work units (optional, ring 0036): when a plan carries a `## Work units` section, each
+      // `### U<n> — <title>` unit must hold the fields a cold hand-off needs (E-014). A plan
+      // without the section is unconstrained — the fire-only-when-present shape of ring 0035.
+      if (WORK_UNITS_RE.test(content)) {
+        const unitBlocks: Array<{ heading: string; body: string }> = [];
+        for (const line of sectionLines(content, WORK_UNITS)) {
+          if (line.startsWith('### ')) unitBlocks.push({ heading: line.trim(), body: '' });
+          else if (unitBlocks.length > 0) unitBlocks[unitBlocks.length - 1].body += line + '\n';
+        }
+        if (unitBlocks.length === 0) {
+          violations.push({
+            check: ID,
+            law: PLAN_LAW,
+            problem: `${file} has a "${WORK_UNITS}" section with no units`,
+            fix: 'add at least one `### U<n> — <title>` unit, or remove the empty section — work units are optional, but an empty section is not a decomposition. Format in docs/plans/README.md.',
+          });
+        }
+        const ids = new Set<string>();
+        for (const unit of unitBlocks) {
+          const m = unit.heading.match(UNIT_HEADING_RE);
+          if (!m) {
+            violations.push({
+              check: ID,
+              law: PLAN_LAW,
+              problem: `${file} work unit heading is malformed: ${JSON.stringify(unit.heading)}`,
+              fix: 'each work unit is `### U<n> — <title>` (e.g. `### U1 — cut the ring`) so it is citable across sessions — format in docs/plans/README.md.',
+            });
+            continue;
+          }
+          const id = m[1];
+          if (ids.has(id)) {
+            violations.push({
+              check: ID,
+              law: PLAN_LAW,
+              problem: `${file} has a duplicate work unit id ${id}`,
+              fix: 'give each work unit a unique id (U1, U2, …); ids need not be gapless, but a duplicate makes a unit uncitable.',
+            });
+          }
+          ids.add(id);
+          if (!UNIT_STATUS_RE.test(unit.body)) {
+            violations.push({
+              check: ID,
+              law: PLAN_LAW,
+              problem: `${file} work unit ${id} has no valid \`- Status:\` line`,
+              fix: 'add `- Status: todo | in progress (<owner>) | done | blocked: <on what>` — a resuming agent reads it to see what is still open.',
+            });
+          }
+          for (const field of UNIT_FIELDS) {
+            if (!field.re.test(unit.body)) {
+              violations.push({
+                check: ID,
+                law: PLAN_LAW,
+                problem: `${file} work unit ${id} is missing field: ${field.name}`,
+                fix: `add ${field.hint} — a unit without it cannot be picked up cold (ring 0036).`,
+              });
+            }
           }
         }
       }

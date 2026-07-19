@@ -21,6 +21,15 @@ work it drives.
 - Required sections: `## Goal`, `## Progress log` (dated entries
   `- **YYYY-MM-DD** — <what happened>`, at least one, newest last — enforced),
   `## Decision log` (local decisions + pointers to any rings cut), `## Next actions`.
+- Optional `## Work units` (ring [0036](../rings/0036-work-unit-format.md)): a plan that will span
+  sessions or parallel [worktrees](../../skills/parallel-worktrees/SKILL.md) agents MAY decompose
+  into work units — each a `### U<n> — <title>` block carrying `- Status:`
+  (`todo | in progress (<owner>) | done | blocked: <on what>`), `- Scope:` (bounded — the
+  don't-derail fence), `- Entry-context:` (the exact files/rings/units to read to start **cold**,
+  without re-deriving the whole plan), `- Done-when:` (a verifiable acceptance criterion, LAW-6),
+  `- Owner:` (`human | agent`, optionally a `· seed/wt-<i>` handle), and an optional `- Depends-on:`
+  (unit ids, or `none`). **Validated only when the section is present** (enforced); a small
+  single-session plan omits it. Unit ids are unique, not necessarily gapless.
 - This explicit-key format is canonical and refines the shorthand sketch in SEED.md §2
   (ring [0003](../rings/0003-artifact-field-formats.md)).
 
@@ -33,6 +42,13 @@ work it drives.
    links to CI runs.
 4. On completion: set Status to `completed YYYY-MM-DD`, `git mv` the file to
    `completed/`, and update any links to it.
+
+**Decomposing for multi-session / parallel work.** When a plan will span sessions or run across
+parallel [worktrees](../../skills/parallel-worktrees/SKILL.md), give it a `## Work units` section
+(above). Each unit's `Entry-context` is the cold-start payload a fresh agent reads *instead of*
+re-deriving the whole plan, and `Depends-on` tells parallel-worktrees which units are independent
+enough to each own a worktree. Keep unit `Status` current as you go — the section is the structured
+hand-off the prose progress log is not (ring [0036](../rings/0036-work-unit-format.md)).
 
 ## Ledger entry format (enforced by `.seed/checks/validate-plans.ts`)
 

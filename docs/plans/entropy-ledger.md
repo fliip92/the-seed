@@ -44,26 +44,6 @@ ledger is also a record of digestion.
   [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
   prose-state shape is the trigger to build the class
 
-## E-014 — plans have no resumable, context-scoped work-unit format
-
-- First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
-  Plan.md/Implement.md artifacts, Meta's hibernate-and-wake checkpointing, LangChain's
-  context-rot/compaction warning) in [docs/references/harness-engineering.md](../references/harness-engineering.md)
-- Where: [docs/plans/](README.md) carry a prose progress log and a `Next actions` list, but no
-  structured, context-scoped work-unit a fresh session — or a parallel [worktrees](../../skills/parallel-worktrees/SKILL.md)
-  agent — can pick up cold without re-deriving context. The Gardener's "implement pieces across
-  sessions without derailing, with efficient context/token usage, and parallel humans + machines"
-  need has no artifact
-- Interest rate: low now (solo, mostly single-session), rising as tasks span sessions and agents —
-  re-derivation cost and derailment risk compound with task size and parallelism
-- Price: medium — a work-unit / handoff format (scope + entry-context + done-when + owner) that a
-  plan decomposes into and parallel-worktrees consumes; likely a plan-format enrichment plus a
-  skill
-- Conversion path: ring then invariant — decide the format as a ring (it touches the LAW-5 plan
-  discipline), then enforce it structurally; sequence after the intake skill, and design it against
-  the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
-  first principles
-
 ## E-017 — the seed asserts LLM/context efficiency but never measures it
 
 - First observed: 2026-07-18, Gardener question comparing the seed's map/reference graph to
@@ -506,3 +486,46 @@ ledger is also a record of digestion.
   fitness.ts's `CURRENT_STAGE` +1 relative to the map) and asserts the check fires with a law-naming
   message and exit 1; the pristine copy passes. `npm run check` (14 checks) + `npm test`
   (234 cases) green; `drift_count` 0.
+
+## E-014 — plans have no resumable, context-scoped work-unit format
+
+- First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
+  Plan.md/Implement.md artifacts, Meta's hibernate-and-wake checkpointing, LangChain's
+  context-rot/compaction warning) in [docs/references/harness-engineering.md](../references/harness-engineering.md)
+- Where: [docs/plans/](README.md) carry a prose progress log and a `Next actions` list, but no
+  structured, context-scoped work-unit a fresh session — or a parallel [worktrees](../../skills/parallel-worktrees/SKILL.md)
+  agent — can pick up cold without re-deriving context. The Gardener's "implement pieces across
+  sessions without derailing, with efficient context/token usage, and parallel humans + machines"
+  need has no artifact
+- Interest rate: low now (solo, mostly single-session), rising as tasks span sessions and agents —
+  re-derivation cost and derailment risk compound with task size and parallelism
+- Price: medium — a work-unit / handoff format (scope + entry-context + done-when + owner) that a
+  plan decomposes into and parallel-worktrees consumes; likely a plan-format enrichment plus a
+  skill
+- Conversion path: ring then invariant — decide the format as a ring (it touches the LAW-5 plan
+  discipline), then enforce it structurally; sequence after the intake skill, and design it against
+  the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
+  first principles
+- Paid: 2026-07-19 ([plan 0008](completed/0008-work-unit-format.md), ring
+  [0036](../rings/0036-work-unit-format.md)) — converted during the
+  [plan 0007](active/0007-dither-graft.md) dither-graft pause as a free ledger item (LAW-8), after
+  [E-011](entropy-ledger.md) (ring 0035). The seed's plans now carry an **optional, context-scoped
+  work-unit format**: a `## Work units` section a plan MAY decompose into when it spans sessions or
+  parallel [worktrees](../../skills/parallel-worktrees/SKILL.md) agents, each `### U<n> — <title>`
+  unit holding **Status / Scope / Entry-context / Done-when / Owner** (+ optional Depends-on) —
+  Entry-context being the cold-start payload a fresh session reads *instead of* re-deriving the whole
+  plan (Meta's hibernate-and-wake + LangChain's context-rot,
+  [harness-engineering.md](../references/harness-engineering.md)). Enforced **conditionally** (the
+  ring-0035 shape): [validate-plans.ts](../../.seed/checks/validate-plans.ts) validates each unit
+  only when a plan has the section, so every prior plan and every small single-session plan stays
+  valid; the check pins the `### U<n>` shape, id-uniqueness, a valid Status enum, and the four
+  required fields, naming LAW-5. Documented in [docs/plans/README.md](README.md) and consumed by
+  [parallel-worktrees](../../skills/parallel-worktrees/SKILL.md)'s Decompose step (each unit with no
+  unmet Depends-on can own a worktree). Dogfooded: [plan 0008](completed/0008-work-unit-format.md)
+  decomposed its own build into U1–U4. Grounded in the already-metabolized long-horizon subsection +
+  the seed's own plan experience, not a fresh intake of the awesome-harness-engineering "Design
+  Primitives" section (still unmetabolized — the ring is supersedable when that pass lands).
+  Verification (LAW-6): six new self-tests — five fire on a malformed unit (missing field, id-less
+  heading, invalid Status, duplicate id, empty section) with a LAW-5 message + exit 1, and one holds
+  (a well-formed multi-unit plan passes), atop the pristine copy now carrying plan 0008's real units.
+  `npm run check` (14 checks) + `npm test` (240 cases) green; `drift_count` 0.
