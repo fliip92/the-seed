@@ -101,15 +101,31 @@ and their verification.
   README excluded). Demonstrated read-only on dither: `map_reachability` null → 1.4% (reachable from `CLAUDE.md`),
   dither byte-identical. Nothing is written into dither yet — the reachability-gate graft stays gated on the owner's
   go. `npm run check` (13) + `npm test` (233) green.
+- **2026-07-19** — **Graft item 1 DONE — the first mutation of a real external host is live.** The Gardener released
+  the pause and the map reachability + dead-link gate landed on dither (commit `da6bb24`, pushed to `main`;
+  [ring 0037](../../rings/0037-dither-map-gate-graft.md)). The Seed's engine (`.seed/lib/repo.ts`,
+  `.seed/checks/validate-map.ts`) is copied **verbatim**; `.seed/checks/map-gate.ts` is dither's runner — it **gates**
+  repo-wide on broken/unfollowable links and **measures** (never gates) `CLAUDE.md` reachability, reading the committed
+  tree (`git ls-files`) so gitignored generated docs stay out. A read-only pass first found dither carried **6
+  pre-existing gate-class links**, all legitimate by its conventions (5 cross-branch refs in a frozen spike, 1
+  ADR-directory link); offered reachable-set-scoping vs fix-the-6-then-gate-everywhere, the Gardener chose the latter,
+  so those 6 were fixed (a `docs/adr/README.md` index + repoint; the 5 spike links repointed to the preserved
+  `spike/local-brain` branch) and the repo-wide gate lands green. **Deviation recorded (ring 0037):** grafting into an
+  existing host modifies existing files (`ci.yml` wiring + the 6 fixes), so this is *not* ring 0028's pure-additive
+  beachhead — reversibility is *revert the graft commit*, not *remove created paths only*. Verified: green on the fixed
+  tree; teeth on a seeded dead link; `.seed/` outside dither's pnpm workspace so lint/typecheck/test are unaffected.
 
 ## Next actions
 
-1. **Owner approved** ([ring 0034](../../rings/0034-dither-graft-approved.md)) — the gate is passed.
-   Sequencing chosen: E-016 seed-side first, then pause before the first dither mutation.
-2. **Graft item 1 — seed-side half done, dither half paused.** [E-016](../entropy-ledger.md) is paid
-   (the seed now reads a host's map from `AGENTS.md`/`CLAUDE.md`; demonstrated read-only on dither,
-   `map_reachability` null → 1.4%). **Next, on the owner's go:** install the map + reachability/dead-link
-   gate into dither — the first mutation of a real host, additive and reversible
-   ([ring 0028](../../rings/0028-installer-uninstall.md)), at top tier.
-3. Then graft items 2–4 in order, each a ring + its verification; price the deferred import-boundary
-   test into dither's new ledger.
+1. **Graft item 1 — DONE** ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`,
+   pushed to `main`). The map reachability + dead-link gate is live in dither's CI; the 6 pre-existing
+   broken links it surfaced were fixed. The first mutation of a real external host has landed.
+2. **Graft item 2 — commit→ADR traceability gate** (the next item, authorized under
+   [ring 0034](../../rings/0034-dither-graft-approved.md); each item its own ring + verification). Graft
+   the seed's plan-traceability shape adapted to dither's decision surface: a commit enacting a decision
+   cites an existing in-repo ADR (`docs/adr/NNNN-*`). Verification: fires on a decision-commit with no ADR
+   citation, holds on one citing a valid ADR; GitHub-Issue refs stay allowed prose but are not the gate.
+   The verbatim-engine + host-runner + committed-tree pattern from item 1 (ring 0037) extends.
+3. Then graft items 3–4 in order, each a ring + its verification; price the deferred import-boundary test
+   into dither's new ledger (item 4). The two Metabolize tracks (SEED.md §4 step 5) open once the graft
+   is in.

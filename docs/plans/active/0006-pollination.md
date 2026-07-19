@@ -223,12 +223,19 @@ reaching its exit while the mother continues to pollinate.
   migration (map + reachability/dead-link gate paying [E-016](../entropy-ledger.md), commit→ADR gate, `ci.yml`
   principles, seeded ledger), workflows, and responsibilities — awaiting the owner's approval, the gate before any
   Graft mutation of dither (LAW-1). `npm run check` + `npm test` green.
+- **2026-07-19** — **Graft step 4 begun — item 1 landed on dither (the first mutation of a real external host).**
+  The owner approved the Propose ([ring 0034](../../rings/0034-dither-graft-approved.md)) and released the pause; the
+  map reachability + dead-link gate is now live in dither's CI (commit `da6bb24`, pushed, hosted CI green;
+  [ring 0037](../../rings/0037-dither-map-gate-graft.md), [plan 0007](0007-dither-graft.md)). The Seed's engine is
+  copied verbatim + a thin host-owned runner; dead links are gated repo-wide, reachability measured; the 6 pre-existing
+  broken links the gate surfaced were fixed (owner's choice over reachable-set-scoping). Items 2–4 follow in order.
+  `npm run check` (14) + `npm test` green.
 
 ## Next actions
 
-The Stage 3 → 4 transition is approved and enacted (ring 0032), dither is the first external host,
-the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed, and **step 1 (Scout) is delivered**
-([assessment 0002 — dither](../../assessments/0002-dither.md)). The live work is the next genome step:
+The Stage 3 → 4 transition is approved and enacted (ring 0032), dither is the first external host, and the
+per-host protocol is underway: Scout, Grill, and Propose are done, and the **Graft (step 4) is live** — its
+first lint has landed on dither. The steps:
 
 1. **Scout dither** (step 1) — **done.** The read-only
    [repo-fitness](../../../skills/repo-fitness/SKILL.md) baseline is delivered as
@@ -246,7 +253,13 @@ the Scout pre-flight ([E-012](../entropy-ledger.md)) has landed, and **step 1 (S
    with a commit→ADR gate; lazy context coverage; seed skills separate from the pinned vendored
    `.agents/skills/` — each distilled into a Rule naming the graft lint it seeds. Ambiguity ended only by
    becoming a ring (SEED.md §5).
-3. **Propose** (step 3) — **live** ([plan 0007](0007-dither-graft.md)). Convert the Scout findings and the grilled architecture into the four products
-   (target architecture, migration plan, workflows, responsibilities); **dither's owners review and
-   approve**. This is the owner gate before any mutation — the mutating steps (Graft onward) do not begin
-   until it is approved. Per-step build decisions are cut as rings when designed.
+3. **Propose** (step 3) — **done** ([plan 0007](0007-dither-graft.md); approved,
+   [ring 0034](../../rings/0034-dither-graft-approved.md)). The four products (target architecture, migration plan,
+   workflows, responsibilities) were accepted by the owner — the gate that authorizes the mutating steps. Per-item
+   build decisions are cut as rings when designed.
+4. **Graft** (step 4) — **live** ([plan 0007](0007-dither-graft.md)). Install the map, decision structure, and first
+   lints into dither — no behavior changes. **Item 1 done:** the map reachability + dead-link gate landed
+   ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`, hosted CI green — the first mutation of a
+   real external host). Items 2–4 (commit→ADR gate, `ci.yml` principles, seeded ledger) follow in order, each its own
+   ring + verification ([plan 0007](0007-dither-graft.md) `Next actions`). Then **Metabolize** (step 5) and
+   **Independence** (step 6) — the two Metabolize tracks open once the graft is in.

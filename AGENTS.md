@@ -34,11 +34,13 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   enters its **first external host, dither** (named by the Gardener at Stage 4 entry, ring 0032 —
   which resolves [ring 0006](docs/rings/0006-solo-until-flowering.md): the seed is no longer solo),
   and runs the genome's six-step per-host protocol (SEED.md §4): **Scout → Grill → Propose → Graft →
-  Metabolize → Independence.** **The live work is step 1 — Scout dither:** the
-  [E-012](docs/plans/entropy-ledger.md) pre-flight fix landed (repo-fitness now counts `git ls-files` —
-  the committed repository — before it measures a real host; paid 2026-07-17), so the next move is to
-  deliver the read-only [repo-fitness](skills/repo-fitness/SKILL.md) baseline + a new
-  [assessment](docs/assessments/README.md). Every step's instrument was built across
+  Metabolize → Independence.** **The live work is step 4 — Graft:** Scout
+  ([assessment 0002](docs/assessments/0002-dither.md)), Grill
+  ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), and Propose
+  ([plan 0007](docs/plans/active/0007-dither-graft.md), approved
+  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **item 1 of the graft — the map
+  reachability + dead-link gate — has landed on dither** ([ring 0037](docs/rings/0037-dither-map-gate-graft.md):
+  the first mutation of a real external host, hosted CI green), items 2–4 next. Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

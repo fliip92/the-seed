@@ -10,8 +10,9 @@ repository's own state, `npm run check` fails the moment this page drifts from t
 ## Where the Seed is now
 
 - **Stage:** 4 — Pollination.
-- **Active plan — where it is going:**
+- **Active plans — where it is going:**
   - [Plan 0006 — Pollination (Stage 4)](../plans/active/0006-pollination.md) — Advance from Stage 3 (Flowering) to Stage 4 (Pollination, SEED.md §4): enter a real foreign host and run the genome's six-step per-host protocol — **Scout → Grill → Propose → Graft → Metabolize → Independence** — bringing **method, not dogma** (the host's target architecture is discovered by grilling its owners, never imposed). Every step's instrument was built and proven during Stages 2–3; Stage 4 is the first time the whole organism is applied, mutating, to a repository that is not the Seed itself. Unlike every prior stage, Pollination is **terminal and ongoing** (SEED.md §0: a repository is never "done") — its exit criterion is judged *per host*, and the mother keeps pollinating indefinitely (SEED.md §7).
+  - [Plan 0007 — dither graft (Pollination Propose → Graft)](../plans/active/0007-dither-graft.md) — Convert the dither Scout (assessment 0002) and Grill (ring 0033; target architecture docs/architecture/dither.md) into the four Propose products (SEED.md §4 step 3) — target architecture, migration plan, workflows, responsibilities — for dither's owner to review and approve. This plan **opens as the Propose**: it is a proposal until the owner approves it, and **no Graft (step 4) mutation of dither begins before that approval** (LAW-1, the owner gate). On approval it governs the Graft — the additive, refuse-to-clobber, byte-exact-reversible install of the map, decision structure, and first lints (ring 0028); no behavior changes.
 
 ## How to get oriented
 
