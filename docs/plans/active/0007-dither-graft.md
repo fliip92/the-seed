@@ -128,23 +128,46 @@ and their verification.
   landing range `da6bb24..95dd09a` is green on both the ADR and map gates (what CI judges on push). `npm run check` +
   `npm test` green seed-side.
 
+- **2026-07-19** — **Graft item 3 DONE — the principles organ + `enforcement_ratio` gate is grafted.** The
+  Gardener started item 3 and it landed in dither (`8a9eec1`, local; push Gardener-gated;
+  [ring 0039](../../rings/0039-dither-principles-gate-graft.md)).
+  [`.seed/checks/principles-gate.ts`](https://github.com/fliip92/dither/blob/main/.seed/checks/principles-gate.ts)
+  is dither's runner over the verbatim engine (`.seed/lib/repo.ts`, confirmed byte-identical — no re-copy). It binds
+  every `docs/principles/*.md` to the four-field format **and** — the load-bearing check — to naming a command
+  `ci.yml` actually runs (parsing `ci.yml`'s `run:` bodies; a step that appends args matches as a leading prefix).
+  **Two adaptations from the Seed's shape, recorded in ring 0039:** (1) **all five** CI-enforced norms are stated
+  (Map gate, ADR gate, Lint, Typecheck, Test), not the plan's parenthetical three — "every norm CI enforces" is a
+  completeness claim and items 1–2 added the map+ADR gates to CI, so omitting them would falsify the organ's own claim
+  silently; (2) the Seed's "Enforcement links a check file that EXISTS" becomes **"names a command `ci.yml` RUNS"** —
+  the faithful, *stronger* analog on dither's uniform CI-step surface (a stale principle for a deleted step still links
+  an existing `ci.yml`, but names a command CI no longer runs → caught). A one-line `CLAUDE.md` "Enforced norms" pointer
+  lands the organ on the map, raising *measured* `map_reachability` 1.4% → 6.1% (cascade; still un-gated). Verified: 5
+  principles green; `enforcement_ratio` **null → 100%** (seed repo-fitness, read-only, dither byte-identical); teeth on a
+  phantom enforcer, a missing field, a prose-only Enforcement, a non-kebab filename, **and a removed `ci.yml` step**; the
+  landing range `95dd09a..8a9eec1` green on all three gates; `.seed/` outside dither's pnpm workspace so lint/typecheck/test
+  are unaffected. `npm run check` + `npm test` green seed-side.
+
 ## Next actions
 
 1. **Graft item 1 — DONE** ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`,
    pushed to `main`). The map reachability + dead-link gate is live in dither's CI; the 6 pre-existing
    broken links it surfaced were fixed. The first mutation of a real external host has landed.
-2. **Graft item 2 — DONE** ([ring 0038](../../rings/0038-dither-adr-gate-graft.md); dither `95dd09a`,
-   local — **push Gardener-gated**). The commit→ADR traceability gate: a cited ADR must exist, and a
+2. **Graft item 2 — DONE, live** ([ring 0038](../../rings/0038-dither-adr-gate-graft.md); dither `95dd09a`,
+   pushed to `main`, hosted CI green). The commit→ADR traceability gate: a cited ADR must exist, and a
    commit adding a new `docs/adr/NNNN-*` must name it; the ADD-not-modify trigger and no-universal-citation
-   clause are grounded in dither's product-repo history. Verified across 9 fire/hold scenarios; landing
-   range green on both gates. **Owner action: `git -C <dither> push origin main`** to run hosted CI (as with
-   item 1's pause release).
-3. **Graft item 3 — principles organ + `enforcement_ratio`** (next; authorized under
-   [ring 0034](../../rings/0034-dither-graft-approved.md); each item its own ring + verification). State
-   dither's CI-enforced norms as principles naming `ci.yml` (it runs lint + typecheck + test).
-   Verification: `enforcement_ratio` computes a real ratio (no longer null); each principle names an
-   enforcer that exists. The verbatim-engine + host-runner + committed-tree pattern (rings 0037/0038)
-   extends.
-4. Then graft item 4 (entropy ledger, seeded), a ring + its verification; price the deferred
-   import-boundary test **and** the "dither's `.seed/` gates have no committed self-test" gap (ring 0038)
-   into dither's new ledger. The two Metabolize tracks (SEED.md §4 step 5) open once the graft is in.
+   clause are grounded in dither's product-repo history. Verified across 9 fire/hold scenarios.
+3. **Graft item 3 — DONE** ([ring 0039](../../rings/0039-dither-principles-gate-graft.md); dither `8a9eec1`,
+   local — **push Gardener-gated**). The principles organ + `enforcement_ratio` gate: all five CI-enforced
+   norms stated as principles, each naming a command `ci.yml` runs; `enforcement_ratio` null → 100%. Verified
+   green + teeth (phantom enforcer, missing field, prose-only, non-kebab name, removed `ci.yml` step); landing
+   range `95dd09a..8a9eec1` green on all three gates. **Owner action: `git -C <dither> push origin main`** to run
+   hosted CI (as with items 1–2).
+4. **Graft item 4 — entropy ledger, seeded** (next; authorized under
+   [ring 0034](../../rings/0034-dither-graft-approved.md); a ring + its verification). Create dither's ledger
+   from its own pre-sensed entropy — architecture.md's "Deferred to build time" list, the risk register, the
+   `docs/spikes/` feasibility notes — each an interest rate + conversion path. Price into it: the deferred
+   import-boundary test (dither.md Rule 5), the "dither's `.seed/` gates have no committed self-test" gap
+   (ring 0038), the **2 pre-existing `docs/spikes/` drift references** the fitness scan surfaces (repo-fitness
+   `drift_count` = 2), and dither's low `map_reachability` (6.1%) as a deliberate reachability sweep.
+   Verification: ledger validates; `ledger_trend` computable. The two Metabolize tracks (SEED.md §4 step 5)
+   open once the graft is in.
