@@ -19,6 +19,7 @@ import { pin } from '../lib/judge.ts';
 
 const ANATOMY = 'seed/validate-anatomy';
 const MAP = 'seed/validate-map';
+const STAGE = 'seed/validate-stage';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
 const ARCH = 'seed/validate-architecture';
@@ -751,6 +752,15 @@ const CASES: ViolationCase[] = [
     name: 'anatomy: symlinked file',
     seed: (r) => symlinkSync('../SEED.md', join(r, 'docs/genome-link.md')),
     expect: { check: ANATOMY, law: LAW2, contains: ['docs/genome-link.md is a symbolic link'] },
+  },
+  {
+    // The growth stage is hand-bumped in two places — AGENTS.md's "- **Stage:** N" prose and
+    // fitness.ts's CURRENT_STAGE — and bumping one but not the other must fire (E-011, ring 0035).
+    // The mutation bumps fitness.ts by +1 relative to the map, derived from the current value, so it
+    // stays a genuine disagreement as the real stage advances.
+    name: 'stage: AGENTS.md and fitness.ts CURRENT_STAGE disagree',
+    seed: (r) => edit(r, '.seed/checks/fitness.ts', (c) => c.replace(/(const CURRENT_STAGE = )(\d+)/, (_m, p, n) => `${p}${Number(n) + 1}`)),
+    expect: { check: STAGE, law: LAW2, contains: ['growth stage disagrees', 'AGENTS.md', '.seed/checks/fitness.ts'] },
   },
   // --- architecture-doc format (grill-the-gardener, ring 0015). These write an
   // --- unreachable doc into docs/architecture/, so validate-map also fires — the assertion

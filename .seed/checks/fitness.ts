@@ -19,7 +19,7 @@ export type { FitnessMetrics, FitnessSnapshot } from '../lib/fitness-metrics.ts'
 
 // Bumped by hand alongside the next stage-transition ring (SEED.md §4) — stage changes are
 // rare, deliberate, Gardener-approved events, not something worth deriving mechanically.
-const CURRENT_STAGE = 4; // Stage 4 — Pollination (ring 0032). Agreement with AGENTS.md is unchecked — E-011.
+const CURRENT_STAGE = 4; // Stage 4 — Pollination (ring 0032). Agreement with AGENTS.md's "- **Stage:**" is enforced by validate-stage (E-011, ring 0035).
 
 function main(): void {
   const json = process.argv.includes('--json');

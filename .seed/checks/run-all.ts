@@ -4,6 +4,7 @@ import { listRepoFiles, formatViolation } from '../lib/repo.ts';
 import type { Check } from '../lib/repo.ts';
 import { check as anatomy } from './validate-anatomy.ts';
 import { check as map } from './validate-map.ts';
+import { check as stage } from './validate-stage.ts';
 import { check as rings } from './validate-rings.ts';
 import { check as plans } from './validate-plans.ts';
 import { check as architecture } from './validate-architecture.ts';
@@ -16,7 +17,7 @@ import { check as pollen } from './validate-pollen.ts';
 import { check as release } from './validate-release.ts';
 import { check as judgments } from './validate-judgments.ts';
 
-const CHECKS: Check[] = [anatomy, map, rings, plans, architecture, postmortems, assessments, principles, generated, references, pollen, release, judgments];
+const CHECKS: Check[] = [anatomy, map, stage, rings, plans, architecture, postmortems, assessments, principles, generated, references, pollen, release, judgments];
 
 const files = listRepoFiles();
 let failed = 0;

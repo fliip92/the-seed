@@ -40,6 +40,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0032 — Stage 3 → 4 transition approved; dither is the first external host (resolving ring 0006's Gardener-designates-a-host revisit)](0032-stage-4-transition-first-host-dither.md)
 - [0033 — dither grill: canonical map, decision record, context-doc coverage, skills coexistence](0033-dither-grill-outcomes.md)
 - [0034 — dither graft approved: the Propose is accepted; E-016 paid seed-side; the first dither mutation stays Gardener-gated](0034-dither-graft-approved.md)
+- [0035 — the stage-agreement invariant: validate-stage checks AGENTS.md against fitness.ts's CURRENT_STAGE, firing only on disagreement so a grafted host is not bound](0035-stage-agreement-invariant.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

@@ -35,6 +35,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 |---|---|---|
 | [checks/validate-anatomy.ts](checks/validate-anatomy.ts) | The anatomy of SEED.md §2 exists; every organ has its README; no symlinks anywhere | LAW-2 |
 | [checks/validate-map.ts](checks/validate-map.ts) | No dead links; every file ≤3 hops from AGENTS.md; reports `map_reachability` | LAW-4 |
+| [checks/validate-stage.ts](checks/validate-stage.ts) | The growth stage agrees across its two hand-bumped places — AGENTS.md's `- **Stage:**` and `CURRENT_STAGE` in [fitness.ts](checks/fitness.ts) (E-011, ring 0035); silent when the map states no stage, so a grafted host is not bound | LAW-2 |
 | [checks/validate-rings.ts](checks/validate-rings.ts) | Ring filenames, sequence, and format (SEED.md §2) | LAW-10 |
 | [checks/validate-plans.ts](checks/validate-plans.ts) | Plan filenames, sequence, format; ledger entry format | LAW-5, LAW-8 |
 | [checks/validate-architecture.ts](checks/validate-architecture.ts) | Architecture-doc format (grill-the-gardener): one page, lintable rules each naming an enforcement, explicit human/agent ownership split (SEED.md §4) | LAW-2 |
@@ -118,7 +119,8 @@ single definition of what each metric means (LAW-3). Two thin CLIs call it:
   [0002](../docs/plans/completed/0002-rooting.md) scope item 4): the engine pointed at this
   repository, printing a dated snapshot (`docs/fitness/history/*.json`, rendered in
   [docs/fitness/FITNESS.md](../docs/fitness/FITNESS.md)). It carries the hand-bumped
-  `CURRENT_STAGE` (E-011).
+  `CURRENT_STAGE`, whose agreement with the map's `- **Stage:**` line is enforced by
+  [validate-stage](checks/validate-stage.ts) (E-011, ring 0035).
 - [checks/repo-fitness.ts](checks/repo-fitness.ts) — the same engine pointed at **any**
   repository (plan [0003](../docs/plans/completed/0003-growth.md) scope item 2), the seed's
   read-only diagnostic instrument for hosts (SEED.md §4, Stage 2). It is **strictly

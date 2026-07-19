@@ -44,22 +44,6 @@ ledger is also a record of digestion.
   [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
   prose-state shape is the trigger to build the class
 
-## E-011 — The current growth stage is stated in two places, unchecked
-
-- First observed: 2026-07-05, enacting the Stage 1→2 transition (ring
-  [0014](../rings/0014-stage-2-transition-approved.md))
-- Where: [AGENTS.md](../../AGENTS.md) `Current state` states the stage in prose, and
-  [.seed/checks/fitness.ts](../../.seed/checks/fitness.ts) hardcodes `CURRENT_STAGE`; both
-  are bumped by hand on a transition (a deliberate choice noted in fitness.ts) and nothing
-  checks the two agree
-- Interest rate: low (the stage changes about once per stage, so the two rarely drift — but a
-  forgotten bump would silently mislabel every fitness snapshot's `stage` until noticed)
-- Price: small — a structural check that the `- **Stage:**` number in AGENTS.md and
-  `CURRENT_STAGE` in fitness.ts name the same stage
-- Conversion path: invariant — add the agreement check; it verifies the hand-bump rather than
-  mechanizing the decision fitness.ts deliberately keeps manual, so it respects that comment
-  while closing the LAW-2 gap. Fold into the next change touching either
-
 ## E-014 — plans have no resumable, context-scoped work-unit format
 
 - First observed: 2026-07-08, same metabolization — the long-horizon patterns (OpenAI's
@@ -492,3 +476,33 @@ ledger is also a record of digestion.
   **null → 1.4% (reachable from `CLAUDE.md`)**, dither byte-identical (HEAD `919a3b6`, clean tree) —
   the low fraction is the real finding (the current `CLAUDE.md` reaches almost none of the territory
   in ≤3 hops), which the graft's reachability gate + a canonical map will raise.
+
+## E-011 — The current growth stage is stated in two places, unchecked
+
+- First observed: 2026-07-05, enacting the Stage 1→2 transition (ring
+  [0014](../rings/0014-stage-2-transition-approved.md))
+- Where: [AGENTS.md](../../AGENTS.md) `Current state` states the stage in prose, and
+  [.seed/checks/fitness.ts](../../.seed/checks/fitness.ts) hardcodes `CURRENT_STAGE`; both
+  are bumped by hand on a transition (a deliberate choice noted in fitness.ts) and nothing
+  checks the two agree
+- Interest rate: low (the stage changes about once per stage, so the two rarely drift — but a
+  forgotten bump would silently mislabel every fitness snapshot's `stage` until noticed)
+- Price: small — a structural check that the `- **Stage:**` number in AGENTS.md and
+  `CURRENT_STAGE` in fitness.ts name the same stage
+- Conversion path: invariant — add the agreement check; it verifies the hand-bump rather than
+  mechanizing the decision fitness.ts deliberately keeps manual, so it respects that comment
+  while closing the LAW-2 gap. Fold into the next change touching either
+- Paid: 2026-07-19 (ring [0035](../rings/0035-stage-agreement-invariant.md)) — converted during
+  the [plan 0007](active/0007-dither-graft.md) dither-graft pause as the highest-certainty free
+  ledger item (LAW-8: pay entropy continuously while the live step is gated). The agreement is now
+  a structural check: [.seed/checks/validate-stage.ts](../../.seed/checks/validate-stage.ts) (in
+  `run-all`) reads the `- **Stage:**` number from [AGENTS.md](../../AGENTS.md) and `CURRENT_STAGE`
+  from [.seed/checks/fitness.ts](../../.seed/checks/fitness.ts) and fails naming LAW-2 when they
+  disagree — verifying the hand-bump, not mechanizing the deliberately-manual decision (fitness.ts's
+  comment stands). It fires **only when both are stated and differ**, so a grafted host — which
+  carries the portable `run-all` + copied fitness.ts but whose map template tracks no genome stage
+  (ring [0026](../rings/0026-pollen-boundary-versioning-lineage.md)) — is not bound, while the seed,
+  always stating both, is. Verification (LAW-6): a new self-test seeds a disagreement (bump
+  fitness.ts's `CURRENT_STAGE` +1 relative to the map) and asserts the check fires with a law-naming
+  message and exit 1; the pristine copy passes. `npm run check` (14 checks) + `npm test`
+  (234 cases) green; `drift_count` 0.
