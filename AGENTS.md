@@ -38,9 +38,11 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   ([assessment 0002](docs/assessments/0002-dither.md)), Grill
   ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), and Propose
   ([plan 0007](docs/plans/active/0007-dither-graft.md), approved
-  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **item 1 of the graft — the map
-  reachability + dead-link gate — has landed on dither** ([ring 0037](docs/rings/0037-dither-map-gate-graft.md):
-  the first mutation of a real external host, hosted CI green), items 2–4 next. Every step's instrument was built across
+  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **graft items 1–2 have landed on
+  dither** — the map reachability + dead-link gate ([ring 0037](docs/rings/0037-dither-map-gate-graft.md):
+  the first mutation of a real external host, hosted CI green) and the commit→ADR traceability gate
+  ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md): committed, its push Gardener-gated) — items
+  3–4 next. Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

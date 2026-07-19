@@ -43,6 +43,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0035 — the stage-agreement invariant: validate-stage checks AGENTS.md against fitness.ts's CURRENT_STAGE, firing only on disagreement so a grafted host is not bound](0035-stage-agreement-invariant.md)
 - [0036 — the work-unit format: an optional, context-scoped `## Work units` section a plan decomposes into and parallel-worktrees consumes, conditionally enforced so small plans stay valid](0036-work-unit-format.md)
 - [0037 — dither's map gate (graft item 1): the Seed's engine copied verbatim + a thin host-owned runner; dead links gated repo-wide, reachability measured; the committed-tree scope; the 6 pre-existing links fixed; not ring 0028's pure-additive beachhead](0037-dither-map-gate-graft.md)
+- [0038 — dither's commit→ADR gate (graft item 2): the Seed's plan-traceability shape adapted to dither's decision surface — two clauses (cited-ADR-must-exist + a new-ADR commit names it), the ADD-not-modify trigger grounded in dither's own history, no universal-citation clause](0038-dither-adr-gate-graft.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 

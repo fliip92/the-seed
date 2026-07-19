@@ -114,18 +114,37 @@ and their verification.
   existing host modifies existing files (`ci.yml` wiring + the 6 fixes), so this is *not* ring 0028's pure-additive
   beachhead — reversibility is *revert the graft commit*, not *remove created paths only*. Verified: green on the fixed
   tree; teeth on a seeded dead link; `.seed/` outside dither's pnpm workspace so lint/typecheck/test are unaffected.
+- **2026-07-19** — **Graft item 2 DONE — the commit→ADR traceability gate is grafted.** The Gardener started item 2 and
+  the gate landed in dither (`95dd09a`, local; push Gardener-gated; [ring 0038](../../rings/0038-dither-adr-gate-graft.md)).
+  [`.seed/checks/adr-gate.ts`](https://github.com/fliip92/dither/blob/main/.seed/checks/adr-gate.ts) is dither's runner over
+  the verbatim engine (`.seed/lib/repo.ts`, confirmed byte-identical — no re-copy). **Two clauses over the event's commit
+  range** (history never re-judged): (1) any ADR a commit *cites* must exist (`ADR-0003/0007` slash-lists split; a
+  `docs/adr/0009-` path counts; `#47` issue refs stay prose, never the gate), and (2) a commit that **ADDS** a new
+  `docs/adr/NNNN-*.md` must name that ADR. The **ADD-not-modify** trigger is grounded in dither's own history (it modifies
+  ADRs without citing as legitimate practice — `919a3b6`, the genesis import `996d28f` — so gating that over-fires;
+  *method, not dogma*), and there is **no universal-citation clause** (dither is a product repo, not the Seed's
+  governance-first surface). CI wiring: `fetch-depth: 0` added so the range diff has history; `ADR gate` step after
+  `Map gate`, pre-install; `check:adr` script added. Verified across 9 fire/hold scenarios on a throwaway clone; the
+  landing range `da6bb24..95dd09a` is green on both the ADR and map gates (what CI judges on push). `npm run check` +
+  `npm test` green seed-side.
 
 ## Next actions
 
 1. **Graft item 1 — DONE** ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`,
    pushed to `main`). The map reachability + dead-link gate is live in dither's CI; the 6 pre-existing
    broken links it surfaced were fixed. The first mutation of a real external host has landed.
-2. **Graft item 2 — commit→ADR traceability gate** (the next item, authorized under
-   [ring 0034](../../rings/0034-dither-graft-approved.md); each item its own ring + verification). Graft
-   the seed's plan-traceability shape adapted to dither's decision surface: a commit enacting a decision
-   cites an existing in-repo ADR (`docs/adr/NNNN-*`). Verification: fires on a decision-commit with no ADR
-   citation, holds on one citing a valid ADR; GitHub-Issue refs stay allowed prose but are not the gate.
-   The verbatim-engine + host-runner + committed-tree pattern from item 1 (ring 0037) extends.
-3. Then graft items 3–4 in order, each a ring + its verification; price the deferred import-boundary test
-   into dither's new ledger (item 4). The two Metabolize tracks (SEED.md §4 step 5) open once the graft
-   is in.
+2. **Graft item 2 — DONE** ([ring 0038](../../rings/0038-dither-adr-gate-graft.md); dither `95dd09a`,
+   local — **push Gardener-gated**). The commit→ADR traceability gate: a cited ADR must exist, and a
+   commit adding a new `docs/adr/NNNN-*` must name it; the ADD-not-modify trigger and no-universal-citation
+   clause are grounded in dither's product-repo history. Verified across 9 fire/hold scenarios; landing
+   range green on both gates. **Owner action: `git -C <dither> push origin main`** to run hosted CI (as with
+   item 1's pause release).
+3. **Graft item 3 — principles organ + `enforcement_ratio`** (next; authorized under
+   [ring 0034](../../rings/0034-dither-graft-approved.md); each item its own ring + verification). State
+   dither's CI-enforced norms as principles naming `ci.yml` (it runs lint + typecheck + test).
+   Verification: `enforcement_ratio` computes a real ratio (no longer null); each principle names an
+   enforcer that exists. The verbatim-engine + host-runner + committed-tree pattern (rings 0037/0038)
+   extends.
+4. Then graft item 4 (entropy ledger, seeded), a ring + its verification; price the deferred
+   import-boundary test **and** the "dither's `.seed/` gates have no committed self-test" gap (ring 0038)
+   into dither's new ledger. The two Metabolize tracks (SEED.md §4 step 5) open once the graft is in.
