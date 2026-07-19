@@ -93,14 +93,23 @@ and their verification.
   the owner's approval; on approval this plan governs the Graft (step 4), whose item 1 pays
   [E-016](../entropy-ledger.md) (seed-side) before the reachability gate lands on dither. `npm run
   check` + `npm test` green.
+- **2026-07-18** — **Approved and E-016 paid seed-side; paused before the first dither mutation.** The owner approved
+  this Propose ([ring 0034](../../rings/0034-dither-graft-approved.md)), authorizing the Graft, and chose to pause
+  after the seed-side prerequisite. Graft item 1's seed-side half is done: [E-016](../entropy-ledger.md) is paid
+  ([resolveMapFilename / MAP_FILENAMES](../../../.seed/checks/validate-map.ts) — `map_reachability` resolves a host's
+  entry map from an agent-map name set, `AGENTS.md` then `CLAUDE.md`; the seed's own gate stays `AGENTS.md`-strict;
+  README excluded). Demonstrated read-only on dither: `map_reachability` null → 1.4% (reachable from `CLAUDE.md`),
+  dither byte-identical. Nothing is written into dither yet — the reachability-gate graft stays gated on the owner's
+  go. `npm run check` (13) + `npm test` (233) green.
 
 ## Next actions
 
-1. **Owner reviews and approves this Propose** (SEED.md §4 step 3) — the gate before any mutation.
-   Approval is a Gardener act; record it as a ring (the transition-approval precedent) and confirm
-   the graft order.
-2. On approval, **Graft item 1** (step 4): pay [E-016](../entropy-ledger.md) seed-side, then install
-   the map + reachability/dead-link gate into dither — the first mutation of a real host, additive
-   and reversible ([ring 0028](../../rings/0028-installer-uninstall.md)), at top tier.
+1. **Owner approved** ([ring 0034](../../rings/0034-dither-graft-approved.md)) — the gate is passed.
+   Sequencing chosen: E-016 seed-side first, then pause before the first dither mutation.
+2. **Graft item 1 — seed-side half done, dither half paused.** [E-016](../entropy-ledger.md) is paid
+   (the seed now reads a host's map from `AGENTS.md`/`CLAUDE.md`; demonstrated read-only on dither,
+   `map_reachability` null → 1.4%). **Next, on the owner's go:** install the map + reachability/dead-link
+   gate into dither — the first mutation of a real host, additive and reversible
+   ([ring 0028](../../rings/0028-installer-uninstall.md)), at top tier.
 3. Then graft items 2–4 in order, each a ring + its verification; price the deferred import-boundary
    test into dither's new ledger.

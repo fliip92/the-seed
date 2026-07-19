@@ -80,35 +80,6 @@ ledger is also a record of digestion.
   the corpus's not-yet-metabolized "Planning & Task Decomposition" primitives rather than from
   first principles
 
-## E-016 — `map_reachability` hard-codes `AGENTS.md`, so a differently-mapped host reads null
-
-- First observed: 2026-07-17, first Stage 4 *Scout* of a real host — the read-only
-  [assessment 0002 — dither](../assessments/0002-dither.md) (plan
-  [0006](active/0006-pollination.md) step 1)
-- Where: [.seed/lib/fitness-metrics.ts](../../.seed/lib/fitness-metrics.ts) hard-codes the map
-  filename (`const MAP = 'AGENTS.md'`); `mapReachability` returns null when the target has no
-  `AGENTS.md`, with the stated reason "LAW-4's map entry point is absent". But a foreign host may
-  carry an equally-conventional entry point under another name — dither's is `CLAUDE.md`
-  (Anthropic's own default) plus a `CONTEXT-MAP.md` and a `README.md` front door — so the metric
-  reports a well-mapped repo as mapless, and its null reason is factually wrong for that host. It
-  is the [E-012](entropy-ledger.md) shape: a Scout instrument systematically under-reading a real
-  host, surfaced by pointing it at one
-- Interest rate: medium — it misfires on the common case (most non-grafted repos map under
-  `CLAUDE.md` or `README.md`, not `AGENTS.md`), turning the single most load-bearing Scout reading
-  into a false null on well-tended hosts; the damage is bounded only because the Scout's narrative
-  catches it by hand (it did on dither), which does not scale to trend-tracking a fleet of hosts
-- Price: small–medium — resolve the host's entry point rather than assume a fixed filename: either
-  a known-name set (`AGENTS.md`, `CLAUDE.md`, `README.md`) tried in priority order, or an explicit
-  Scout parameter naming the map, reporting the resolved filename alongside the metric so the
-  reading stays legible (LAW-2); plus self-tests pinning that a `CLAUDE.md`-mapped repo computes a
-  real fraction instead of null
-- Conversion path: invariant — make the map filename a resolved input to `mapReachability` (the
-  ring [0016](../rings/0016-repo-fitness-generalizes-the-metric-engine.md) generalization already
-  isolated it to one constant), self-tested; fold into the next repo-fitness change, or a
-  dedicated fix before the reachability gate is grafted onto dither — the graft's first lint
-  depends on which file is canonical, a choice the [assessment 0002](../assessments/0002-dither.md)
-  Grill agenda routes to the owner
-
 ## E-017 — the seed asserts LLM/context efficiency but never measures it
 
 - First observed: 2026-07-18, Gardener question comparing the seed's map/reference graph to
@@ -472,3 +443,52 @@ ledger is also a record of digestion.
   untracked `.claude/worktrees/moire-*` snapshots (225 on-disk files vs 4 tracked) reported
   identical metrics before and after the junk (`map_reachability` 0.75, `drift_count` 0) — the
   mottainapp shape reproduced.
+
+## E-016 — `map_reachability` hard-codes `AGENTS.md`, so a differently-mapped host reads null
+
+- First observed: 2026-07-17, first Stage 4 *Scout* of a real host — the read-only
+  [assessment 0002 — dither](../assessments/0002-dither.md) (plan
+  [0006](active/0006-pollination.md) step 1)
+- Where: [.seed/lib/fitness-metrics.ts](../../.seed/lib/fitness-metrics.ts) hard-codes the map
+  filename (`const MAP = 'AGENTS.md'`); `mapReachability` returns null when the target has no
+  `AGENTS.md`, with the stated reason "LAW-4's map entry point is absent". But a foreign host may
+  carry an equally-conventional entry point under another name — dither's is `CLAUDE.md`
+  (Anthropic's own default) plus a `CONTEXT-MAP.md` and a `README.md` front door — so the metric
+  reports a well-mapped repo as mapless, and its null reason is factually wrong for that host. It
+  is the [E-012](entropy-ledger.md) shape: a Scout instrument systematically under-reading a real
+  host, surfaced by pointing it at one
+- Interest rate: medium — it misfires on the common case (most non-grafted repos map under
+  `CLAUDE.md` or `README.md`, not `AGENTS.md`), turning the single most load-bearing Scout reading
+  into a false null on well-tended hosts; the damage is bounded only because the Scout's narrative
+  catches it by hand (it did on dither), which does not scale to trend-tracking a fleet of hosts
+- Price: small–medium — resolve the host's entry point rather than assume a fixed filename: either
+  a known-name set (`AGENTS.md`, `CLAUDE.md`, `README.md`) tried in priority order, or an explicit
+  Scout parameter naming the map, reporting the resolved filename alongside the metric so the
+  reading stays legible (LAW-2); plus self-tests pinning that a `CLAUDE.md`-mapped repo computes a
+  real fraction instead of null
+- Conversion path: invariant — make the map filename a resolved input to `mapReachability` (the
+  ring [0016](../rings/0016-repo-fitness-generalizes-the-metric-engine.md) generalization already
+  isolated it to one constant), self-tested; fold into the next repo-fitness change, or a
+  dedicated fix before the reachability gate is grafted onto dither — the graft's first lint
+  depends on which file is canonical, a choice the [assessment 0002](../assessments/0002-dither.md)
+  Grill agenda routes to the owner
+- Paid: 2026-07-18 ([plan 0007](active/0007-dither-graft.md) graft item 1 — the seed-side
+  prerequisite; the graft's owner gate was approved in
+  [ring 0034](../rings/0034-dither-graft-approved.md)). `map_reachability` now RESOLVES the target's
+  entry map from an agent-map name set — `AGENTS.md`, then `CLAUDE.md`
+  ([`resolveMapFilename` / `MAP_FILENAMES`](../../.seed/checks/validate-map.ts)) — instead of
+  hard-coding `AGENTS.md`, so a host mapped under a conventional non-`AGENTS.md` name is measured,
+  not read as a false null. `analyzeReachability` now takes the resolved filename as a parameter
+  (the seed's own `validate-map` GATE stays `AGENTS.md`-strict — it enforces the seed's law, not a
+  host convention), and the resolved filename rides in the metric note so the reading stays legible
+  even when it computes (LAW-2). **`README.md` is deliberately excluded** from the set — a human
+  front door is not an agent map ([ring 0033](../rings/0033-dither-grill-outcomes.md) rejected it
+  for dither) — so a README-only repo still reads a null `map_reachability`, the honest "no agent
+  entry point" finding. Chose the known-name resolver over an explicit Scout parameter: it is
+  zero-config and generalizes to the whole host fleet. Verification (LAW-6): a new self-test pins
+  that a `CLAUDE.md`-mapped host computes a real fraction with a naming note (not a false null),
+  while the foreign-repo degradation and recursive-upgrade tests still pass unchanged. `npm run
+  check` (13) + `npm test` (233) green. Demonstrated read-only on dither: `map_reachability`
+  **null → 1.4% (reachable from `CLAUDE.md`)**, dither byte-identical (HEAD `919a3b6`, clean tree) —
+  the low fraction is the real finding (the current `CLAUDE.md` reaches almost none of the territory
+  in ≤3 hops), which the graft's reachability gate + a canonical map will raise.

@@ -11,6 +11,22 @@ const ID = 'seed/validate-map';
 const MAP = 'AGENTS.md';
 const MAX_HOPS = 3;
 
+// The agent-entry-map filenames the `map_reachability` METRIC resolves a target's map to, in
+// priority order (E-016). AGENTS.md is the seed's own canonical and wins for the seed; CLAUDE.md
+// is the conventional agent entry a well-tended but un-grafted host uses (dither's, ring 0033).
+// README.md is deliberately absent — it is a human front door, not an agent map (ring 0033
+// rejected it for dither) — so a repo carrying only a README reads a null map_reachability, the
+// honest "no agent entry point" finding. The seed's own validate-map GATE below stays
+// AGENTS.md-strict (it enforces the seed's law); this set is only the metric's resolver for
+// foreign targets (.seed/lib/fitness-metrics.ts).
+export const MAP_FILENAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
+
+/** The target's canonical agent map: the first MAP_FILENAMES entry it carries at its root, or
+ *  null when it carries none — the "no legible entry point" finding (E-016). */
+export function resolveMapFilename(files: string[]): string | null {
+  return MAP_FILENAMES.find((name) => files.includes(name)) ?? null;
+}
+
 // Append-only data directories: files matching the pattern are covered by the
 // directory's README for reachability, and excluded from the map_reachability
 // denominator (they are data, not knowledge artifacts). Anything else in these
@@ -72,13 +88,13 @@ export interface ReachabilityResult {
  * fraction, not a parsed summary string. `root` defaults to REPO_ROOT (this check's use);
  * repo-fitness passes a foreign repo's root to run the identical analysis there (ring 0016).
  */
-export function analyzeReachability(files: string[], root: string = REPO_ROOT): ReachabilityResult {
+export function analyzeReachability(files: string[], root: string = REPO_ROOT, mapFilename: string = MAP): ReachabilityResult {
   const present = new Set(files);
   const violations: Violation[] = [];
 
   // Hop 0 is the map itself; a link found in a file at hop d lands its target at d+1.
-  const hop = new Map<string, number>([[MAP, 0]]);
-  const queue: string[] = [MAP];
+  const hop = new Map<string, number>([[mapFilename, 0]]);
+  const queue: string[] = [mapFilename];
   const linksExtracted = new Set<string>();
 
   const checkLinksOf = (file: string): ReturnType<typeof extractLocalLinks> => {
@@ -152,8 +168,8 @@ export function analyzeReachability(files: string[], root: string = REPO_ROOT): 
     violations.push({
       check: ID,
       law: LAW,
-      problem: `${file} is not reachable within ${MAX_HOPS} hops of ${MAP}`,
-      fix: `link it from ${MAP} or from an index README already on the map (e.g. the README of its directory). If it should not exist, delete it — digest or delete (SEED.md §0).`,
+      problem: `${file} is not reachable within ${MAX_HOPS} hops of ${mapFilename}`,
+      fix: `link it from ${mapFilename} or from an index README already on the map (e.g. the README of its directory). If it should not exist, delete it — digest or delete (SEED.md §0).`,
     });
   }
 

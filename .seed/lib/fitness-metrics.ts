@@ -24,12 +24,11 @@ import { execFileSync } from 'node:child_process';
 import { lstatSync, realpathSync } from 'node:fs';
 import { join } from 'node:path';
 import { listRepoFiles, readRepoFile, numberedFilenames, extractPlanRingRefs } from './repo.ts';
-import { analyzeReachability } from '../checks/validate-map.ts';
+import { analyzeReachability, resolveMapFilename } from '../checks/validate-map.ts';
 import { scanDrift } from '../checks/doc-drift.ts';
 
 const PRINCIPLES_DIR = 'docs/principles';
 const LEDGER = 'docs/plans/entropy-ledger.md';
-const MAP = 'AGENTS.md';
 
 /** Each metric is a number when computable, or null when the target lacks the anatomy that
  *  defines it (see the module header). One key per SEED.md §6 metric. */
@@ -120,13 +119,20 @@ function trackedFiles(root: string): string[] | null {
   return out.split('\0').filter((f) => f !== '').sort();
 }
 
-// % files reachable ≤3 hops from AGENTS.md. Null when the target has no AGENTS.md at all —
-// LAW-4's entry point is absent, so reachability from it is undefined (and the absence is
-// itself the finding). analyzeReachability's own vacuous-1 convention is for a present map
-// with nothing to reach, a distinct case.
+// % files reachable ≤3 hops from the target's entry map. The map filename is RESOLVED from the
+// agent-map name set (AGENTS.md, then CLAUDE.md — resolveMapFilename) rather than hard-coded, so a
+// well-tended host mapped under a conventional non-AGENTS.md name is measured, not read as a false
+// null (E-016; dither maps under CLAUDE.md, ring 0033). Null only when the target carries NO agent
+// map — that absence is itself the finding (a bare README is a human front door, not an agent map,
+// so it is not in the set). The resolved filename rides in the note so the reading stays legible
+// even when it computes (LAW-2). analyzeReachability's own vacuous-1 convention is for a present
+// map with nothing to reach, a distinct case.
 function mapReachability(files: string[], root: string): { value: number | null; note?: string } {
-  if (!files.includes(MAP)) return { value: null, note: `no ${MAP} — LAW-4's map entry point is absent` };
-  return { value: analyzeReachability(files, root).fraction };
+  const mapFilename = resolveMapFilename(files);
+  if (mapFilename === null) {
+    return { value: null, note: `no AGENTS.md or CLAUDE.md — LAW-4's map entry point is absent` };
+  }
+  return { value: analyzeReachability(files, root, mapFilename).fraction, note: `reachable from ${mapFilename}` };
 }
 
 // enforced ÷ stated principles. Null when there is no docs/principles/ organ at all (a
@@ -252,7 +258,9 @@ export function computeMetrics(root: string): MetricsResult {
   });
   const notes: MetricNotes = {};
   const record = (key: keyof FitnessMetrics, r: { value: number | null; note?: string }): number | null => {
-    if (r.value === null && r.note) notes[key] = r.note;
+    // Store the note whenever present — for a null it explains WHY (the finding); for a computed
+    // metric it carries context that keeps the reading legible (E-016: the resolved map filename).
+    if (r.note) notes[key] = r.note;
     return r.value;
   };
   const metrics: FitnessMetrics = {

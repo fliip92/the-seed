@@ -42,9 +42,14 @@ const IS_FRACTION: Partial<Record<keyof FitnessMetrics, boolean>> = {
 
 function renderValue(key: keyof FitnessMetrics, value: number | null, notes: MetricNotes): string {
   if (value === null) return `null — ${notes[key] ?? 'not computable'}`;
-  if (IS_FRACTION[key]) return `${(value * 100).toFixed(1)}%`;
-  if (key === 'ledger_trend') return `${value >= 0 ? '+' : ''}${value} open entries (trailing 7 days)`;
-  return String(value);
+  const base = IS_FRACTION[key]
+    ? `${(value * 100).toFixed(1)}%`
+    : key === 'ledger_trend'
+      ? `${value >= 0 ? '+' : ''}${value} open entries (trailing 7 days)`
+      : String(value);
+  // A note on a COMPUTED metric (E-016: the resolved map filename) rides alongside the value so
+  // the reading stays legible — which map was measured, not just the number (LAW-2).
+  return notes[key] ? `${base} — ${notes[key]}` : base;
 }
 
 function humanReport(target: string, date: string, metrics: FitnessMetrics, notes: MetricNotes): string {

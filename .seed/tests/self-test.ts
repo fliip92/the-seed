@@ -2828,6 +2828,27 @@ inTempCopy((root) => {
   });
 });
 
+// E-016: a host mapped under a conventional non-AGENTS.md name (dither's is CLAUDE.md — ring 0033)
+// is MEASURED, not read as a false null. map_reachability resolves the entry map to the first of
+// AGENTS.md, CLAUDE.md the target carries, so a CLAUDE.md-rooted repo computes a real fraction and
+// the note names the resolved file (the reading stays legible even when it computes — LAW-2).
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    writeFileSync(join(foreign, 'CLAUDE.md'), '# Map\n\nSee [notes](notes.md) and [real](lib/real.ts).\n');
+    gitCommitAll(foreign, 'add a CLAUDE.md map so the host is legibly mapped under a non-AGENTS.md name');
+    const { output } = runRepoFitness(root, [foreign, '--json']);
+    const m = repoFitnessMetrics(output);
+    const notes = (JSON.parse(output) as { notes: Record<string, string> }).notes;
+    report(
+      'repo-fitness (E-016): a CLAUDE.md-mapped host computes a real map_reachability, not a false null, and the note names the resolved map',
+      typeof m.map_reachability === 'number' &&
+        (m.map_reachability as number) > 0 &&
+        String(notes.map_reachability).includes('CLAUDE.md'),
+      `expected a numeric map_reachability resolved from CLAUDE.md with a naming note, got:\n${output}`,
+    );
+  });
+});
+
 // Foreign NON-git dir: BOTH git-history metrics report the not-a-git-repository reason
 // (distinct from the git-but-no-plans / no-ledger reasons), proving the git-root guard fires
 // for plan_traceability and — since ledgerTrend now checks git-root before ledger presence —
