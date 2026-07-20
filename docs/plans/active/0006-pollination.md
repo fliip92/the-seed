@@ -230,12 +230,32 @@ reaching its exit while the mother continues to pollinate.
   copied verbatim + a thin host-owned runner; dead links are gated repo-wide, reachability measured; the 6 pre-existing
   broken links the gate surfaced were fixed (owner's choice over reachable-set-scoping). Items 2–4 follow in order.
   `npm run check` (14) + `npm test` green.
+- **2026-07-19** — **Graft (step 4) complete — all four organs live on dither `main`, hosted CI green; Metabolize
+  (step 5) opened.** Graft items 2–4 landed and pushed alongside item 1 — the commit→ADR gate
+  ([ring 0038](../../rings/0038-dither-adr-gate-graft.md)), the principles + `enforcement_ratio` organ
+  ([ring 0039](../../rings/0039-dither-principles-gate-graft.md)), and the seeded entropy ledger
+  ([ring 0040](../../rings/0040-dither-ledger-graft.md)) — each a host-owned runner over the seed's verbatim engine;
+  hosted CI green on all four gates (run [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339)).
+  [Plan 0007](../completed/0007-dither-graft.md) completed and moved to `completed/`. **Step 5 (Metabolize) opened
+  as [plan 0009](0009-dither-metabolize.md)** — the two tracks (refactor-toward-[architecture](../../architecture/dither.md)
+  + feature work, fitness arbitrating pace); the first refactor (E-001, the import-boundary test) ran a read-only
+  pre-flight that surfaced a target-drift finding (the stated inter-package graph is inverted from dither's code),
+  now the owner's fork before the first Metabolize mutation. `npm run check` + `npm test` green.
+- **2026-07-19** — **Metabolize (step 5) first refactor landed — E-001, the import boundary, on dither**
+  (`607bc64`, local; push Gardener-gated; [ring 0041](../../rings/0041-dither-import-boundary-gate.md)). The
+  refactor-toward-architecture track's first act corrected a drifted target (the elicited package graph was
+  inverted from dither's code — the Gardener chose *fix docs to code*) and then enforced it: an owned
+  R1/R2/R3 import-boundary gate over the verbatim engine, green + teeth 9/9, a seventh principle keeping
+  ring 0039's completeness honest, `enforcement_ratio` 7/7, E-001 Open→Paid (`ledger_trend` +8 → +7 —
+  dither's first digested debt), `map_reachability` 11.3% → 11.7%, `drift_count` 2. Detail in
+  [plan 0009](0009-dither-metabolize.md). `npm run check` + `npm test` green.
 
 ## Next actions
 
 The Stage 3 → 4 transition is approved and enacted (ring 0032), dither is the first external host, and the
-per-host protocol is underway: Scout, Grill, and Propose are done, and the **Graft (step 4) is live** — its
-first lint has landed on dither. The steps:
+per-host protocol is underway: **Scout, Grill, Propose, and Graft are done** — all four graft organs live on
+dither `main`, hosted CI green — and **Metabolize (step 5) is now open** ([plan 0009](0009-dither-metabolize.md)).
+The steps:
 
 1. **Scout dither** (step 1) — **done.** The read-only
    [repo-fitness](../../../skills/repo-fitness/SKILL.md) baseline is delivered as
@@ -257,9 +277,19 @@ first lint has landed on dither. The steps:
    [ring 0034](../../rings/0034-dither-graft-approved.md)). The four products (target architecture, migration plan,
    workflows, responsibilities) were accepted by the owner — the gate that authorizes the mutating steps. Per-item
    build decisions are cut as rings when designed.
-4. **Graft** (step 4) — **live** ([plan 0007](0007-dither-graft.md)). Install the map, decision structure, and first
-   lints into dither — no behavior changes. **Item 1 done:** the map reachability + dead-link gate landed
-   ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`, hosted CI green — the first mutation of a
-   real external host). Items 2–4 (commit→ADR gate, `ci.yml` principles, seeded ledger) follow in order, each its own
-   ring + verification ([plan 0007](0007-dither-graft.md) `Next actions`). Then **Metabolize** (step 5) and
-   **Independence** (step 6) — the two Metabolize tracks open once the graft is in.
+4. **Graft** (step 4) — **done** ([plan 0007](../completed/0007-dither-graft.md), completed). All four organs
+   installed as host-owned runners over the seed's verbatim engine — no behavior changes — and pushed to dither
+   `main`, hosted CI green: the map reachability + dead-link gate ([ring 0037](../../rings/0037-dither-map-gate-graft.md),
+   the first mutation of a real external host), the commit→ADR gate ([ring 0038](../../rings/0038-dither-adr-gate-graft.md)),
+   the principles + `enforcement_ratio` organ ([ring 0039](../../rings/0039-dither-principles-gate-graft.md)), and the
+   seeded entropy ledger ([ring 0040](../../rings/0040-dither-ledger-graft.md)).
+5. **Metabolize** (step 5) — **live** ([plan 0009](0009-dither-metabolize.md)). Two agent-driven tracks in parallel,
+   indefinitely — refactor-toward-[architecture](../../architecture/dither.md) + feature work — fitness arbitrating
+   pace, until dither's per-host exit criterion is met. The refactor queue digests dither's seeded ledger by interest;
+   its first refactor, **E-001** (the import boundary), is **done** ([ring 0041](../../rings/0041-dither-import-boundary-gate.md);
+   dither `607bc64`, local, push Gardener-gated) — the target-drift its pre-flight surfaced was corrected (fix docs to
+   code) and enforced (R1/R2/R3, green + teeth 9/9), E-001 Open→Paid. Next: E-002 (self-test the gates), then E-007,
+   E-006; the feature track is owner-paced. The per-host exit criterion governs completion.
+6. **Independence** (step 6) — not yet. When the fitness trend is positive over a sustained window and the owner ships
+   through the agent workflow without the seed being special, dither carries its own seed, its lineage recorded, and
+   its [feedback](../../../skills/feedback/SKILL.md) channel to the mother live (LAW-11).

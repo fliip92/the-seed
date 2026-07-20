@@ -1,6 +1,6 @@
 # Plan 0007 — dither graft (Pollination Propose → Graft)
 
-- Status: active
+- Status: completed 2026-07-19
 
 ## Goal
 
@@ -172,6 +172,17 @@ and their verification.
   `da6bb24..8ce4e11` green on all four gates (map, ADR, principles, ledger). `.seed/` outside dither's pnpm
   workspace so lint/typecheck/test unaffected. `npm run check` + `npm test` green seed-side.
 
+- **2026-07-19** — **Plan complete — all four graft organs pushed to dither `main`, hosted CI green.** Items 3–4
+  were pushed alongside items 1–2 (dither `8ce4e11` on `main`, synced with upstream); hosted CI is green on all four
+  gates — run [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339) judged the map, ADR,
+  principles, and ledger gate steps together. The seed-side records (rings
+  [0037](../../rings/0037-dither-map-gate-graft.md)–[0040](../../rings/0040-dither-ledger-graft.md)) and the
+  confirmation commit are pushed; both repos synced and green, working trees clean. The dither Propose→Graft
+  (SEED.md §4 steps 3–4) is **done**. This plan closes and moves to `completed/`; **Metabolize (step 5) opens as
+  [plan 0009](0009-dither-metabolize.md)** — its first refactor candidate (E-001, the import-boundary test) is
+  already priced in dither's ledger, and E-001's read-only pre-flight surfaced a target-drift finding carried into
+  plan 0009. The per-host exit criterion governs from here.
+
 ## Next actions
 
 1. **Graft item 1 — DONE** ([ring 0037](../../rings/0037-dither-map-gate-graft.md); dither `da6bb24`,
@@ -197,11 +208,13 @@ and their verification.
    **null → +8**, `map_reachability` 6.1% → 11.3%, `drift_count` held at 2; landing range
    `da6bb24..8ce4e11` green on all four gates.
 
-**Migration complete.** All four graft organs have landed on dither (the map+reachability gate, the
-commit→ADR gate, the principles+`enforcement_ratio` organ, and the seeded ledger) — the Propose→Graft
-of SEED.md §4 steps 3–4 is done. Remaining before this plan closes: the Gardener pushes items 3–4 to
-run hosted CI (items 1–2 are pushed + green). **Next SEED.md §4 step: Metabolize (step 5)** — the two
-tracks (refactor-toward-[architecture](../../architecture/dither.md) + feature work, fitness arbitrating
-pace) open as new work; the first refactor candidate is already priced in dither's ledger (E-001, the
-import-boundary test). The per-host **exit criterion** governs from here: a positive fitness trend over
-a sustained window with the owner shipping through the agent workflow, the seed no longer special.
+**Migration complete — plan closed.** All four graft organs have landed on dither (the map+reachability
+gate, the commit→ADR gate, the principles+`enforcement_ratio` organ, and the seeded ledger) and are pushed
+to `main` with hosted CI green on all four (run
+[29707599339](https://github.com/fliip92/dither/actions/runs/29707599339)) — the Propose→Graft of SEED.md
+§4 steps 3–4 is **done**. **The next SEED.md §4 step, Metabolize (step 5), opens as
+[plan 0009](0009-dither-metabolize.md)** — the two tracks (refactor-toward-[architecture](../../architecture/dither.md)
++ feature work, fitness arbitrating pace); the first refactor candidate is already priced in dither's ledger
+(E-001, the import-boundary test), whose read-only pre-flight surfaced a target-drift finding carried into
+plan 0009. The per-host **exit criterion** governs from here: a positive fitness trend over a sustained
+window with the owner shipping through the agent workflow, the seed no longer special.

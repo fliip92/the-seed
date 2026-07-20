@@ -34,21 +34,30 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   enters its **first external host, dither** (named by the Gardener at Stage 4 entry, ring 0032 —
   which resolves [ring 0006](docs/rings/0006-solo-until-flowering.md): the seed is no longer solo),
   and runs the genome's six-step per-host protocol (SEED.md §4): **Scout → Grill → Propose → Graft →
-  Metabolize → Independence.** **The live work is step 4 — Graft:** Scout
+  Metabolize → Independence.** **Scout, Grill, Propose, and Graft are done:** Scout
   ([assessment 0002](docs/assessments/0002-dither.md)), Grill
-  ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), and Propose
-  ([plan 0007](docs/plans/active/0007-dither-graft.md), approved
-  [ring 0034](docs/rings/0034-dither-graft-approved.md)) are done; **all four graft items have landed on
-  dither, completing the Propose→Graft** — the map reachability + dead-link gate
-  ([ring 0037](docs/rings/0037-dither-map-gate-graft.md): the first mutation of a real external host,
-  hosted CI green), the commit→ADR traceability gate ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md):
-  hosted CI green), the principles + `enforcement_ratio` organ
-  ([ring 0039](docs/rings/0039-dither-principles-gate-graft.md)), and the seeded entropy ledger
-  ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend` null → +8) — all four pushed to
-  dither's `main`, hosted CI green (items 3–4 confirmed by run
-  [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339), the Ledger gate live beside
-  the map, ADR, and principles gates). **The next SEED.md §4 step is Metabolize (step 5)**, whose first
-  refactor candidate (the app→package import-boundary test) is already priced in dither's new ledger.
+  ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), Propose
+  ([plan 0007](docs/plans/completed/0007-dither-graft.md), approved
+  [ring 0034](docs/rings/0034-dither-graft-approved.md)), and the Graft — **all four graft organs have
+  landed on dither's `main`, hosted CI green**: the map reachability + dead-link gate
+  ([ring 0037](docs/rings/0037-dither-map-gate-graft.md): the first mutation of a real external host),
+  the commit→ADR traceability gate ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), the
+  principles + `enforcement_ratio` organ ([ring 0039](docs/rings/0039-dither-principles-gate-graft.md)),
+  and the seeded entropy ledger ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend`
+  null → +8), each a host-owned runner over the seed's verbatim engine, confirmed by run
+  [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339)
+  ([plan 0007](docs/plans/completed/0007-dither-graft.md) completed). **The live work is step 5 —
+  Metabolize** ([plan 0009](docs/plans/active/0009-dither-metabolize.md)): two agent-driven tracks in
+  parallel, indefinitely — refactor-toward-[architecture](docs/architecture/dither.md) + feature work,
+  fitness arbitrating pace — until dither's per-host exit criterion is met. The refactor queue digests
+  dither's seeded ledger by interest; its first refactor, **E-001** (the app→package import boundary,
+  dither.md Rule 5), is **done** ([ring 0041](docs/rings/0041-dither-import-boundary-gate.md); dither
+  `607bc64`, local, push Gardener-gated): its read-only pre-flight found the elicited package graph
+  itself drifted (`traits`/`matrix` were written as building on `droid-file`; the code is the reverse),
+  the Gardener chose *fix docs to code*, and the corrected graph is now enforced by an owned R1/R2/R3
+  import-boundary gate over the verbatim engine — green + teeth 9/9, `enforcement_ratio` 7/7, E-001
+  Open→Paid (`ledger_trend` +8 → +7, dither's first digested debt). Next refactor: E-002 (self-test the
+  grafted gates); the feature track is owner-paced.
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);

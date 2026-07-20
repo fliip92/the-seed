@@ -38,6 +38,17 @@ built, and the evidence trail behind every capability (LAW-6).
   ring [0030](../../rings/0030-inferential-control-judge.md)) and the name (E-004,
   ring [0031](../../rings/0031-name-cleared-codename-retained.md)). Closed by the Stage 3 → 4
   transition (ring [0032](../../rings/0032-stage-4-transition-first-host-dither.md)).
+- [0007 — dither graft (Pollination Propose → Graft)](0007-dither-graft.md) — completed 2026-07-19. The
+  **Propose → Graft** of SEED.md §4 steps 3–4 on the first external host, dither: converted the Scout
+  ([assessment 0002](../../assessments/0002-dither.md)) + Grill ([ring 0033](../../rings/0033-dither-grill-outcomes.md),
+  target architecture [docs/architecture/dither.md](../../architecture/dither.md)) into the four Propose products,
+  then landed the four graft organs — the map reachability + dead-link gate
+  ([ring 0037](../../rings/0037-dither-map-gate-graft.md): the first mutation of a real external host), the commit→ADR
+  traceability gate ([ring 0038](../../rings/0038-dither-adr-gate-graft.md)), the principles + `enforcement_ratio`
+  organ ([ring 0039](../../rings/0039-dither-principles-gate-graft.md)), and the seeded entropy ledger
+  ([ring 0040](../../rings/0040-dither-ledger-graft.md)) — each a host-owned runner over the seed's verbatim engine,
+  all pushed to dither `main` with hosted CI green. Closed into Metabolize (step 5),
+  [plan 0009](../active/0009-dither-metabolize.md).
 - [0008 — work-unit format (pay E-014)](0008-work-unit-format.md) — completed 2026-07-19. Paid
   [E-014](../entropy-ledger.md) during the dither-graft pause (LAW-8): plans gained an **optional,
   context-scoped `## Work units` format** (ring [0036](../../rings/0036-work-unit-format.md)) — each
