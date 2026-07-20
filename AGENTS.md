@@ -52,12 +52,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   fitness arbitrating pace — until dither's per-host exit criterion is met. The refactor queue digests
   dither's seeded ledger by interest; its first refactor, **E-001** (the app→package import boundary,
   dither.md Rule 5), is **done** ([ring 0041](docs/rings/0041-dither-import-boundary-gate.md); dither
-  `607bc64`, local, push Gardener-gated): its read-only pre-flight found the elicited package graph
+  `607bc64`, pushed to `main`): its read-only pre-flight found the elicited package graph
   itself drifted (`traits`/`matrix` were written as building on `droid-file`; the code is the reverse),
   the Gardener chose *fix docs to code*, and the corrected graph is now enforced by an owned R1/R2/R3
   import-boundary gate over the verbatim engine — green + teeth 9/9, `enforcement_ratio` 7/7, E-001
-  Open→Paid (`ledger_trend` +8 → +7, dither's first digested debt). Next refactor: E-002 (self-test the
-  grafted gates); the feature track is owner-paced.
+  Open→Paid (`ledger_trend` +8 → +7, dither's first digested debt). Its second refactor, **E-002** (the
+  gates' own self-test, [ring 0042](docs/rings/0042-dither-gates-self-test.md)), is **done** (dither
+  `9f41427`, local, push Gardener-gated): a scoped port of the seed's self-test.ts binds each of the five
+  gates' violation classes into a committed CI harness (green + 15/15; the test-of-the-test by neutering
+  map-gate turns its tooth red) — **no eighth principle**, the self-test is the gates' LAW-6 verification,
+  not a product norm (`enforcement_ratio` held 7/7, `ledger_trend` +7 → +6, `map_reachability` 11.9%). Next
+  refactor: E-007 (map-reachability sweep); the feature track is owner-paced.
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);

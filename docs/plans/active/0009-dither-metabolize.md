@@ -46,7 +46,7 @@ features need it clean, the refactor track takes pace; when the product needs to
    below.**
 2. **[E-002] — self-test the grafted `.seed/` gates** (medium) — the gates guard the repo; nothing
    guards the gates ([ring 0038](../../rings/0038-dither-adr-gate-graft.md) named the gap). Port the
-   seed's E-007 self-test harness, scoped to dither's five gates.
+   seed's E-007 self-test harness, scoped to dither's five gates. **Done — U2 below.**
 3. **[E-007] — map reachability sweep** (medium) — raise `map_reachability` (~11%) by linking the ADR
    index, spikes, and per-context `CONTEXT.md` files into the map's hop graph. A gardening pass.
 4. **[E-006] — two stale spike refs** (low) — a gardening deletion; fix or externalize the two paths.
@@ -88,6 +88,30 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   lint/typecheck/test are unaffected.
 - Owner: agent
 - Depends-on: the owner's target-drift fork decision
+
+### U2 — E-002: self-test the grafted `.seed/` gates (the verification of the verifiers)
+- Status: done
+- Landed: dither `9f41427` (local; push Gardener-gated) — [ring 0042](../../rings/0042-dither-gates-self-test.md)
+- Scope: a committed structural self-test, dither's
+  [`.seed/tests/gates-self-test.ts`](https://github.com/fliip92/dither/blob/main/.seed/tests/gates-self-test.ts)
+  over the verbatim engine, that for each of dither's **five** gates proves the pristine committed
+  tree passes and seeds each load-bearing violation class into an isolated git clone, asserting the
+  gate fires (exit 1, its law-naming message); wired as a `ci.yml` `Gates self-test` step + a
+  `check:gates` script, `.seed/` staying outside the pnpm workspace. In scope: the **no-eighth-principle**
+  decision (the self-test is LAW-6 verification, not a product norm — `CLAUDE.md`'s *Enforced norms*
+  categorizes it, `enforcement_ratio` held 7/7) and E-002 Open→Paid. Out of scope: any product-code
+  change; a sixth gate.
+- Entry-context: [ring 0038](../../rings/0038-dither-adr-gate-graft.md) (named the gap); the seed's
+  [self-test.ts](../../../.seed/tests/self-test.ts) (the port source, scoped down); dither's five gate
+  runners over the verbatim `.seed/lib/repo.ts`; [ring 0041](../../rings/0041-dither-import-boundary-gate.md)'s
+  *Revisit-when* (this closes it — a gate's teeth now live in a committed harness, not only a ring).
+- Done-when: the self-test runs in dither CI, **GREEN + 15/15** on the current tree (5 baselines + 10
+  teeth); **TEETH** — each gate's seeded violation fires it, and neutering a gate turns its tooth red
+  (the test-of-the-test); **no eighth principle** (`enforcement_ratio` 7/7 held); E-002 Open→Paid
+  (`ledger_trend` +7 → +6); the landing range green on all five gates **and** the self-test; seed-side
+  `npm run check` + `npm test` green.
+- Owner: agent
+- Depends-on: E-001 landed (the fifth gate must exist to be self-tested)
 
 ## Decision log
 
@@ -180,19 +204,36 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   throwaway; the landing range `8ce4e11..607bc64` is green on all five gates; `enforcement_ratio` **100%
   (7/7)**, `map_reachability` 11.3% → **11.7%**, E-001 **Open→Paid** so `ledger_trend` **+8 → +7** (dither's
   first digested debt), `drift_count` held at 2. Seed-side `npm run check` + `npm test` green.
+- **2026-07-19** — **U2 / E-002 done — the second Metabolize refactor landed on dither** (`9f41427`, local;
+  push Gardener-gated; [ring 0042](../../rings/0042-dither-gates-self-test.md)). The Gardener had pushed E-001
+  (`607bc64`) + the seed-side record; the gates self-test is the second refactor.
+  [`.seed/tests/gates-self-test.ts`](https://github.com/fliip92/dither/blob/main/.seed/tests/gates-self-test.ts)
+  — a scoped port of the seed's [self-test.ts](../../../.seed/tests/self-test.ts) — copies the committed tree
+  (`git ls-files`), git-inits it, and for each of the five gates proves the pristine tree passes then seeds
+  each load-bearing violation class into an isolated clone, asserting the gate fires (exit 1, its law-naming
+  message). **No eighth principle**: the self-test is the gates' LAW-6 verification, not a product norm (the
+  seed's own self-test is likewise not a principle) — `CLAUDE.md`'s *Enforced norms* categorizes it, and
+  `enforcement_ratio` stays **7/7**. Verified: **GREEN + 15/15** (5 baselines + 10 teeth); the
+  **test-of-the-test** — neutering `map-gate` turns its tooth red. `map_reachability` 11.7% → **11.9%**,
+  E-002 **Open→Paid** so `ledger_trend` **+7 → +6** (the second digestion), `drift_count` held at 2; the
+  landing range `607bc64..9f41427` green on all five gates + the self-test. Seed-side `npm run check` +
+  `npm test` green. Closes [ring 0041](../../rings/0041-dither-import-boundary-gate.md)'s *Revisit-when*.
 
 ## Next actions
 
-1. **E-001 fork — decided:** the Gardener chose **A — fix docs to code** (the code graph is the target).
-2. **U1 / E-001 — DONE** ([ring 0041](../../rings/0041-dither-import-boundary-gate.md); dither `607bc64`,
-   local). Target corrected, then the import-boundary gate (R1/R2/R3) built over the verbatim engine and
-   wired into dither CI; a seventh principle added; green + teeth 9/9; `enforcement_ratio` 7/7,
-   `ledger_trend` +8 → +7. **Remaining: the Gardener pushes** dither `607bc64` (and the seed-side records)
-   — items 1–4 of the graft are the precedent (local commit, Gardener push via bang).
-3. **Next refactor (the queue):** **E-002** (self-test the grafted `.seed/` gates — the highest-value
-   next structural item; the gates guard dither, nothing yet guards the gates), then **E-007** (map
-   reachability sweep) and **E-006** (stale spike refs) — each its own ring + verification, owner-paced.
-   Feature-track entries (E-003/E-004/E-005/E-008) at their build-order steps.
+1. **E-001 (U1) — landed and pushed.** The Gardener pushed dither `607bc64` + the seed-side record;
+   hosted CI on that push is the standing confirmation (run
+   [29711596701](https://github.com/fliip92/dither/actions/runs/29711596701)).
+2. **E-002 (U2) — DONE** ([ring 0042](../../rings/0042-dither-gates-self-test.md); dither `9f41427`,
+   local). The gates self-test built over the verbatim engine + wired into dither CI; **no eighth
+   principle** (`enforcement_ratio` 7/7 held); green + 15/15 + the test-of-the-test; E-002 Open→Paid
+   (`ledger_trend` +7 → +6). **Remaining: the Gardener pushes** dither `9f41427` and the seed-side
+   record (the `607bc64` precedent — local commit, Gardener push via bang), after which one hosted-CI
+   run confirms all five gates + the self-test.
+3. **Next refactor (the queue):** **E-007** (map-reachability sweep — link the ADR index, spikes, and
+   per-context `CONTEXT.md` files into the map's hop graph, raising `map_reachability` ~11.9%), then
+   **E-006** (two stale spike refs) — each its own ring + verification, owner-paced. Feature-track
+   entries (E-003/E-004/E-005/E-008) at their build-order steps.
 4. **On cadence:** measure dither fitness (the before/after-graft delta is the pollination proof); watch
    the trend against the per-host exit criterion. When the trend is positive over a sustained window and
    the owner ships through the agent workflow without the seed being special, dither reaches **step 6 —
