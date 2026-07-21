@@ -52,6 +52,7 @@ features need it clean, the refactor track takes pace; when the product needs to
    source-floored, so the Seed rescoped it to knowledge artifacts first (ring 0043 / E-019). **Done — U3
    below.**
 4. **[E-006] — two stale spike refs** (low) — a gardening deletion; fix or externalize the two paths.
+   **Done — U4 below.**
 
 E-003 / E-004 / E-005 / E-008 are feature-track (owner-driven), resolved at their build-order steps.
 The queue is re-ordered as fitness moves and as new entropy is sensed — it is a live priority, not a
@@ -139,6 +140,32 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Owner: agent
 - Depends-on: E-002 landed **and its hosted CI green** — the self-test the re-copy must not break (its
   CI caught a real `.git`-copy race first; see the Progress log)
+
+### U4 — E-006: fix the two stale spike refs (a gardening deletion, no new instrument)
+- Status: done
+- Landed: dither `0f078ef` (local; push Gardener-gated) — [ring 0044](../../rings/0044-dither-e006-stale-spike-refs-gardened.md)
+- Scope: the two backtick path refs the seed's `drift_count` scan flags in dither's frozen feasibility
+  spikes — **(a)** relabel the ExecuTorch reference in `docs/spikes/executorch-lora-adapter-feasibility.md`
+  to its upstream-qualified path (`pytorch/executorch/…`, link href unchanged) so it reads external and
+  no longer collides with dither's `docs/` namespace; **(b)** reduce the never-built illustrative phone
+  path in `docs/spikes/local-brain-experience-feasibility.md` to the module identifier `leanPrompt`; and
+  **(c)** E-006 Open→Paid. In scope: the **no-new-instrument** decision (a gardening deletion's LAW-6
+  verification is the standing drift scan, not a new gate — `enforcement_ratio` held 7/7) and the
+  content-fix choice over scoping-spikes-out or refining-the-scanner. Out of scope: any seed instrument
+  change; grafting the drift scan into dither CI; any product-code change.
+- Entry-context: the E-006 pre-flight (Decision log below) — drift confirmed exactly 2, both refs as the
+  ledger names, fixes validated against the real `pathClaims` tokenizer; dither ledger
+  [E-006](https://github.com/fliip92/dither/blob/main/docs/plans/entropy-ledger.md); the seed's
+  [doc-drift.ts](../../../.seed/checks/doc-drift.ts) (`isScanned` surface + the `stale-path-reference`
+  class); [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) (the prior
+  gardening refactor).
+- Done-when: the seed's `drift_count` scan of dither reads **0** (was 2); dither's E-006 Open→Paid
+  (`ledger_trend` +5 → +4); **no new principle, no new gate** (`enforcement_ratio` 7/7 held); the landing
+  range green on all five gates + the gates self-test; a seed-side ring records the gardening pass;
+  seed-side `npm run check` + `npm test` + `npm run garden` green.
+- Owner: agent
+- Depends-on: E-007 landed **and its hosted CI green** (dither run 29797280462 on `c058fbc` — success),
+  so the gardening builds on the reachability-swept tree.
 
 ## Decision log
 
@@ -278,24 +305,46 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   (re-copy) → 48.2% (41/85 docs)**, 0 broken links, residual = 43 vendored skill docs + 1 test fixture.
   dither's E-007 + the seed's E-019 Open→Paid. All five dither gates + the self-test green on the landing
   range `edec7fd..c058fbc`; seed `npm run check` + `npm test` green.
+- **2026-07-20** — **U4 / E-006 done — the fourth Metabolize refactor, and the first that adds no
+  instrument** (dither `0f078ef`, local; push Gardener-gated;
+  [ring 0044](../../rings/0044-dither-e006-stale-spike-refs-gardened.md)). The Gardener chose the
+  content-fix fork. The E-006 pre-flight confirmed dither's `drift_count` was exactly 2 (both refs as the
+  ledger names) and validated each fix against the real `pathClaims` tokenizer — catching that a
+  *space-separated* relabel stays flagged (the backtick span is re-split on whitespace), so only a single
+  non-colliding token clears it. The ExecuTorch reference — a valid markdown link to upstream whose
+  backtick label merely collided with dither's `docs/` namespace — was relabeled `pytorch/executorch/…`;
+  the never-built illustrative phone path was reduced to `leanPrompt`. Unlike E-001/E-002/E-007, **E-006
+  builds no gate or self-test** — its LAW-6 verification is the standing drift scan, which now reads
+  **`drift_count` 2 → 0**. `enforcement_ratio` held **7/7** (no new principle), `ledger_trend` **+5 → +4**
+  (dither's fourth digested debt), `map_reachability` 48.2% unchanged. The landing range
+  `c058fbc..0f078ef` is green on all five gates + the gates self-test; seed-side `npm run check` +
+  `npm test` + `npm run garden` green. Considered and rejected: scoping frozen spikes out of the drift
+  surface (a Seed-wide change for one host's two low-interest refs) and refining the scanner to skip
+  link-labeled backticks (LAW-7 complexity for a genuinely-misleading pattern). *(The
+  `(E-006: anchors unchecked)` comment in `doc-drift.ts` is the seed's own unrelated E-006 — a
+  same-number coincidence.)*
 
 ## Next actions
 
-1. **E-001 (U1) / E-002 (U2) — landed, pushed, hosted-CI green.** E-002's fix run
-   [29796090886](https://github.com/fliip92/dither/actions/runs/29796090886) is green on `edec7fd` — all
-   five gates + the gates self-test now stand on dither `main`.
-2. **E-007 (U3) — DONE, held for the Gardener's push** (seed
-   [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) /
-   [E-019](../entropy-ledger.md) + dither `c058fbc`, local). Metric rescoped to docs (seed 100% 94/94
-   unchanged) + dither's stranded docs linked (11.9% → **48.2%**), dither's E-007 Open→Paid.
-   **Remaining: the Gardener pushes** the seed record and dither `c058fbc` (the `607bc64` / `edec7fd`
-   precedent — local commit, push via bang), after which one dither CI run confirms all five gates + the
-   self-test on the gardened tree.
-3. **Next refactor (the queue):** **E-006** (two stale spike refs — a gardening deletion) — its own ring
-   + verification, owner-paced. Feature-track entries (E-003/E-004/E-005/E-008) at their build-order
-   steps. Possible follow-up: the vendored-doc residual (43 `.agents/skills/*.md` counted as stranded,
-   holding dither at 48.2%) — if worth excluding, price it host-side and decide separately
-   (ring 0043 Revisit).
+1. **E-001 (U1) / E-002 (U2) / E-007 (U3) — landed, pushed, hosted-CI green.** E-002's fix run
+   [29796090886](https://github.com/fliip92/dither/actions/runs/29796090886) (green on `edec7fd`) and
+   E-007's run [29797280462](https://github.com/fliip92/dither/actions/runs/29797280462) (green on
+   `c058fbc`) — all five gates + the gates self-test stand on dither `main`, on the reachability-swept
+   tree (`map_reachability` 48.2%).
+2. **E-006 (U4) — DONE, held for the Gardener's push** (seed
+   [ring 0044](../../rings/0044-dither-e006-stale-spike-refs-gardened.md) + dither `0f078ef`, local). The
+   two stale spike refs fixed by content-edit (`drift_count` 2 → 0), E-006 Open→Paid (`ledger_trend`
+   +5 → +4), no new instrument (`enforcement_ratio` 7/7). **Remaining: the Gardener pushes** the seed
+   record and dither `0f078ef` (the `607bc64` / `edec7fd` / `c058fbc` precedent — local commit, push via
+   bang), after which one dither CI run confirms all five gates + the self-test on the gardened tree.
+3. **The structural refactor queue is drained.** All four priced structural ledger entries —
+   E-001/E-002/E-007/E-006 — are digested. What remains: the **feature-track** entries
+   (E-003/E-004/E-005/E-008, owner-paced) at their build-order steps; the **vendored-doc residual** (43
+   `.agents/skills/*.md` counted as stranded, holding dither at 48.2%) — if worth excluding, price it
+   host-side and decide separately ([ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
+   Revisit); and the **branch-protection residual** (enforcing the gates on `main` is the owner's call).
+   With no priced structural entry pending, **sensing new entropy is the refactor track's default work**
+   (AGENTS.md §"Nothing active?").
 4. **On cadence:** measure dither fitness (the before/after-graft delta is the pollination proof); watch
    the trend against the per-host exit criterion. When the trend is positive over a sustained window and
    the owner ships through the agent workflow without the seed being special, dither reaches **step 6 —

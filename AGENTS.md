@@ -65,11 +65,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   not a product norm (`enforcement_ratio` held 7/7, `ledger_trend` +7 → +6, `map_reachability` 11.9%). Its
   third refactor, **E-007** (the map-reachability sweep,
   [ring 0043](docs/rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)), is **done** (dither
-  `c058fbc`, local): the pre-flight found `map_reachability` structurally source-floored on a product repo
-  (283 of dither's 386 files are source) and the plan's named targets already reachable, so the Gardener
-  had the metric rescoped to knowledge artifacts (docs) — the GATE untouched, the seed still enforcing
-  total reachability — then dither's own stranded docs linked; the seed reads 100% (94/94 docs) unchanged,
-  dither 11.9% → 48.2%. Next refactor: E-006 (two stale spike refs); the feature track is owner-paced.
+  `c058fbc`, pushed, hosted CI green): the pre-flight found `map_reachability` structurally source-floored
+  on a product repo (283 of dither's 386 files are source) and the plan's named targets already reachable,
+  so the Gardener had the metric rescoped to knowledge artifacts (docs) — the GATE untouched, the seed
+  still enforcing total reachability — then dither's own stranded docs linked; the seed reads 100% (94/94
+  docs) unchanged, dither 11.9% → 48.2%. Its fourth refactor, **E-006** (the two stale spike refs,
+  [ring 0044](docs/rings/0044-dither-e006-stale-spike-refs-gardened.md)), is **done** (dither `0f078ef`,
+  local) — the first refactor that adds **no instrument**: a gardening content-fix whose LAW-6
+  verification is the standing drift scan (`drift_count` 2 → 0, `ledger_trend` +5 → +4, no new principle).
+  With all four priced structural entries (E-001/E-002/E-007/E-006) digested, the structural refactor
+  queue is **drained** — the feature track is owner-paced, and sensing new entropy is the refactor track's
+  default (AGENTS.md §"Nothing active?").
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
