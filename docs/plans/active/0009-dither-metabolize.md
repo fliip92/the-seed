@@ -47,8 +47,10 @@ features need it clean, the refactor track takes pace; when the product needs to
 2. **[E-002] — self-test the grafted `.seed/` gates** (medium) — the gates guard the repo; nothing
    guards the gates ([ring 0038](../../rings/0038-dither-adr-gate-graft.md) named the gap). Port the
    seed's E-007 self-test harness, scoped to dither's five gates. **Done — U2 below.**
-3. **[E-007] — map reachability sweep** (medium) — raise `map_reachability` (~11%) by linking the ADR
-   index, spikes, and per-context `CONTEXT.md` files into the map's hop graph. A gardening pass.
+3. **[E-007] — map reachability sweep** (medium) — raise `map_reachability` by linking dither's stranded
+   docs into the map's hop graph. A gardening pass — whose pre-flight found the metric itself
+   source-floored, so the Seed rescoped it to knowledge artifacts first (ring 0043 / E-019). **Done — U3
+   below.**
 4. **[E-006] — two stale spike refs** (low) — a gardening deletion; fix or externalize the two paths.
 
 E-003 / E-004 / E-005 / E-008 are feature-track (owner-driven), resolved at their build-order steps.
@@ -112,6 +114,31 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   `npm run check` + `npm test` green.
 - Owner: agent
 - Depends-on: E-001 landed (the fifth gate must exist to be self-tested)
+
+### U3 — E-007: map reachability sweep — rescope the metric to docs, then link dither's stranded docs
+- Status: done
+- Landed: seed metric rescope — [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) + [E-019](../entropy-ledger.md); dither `c058fbc` (gardening; local, push Gardener-gated)
+- Scope: **(a) seed-side** — rescope `map_reachability`'s denominator to knowledge artifacts (`.md`) in
+  the shared [`analyzeReachability`](../../../.seed/checks/validate-map.ts), the **GATE untouched** (the
+  seed still enforces total reachability — a stray unreachable `.ts` still fails seed CI — and dither
+  still gates only broken links); a [self-test](../../../.seed/tests/self-test.ts) twin pinning that an
+  unreachable non-doc leaves the metric at 1.0; SEED.md §6's definition updated; [E-019](../entropy-ledger.md)
+  priced + paid. **(b) dither-side** — re-copy the rescoped `validate-map.ts` verbatim, then link
+  dither's 14 own stranded docs from `CLAUDE.md` (backtick doc-refs made real + a `## Map` section),
+  `map-gate.ts` wording matched, dither's E-007 Open→Paid. Out of scope: excluding the 43 vendored
+  `.agents/skills/*.md` from the denominator (ring 0043 Revisit — a separate host-side decision); the one
+  test-fixture doc.
+- Entry-context: the E-007 read-only pre-flight finding (Decision log below) — the metric was
+  source-floored (283 of dither's 386 files are source) and the plan's named targets (ADRs/spikes/`CONTEXT.md`)
+  were already reachable; the real stranded set was dither's own per-app/cohort docs + vendored skills;
+  the Gardener chose "scope the denominator to docs" over vendored-exclusion or garden-only.
+- Done-when: seed reads 100% (94/94 docs) unchanged, `npm run check` + `npm test` green with the new
+  self-test case; dither reads 11.9% → 32.9% (re-copy) → **48.2%** (gardening, 41/85 docs), 0 broken
+  links, all five gates + the self-test green on the landing range; dither's E-007 + the seed's E-019
+  Open→Paid.
+- Owner: agent
+- Depends-on: E-002 landed **and its hosted CI green** — the self-test the re-copy must not break (its
+  CI caught a real `.git`-copy race first; see the Progress log)
 
 ## Decision log
 
@@ -179,6 +206,19 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   mid tier; the E-001 build against a real host (a dither mutation) runs at top tier or a top-tier review
   pass — the first-mutation discipline (plan 0007).
 
+- **E-007 read-only pre-flight — the metric was the entropy, not the links (the E-001 pattern again).**
+  Measuring dither's stranded set to scope the sweep found the plan's named targets (the ADR index, the
+  spikes, the `CONTEXT.md` files) **already reachable** via the item-3 / item-4 graft hubs
+  (`docs/adr/README.md`, `CONTEXT-MAP.md`), and `map_reachability` itself **source-floored** — its
+  all-files denominator (283 of dither's 386 files are source) capped it near ~15% however well tended, so
+  the one metric meant to prove pollination value had gone insensitive to doc gardening. Surfaced to the
+  Gardener as three options (scope denom to docs / exclude vendored only / garden only); the Gardener chose
+  **scope the denominator to knowledge artifacts (docs)**. So E-007 split like E-001: a seed-side metric
+  rescope ([ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) /
+  [E-019](../entropy-ledger.md)) then the dither-side gardening. The 43 vendored `.agents/skills/*.md`
+  stay counted (dither lands at 48.2%, not higher) — excluding them is a separate host-side decision
+  (ring 0043 Revisit), not folded into this metric change.
+
 ## Progress log
 
 - **2026-07-19** — **Opened as the Metabolize proposal** at the close of the dither Propose→Graft
@@ -218,22 +258,44 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   E-002 **Open→Paid** so `ledger_trend` **+7 → +6** (the second digestion), `drift_count` held at 2; the
   landing range `607bc64..9f41427` green on all five gates + the self-test. Seed-side `npm run check` +
   `npm test` green. Closes [ring 0041](../../rings/0041-dither-import-boundary-gate.md)'s *Revisit-when*.
+- **2026-07-20** — **E-002's hosted CI caught a real bug the local 15/15 missed.** The gates self-test
+  `cpSync`-cloned its baseline *including* `.git`, and CI's detached auto-gc repacked it mid-copy
+  (`std::filesystem: directory iterator cannot open directory`, exit 134) — the seed's own self-test is
+  immune (it excludes `.git` and re-inits; dither's port keeps `.git` for a shared baseSha, so it freezes
+  it instead). Fixed by disabling auto-gc on the baseline commit (`gc.auto=0` + `maintenance.auto=false`,
+  inline on the commit). Two commits: the first fix (`9522128`) deleted the `git init` line in a follow-up
+  edit and was itself caught by CI — a re-verify-after-the-last-edit lesson — and the corrected `edec7fd`
+  went **green** (run 29796090886). A bugfix to E-002, recorded here (not a ring), cited via the dither
+  commits' `Seed plan 0009 / E-002`.
+- **2026-07-20** — **U3 / E-007 done — the third Metabolize refactor, its scope rewritten by the
+  pre-flight** (Decision log; the E-001 pattern). The Seed rescoped `map_reachability` to knowledge
+  artifacts ([ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) /
+  [E-019](../entropy-ledger.md); [validate-map.ts](../../../.seed/checks/validate-map.ts), the GATE
+  untouched + a self-test twin pinning that an unreachable non-doc stays at 1.0) because measuring dither
+  found it source-floored (~15% ceiling) and the plan's named targets already reachable; then the sweep
+  re-copied the rescoped engine verbatim and linked dither's own stranded docs from `CLAUDE.md`
+  (dither `c058fbc`, local). **Seed 100% (94/94 docs)** unchanged in value; **dither 11.9% → 32.9%
+  (re-copy) → 48.2% (41/85 docs)**, 0 broken links, residual = 43 vendored skill docs + 1 test fixture.
+  dither's E-007 + the seed's E-019 Open→Paid. All five dither gates + the self-test green on the landing
+  range `edec7fd..c058fbc`; seed `npm run check` + `npm test` green.
 
 ## Next actions
 
-1. **E-001 (U1) — landed and pushed.** The Gardener pushed dither `607bc64` + the seed-side record;
-   hosted CI on that push is the standing confirmation (run
-   [29711596701](https://github.com/fliip92/dither/actions/runs/29711596701)).
-2. **E-002 (U2) — DONE** ([ring 0042](../../rings/0042-dither-gates-self-test.md); dither `9f41427`,
-   local). The gates self-test built over the verbatim engine + wired into dither CI; **no eighth
-   principle** (`enforcement_ratio` 7/7 held); green + 15/15 + the test-of-the-test; E-002 Open→Paid
-   (`ledger_trend` +7 → +6). **Remaining: the Gardener pushes** dither `9f41427` and the seed-side
-   record (the `607bc64` precedent — local commit, Gardener push via bang), after which one hosted-CI
-   run confirms all five gates + the self-test.
-3. **Next refactor (the queue):** **E-007** (map-reachability sweep — link the ADR index, spikes, and
-   per-context `CONTEXT.md` files into the map's hop graph, raising `map_reachability` ~11.9%), then
-   **E-006** (two stale spike refs) — each its own ring + verification, owner-paced. Feature-track
-   entries (E-003/E-004/E-005/E-008) at their build-order steps.
+1. **E-001 (U1) / E-002 (U2) — landed, pushed, hosted-CI green.** E-002's fix run
+   [29796090886](https://github.com/fliip92/dither/actions/runs/29796090886) is green on `edec7fd` — all
+   five gates + the gates self-test now stand on dither `main`.
+2. **E-007 (U3) — DONE, held for the Gardener's push** (seed
+   [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) /
+   [E-019](../entropy-ledger.md) + dither `c058fbc`, local). Metric rescoped to docs (seed 100% 94/94
+   unchanged) + dither's stranded docs linked (11.9% → **48.2%**), dither's E-007 Open→Paid.
+   **Remaining: the Gardener pushes** the seed record and dither `c058fbc` (the `607bc64` / `edec7fd`
+   precedent — local commit, push via bang), after which one dither CI run confirms all five gates + the
+   self-test on the gardened tree.
+3. **Next refactor (the queue):** **E-006** (two stale spike refs — a gardening deletion) — its own ring
+   + verification, owner-paced. Feature-track entries (E-003/E-004/E-005/E-008) at their build-order
+   steps. Possible follow-up: the vendored-doc residual (43 `.agents/skills/*.md` counted as stranded,
+   holding dither at 48.2%) — if worth excluding, price it host-side and decide separately
+   (ring 0043 Revisit).
 4. **On cadence:** measure dither fitness (the before/after-graft delta is the pollination proof); watch
    the trend against the per-host exit criterion. When the trend is positive over a sustained window and
    the owner ships through the agent workflow without the seed being special, dither reaches **step 6 —

@@ -293,7 +293,7 @@ v0 metrics — crude is fine, computable is mandatory:
 
 | Metric | Question it answers | Source |
 |---|---|---|
-| `map_reachability` | % of files reachable ≤3 hops from AGENTS.md | script |
+| `map_reachability` | % of knowledge artifacts (docs) reachable ≤3 hops from AGENTS.md | script |
 | `enforcement_ratio` | enforced principles ÷ stated principles | script over `docs/principles/` |
 | `drift_count` | open doc↔code divergences | doc-gardener |
 | `plan_traceability` | % merged PRs tracing to a plan or ring | CI history |

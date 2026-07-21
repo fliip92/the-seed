@@ -74,7 +74,10 @@ function resolveLinkTarget(target: string, present: Set<string>): string | null 
 
 export interface ReachabilityResult {
   violations: Violation[];
+  /** reachable KNOWLEDGE ARTIFACTS (markdown docs) — the metric numerator, not every reachable file. */
   reachableCount: number;
+  /** total knowledge artifacts (markdown docs) — the metric denominator; source/config are excluded
+   *  because the doc map is not answerable for them (ring 0043). */
   knowledgeTotal: number;
   deadLinks: number;
   coveredCount: number;
@@ -173,8 +176,18 @@ export function analyzeReachability(files: string[], root: string = REPO_ROOT, m
     });
   }
 
-  const knowledgeTotal = files.length - covered.length;
-  const reachableCount = knowledgeTotal - unreachable.length;
+  // map_reachability (SEED.md §6) is scoped to KNOWLEDGE ARTIFACTS — the markdown docs the map
+  // is built from and answerable for. Source and config are navigated by code tooling, not the doc
+  // map, so counting them in the denominator floors the metric on a product monorepo (dither: 283
+  // of 386 tracked files are source, capping it near ~15% however well the docs are tended) and it
+  // stops tracking doc navigability, the health it exists to measure — the metric that stops
+  // tracking real health gets replaced (SEED.md §6). This rescopes ONLY the reported metric; the
+  // unreachable-file VIOLATIONS above are unchanged, so each host keeps its own reachability policy
+  // (the seed's GATE enforces total reachability over every file; dither gates broken links and
+  // measures the rest). Ring 0043, surfaced by the dither reachability sweep (E-007 / E-019).
+  const knowledgeFiles = files.filter((f) => f.endsWith('.md'));
+  const knowledgeTotal = knowledgeFiles.length;
+  const reachableCount = knowledgeFiles.filter((f) => hop.has(f)).length;
   const fraction = knowledgeTotal === 0 ? 1 : reachableCount / knowledgeTotal;
   const deadLinks = violations.filter((v) => v.problem.includes('dead link')).length;
 
@@ -189,7 +202,7 @@ export const check: Check = {
     const pct = fraction * 100;
     const coveredNote = coveredCount > 0 ? `, ${coveredCount} data file(s) covered by README` : '';
     return {
-      summary: `map_reachability ${pct.toFixed(1)}% (${reachableCount}/${knowledgeTotal} files ≤${MAX_HOPS} hops${coveredNote}), dead links: ${deadLinks}`,
+      summary: `map_reachability ${pct.toFixed(1)}% (${reachableCount}/${knowledgeTotal} docs ≤${MAX_HOPS} hops${coveredNote}), dead links: ${deadLinks}`,
       violations,
     };
   },

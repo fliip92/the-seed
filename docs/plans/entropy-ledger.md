@@ -525,6 +525,41 @@ ledger is also a record of digestion.
   decomposed its own build into U1–U4. Grounded in the already-metabolized long-horizon subsection +
   the seed's own plan experience, not a fresh intake of the awesome-harness-engineering "Design
   Primitives" section (still unmetabolized — the ring is supersedable when that pass lands).
+
+## E-019 — `map_reachability` counts all files, so it floors on a product monorepo
+
+- First observed: 2026-07-20, the E-007 map-reachability-sweep pre-flight on the first host
+  ([plan 0009](active/0009-dither-metabolize.md) refactor track) — measuring dither's stranded
+  knowledge to scope the gardening surfaced that the metric itself under-reads
+- Where: [.seed/checks/validate-map.ts](../../.seed/checks/validate-map.ts) computed the fraction over
+  `files.length` — every tracked file. On the seed (almost all `.md` + machinery indexed by
+  `.seed/README.md`) that reads a true ~100%, but on a product monorepo most files are source navigated
+  by code tooling, not the doc map: dither has **283 of 386 tracked files as source**, capping the
+  metric near ~15% however well the docs are tended. It stopped tracking doc navigability — the health
+  it exists to measure — the same Scout-instrument-under-reads-a-real-host shape as
+  [E-012](entropy-ledger.md) / [E-016](entropy-ledger.md), surfaced by pointing it at dither
+- Interest rate: medium — it does not misfire to null (E-016) but it flattens: the one metric meant to
+  prove doc-gardening value on a host is nearly insensitive to it (linking every stranded dither doc
+  moves it 11.9% → ~15%), so a rising-navigability trend is invisible in the number the pollination
+  before/after leans on
+- Price: small — scope the fraction's denominator (and numerator) to knowledge artifacts (`.md`),
+  leaving the unreachable-file VIOLATIONS untouched so each host keeps its own reachability policy (the
+  seed's GATE stays total-reachability-strict; dither still gates only broken links); self-test the
+  scoping; update SEED.md §6's one-line definition
+- Conversion path: invariant — rescope the fraction inside the single shared `analyzeReachability`
+  (ring [0016](../rings/0016-repo-fitness-generalizes-the-metric-engine.md) already made it the one
+  definition), self-tested; fold into the E-007 sweep that surfaced it
+- Paid: 2026-07-20 (ring [0043](../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)) —
+  `map_reachability` now counts only knowledge artifacts (`.md`): `analyzeReachability` derives
+  `reachableCount` / `knowledgeTotal` from the markdown docs reachable ≤3 hops, source/config excluded.
+  The GATE is unchanged — the seed still enforces total reachability over every file, dither still gates
+  broken links only — so no host's policy shifts; only the reported metric is rescoped, and metric/gate
+  now answer different questions. The seed reads **100% (94/94 docs)**, unchanged in value; dither reads
+  **11.9% → 32.9%** on re-copy (source no longer floors it), the honest doc-navigability the E-007
+  gardening raises toward ~48% (the residual being 43 vendored `.agents/skills/*.md` + a test fixture,
+  left to a separate decision — ring 0043 Revisit). Verification (LAW-6): a new self-test pins that an
+  unreachable non-doc file leaves the metric at 1.0 (the twin of the existing unreachable-`.md`-drops-it
+  case). SEED.md §6's definition updated. `npm run check` + `npm test` green.
   Verification (LAW-6): six new self-tests — five fire on a malformed unit (missing field, id-less
   heading, invalid Status, duplicate id, empty section) with a LAW-5 message + exit 1, and one holds
   (a well-formed multi-unit plan passes), atop the pristine copy now carrying plan 0008's real units.

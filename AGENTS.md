@@ -58,11 +58,18 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   import-boundary gate over the verbatim engine — green + teeth 9/9, `enforcement_ratio` 7/7, E-001
   Open→Paid (`ledger_trend` +8 → +7, dither's first digested debt). Its second refactor, **E-002** (the
   gates' own self-test, [ring 0042](docs/rings/0042-dither-gates-self-test.md)), is **done** (dither
-  `9f41427`, local, push Gardener-gated): a scoped port of the seed's self-test.ts binds each of the five
+  `9f41427`, pushed; its hosted CI caught a real `.git`-copy race in the self-test, fixed in `edec7fd`,
+  now green): a scoped port of the seed's self-test.ts binds each of the five
   gates' violation classes into a committed CI harness (green + 15/15; the test-of-the-test by neutering
   map-gate turns its tooth red) — **no eighth principle**, the self-test is the gates' LAW-6 verification,
-  not a product norm (`enforcement_ratio` held 7/7, `ledger_trend` +7 → +6, `map_reachability` 11.9%). Next
-  refactor: E-007 (map-reachability sweep); the feature track is owner-paced.
+  not a product norm (`enforcement_ratio` held 7/7, `ledger_trend` +7 → +6, `map_reachability` 11.9%). Its
+  third refactor, **E-007** (the map-reachability sweep,
+  [ring 0043](docs/rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)), is **done** (dither
+  `c058fbc`, local): the pre-flight found `map_reachability` structurally source-floored on a product repo
+  (283 of dither's 386 files are source) and the plan's named targets already reachable, so the Gardener
+  had the metric rescoped to knowledge artifacts (docs) — the GATE untouched, the seed still enforcing
+  total reachability — then dither's own stranded docs linked; the seed reads 100% (94/94 docs) unchanged,
+  dither 11.9% → 48.2%. Next refactor: E-006 (two stale spike refs); the feature track is owner-paced.
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);

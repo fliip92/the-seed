@@ -2517,6 +2517,26 @@ inTempCopy((root) => {
 
 inTempCopy((root) => {
   git(root, 'init', '--quiet');
+  // The twin of the case above: a SOURCE file no doc links. map_reachability is scoped to knowledge
+  // artifacts (markdown docs, ring 0043) — source and config are navigated by code tooling, not the
+  // doc map — so a stranded .ts must NOT drag the metric down the way a stranded .md does. Without
+  // this, a product monorepo full of source reads a floored fraction that no amount of doc gardening
+  // can lift (the dither E-007 finding). Every .md in the pristine copy stays reachable, so the
+  // reading must remain a perfect 1 even with an unreachable source file present.
+  mkdirSync(join(root, 'src'), { recursive: true }); // src/ isn't in the seed copy; write doesn't mkdir
+  write(root, 'src/orphan.ts', 'export const stranded = 1;\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: unreachable source file, all docs reachable`);
+  const { output } = runFitness(root, ['--json']);
+  const m = fitnessMetrics(output);
+  report(
+    'fitness: map_reachability ignores unreachable non-doc files (denominator is knowledge artifacts, ring 0043)',
+    m.map_reachability === 1,
+    `expected map_reachability 1 (a stranded .ts is not a doc), got:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
   gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a change that names its plan`);
   const { output } = runFitness(root, ['--json']);
   const m = fitnessMetrics(output);
