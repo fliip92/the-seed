@@ -167,6 +167,34 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Depends-on: E-007 landed **and its hosted CI green** (dither run 29797280462 on `c058fbc` — success),
   so the gardening builds on the reachability-swept tree.
 
+### U5 — E-009: entropy-sensing pass (queue drained); convert the theme-layout drift
+- Status: done
+- Landed: dither `eeb5fdd` (local; push Gardener-gated) — [ring 0045](../../rings/0045-dither-sensing-pass-theme-layout.md)
+- Scope: run the metabolism (SEED.md §3) on dither now the structural queue is drained — a read-only
+  sensing pass (fitness, the existing ledger, structure/map, a marker/stub/deferral sweep, the risk
+  register, the test surface, branch-protection posture) — then **(a)** price the one genuine finding,
+  **E-009** (architecture.md's Repo layout omits `@dither/theme`), and **(b)** convert it: add the
+  `theme/` line so the layout matches `git ls-files` and the doc's own build-order line. In scope: the
+  honesty filter — candidates checked and deliberately **not** priced (branch protection: the seed's own
+  main is likewise unprotected; graphify: a deliberate optional aid; the `escalation_rate` /
+  `plan_traceability` nulls: by-design), and E-010 (vendored-doc reachability floor) left as
+  [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)'s Revisit rather than a
+  dither entry. Out of scope: manufacturing entropy to fill the drained queue; a new "layout
+  completeness" gate (LAW-7, one occurrence).
+- Entry-context: the sensing-pass findings (Decision log below + ring 0045); dither's
+  [architecture.md](https://github.com/fliip92/dither/blob/main/docs/architecture.md) Repo layout vs its
+  build-order line 94; the seed's [doc-drift.ts](../../../.seed/checks/doc-drift.ts) (why a *missing*
+  entry is uncaught); [ring 0044](../../rings/0044-dither-e006-stale-spike-refs-gardened.md) (the
+  gardening-fix shape).
+- Done-when: dither's `drift_count` stays 0; E-009 priced + converted (Paid in the same pass, so
+  `ledger_trend` +4 unchanged — no new open debt); the layout diagram matches the committed package set
+  (5 packages) and the build-order line; the landing range green on all five gates + the gates self-test;
+  a seed-side ring records the pass (including what was *not* priced); seed-side `npm run check` +
+  `npm test` + `npm run garden` green.
+- Owner: agent
+- Depends-on: the structural queue drained (E-001/E-002/E-007/E-006 all Paid) — the sensing pass is the
+  refactor track's default work once no priced structural entry is pending.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -323,28 +351,47 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   link-labeled backticks (LAW-7 complexity for a genuinely-misleading pattern). *(The
   `(E-006: anchors unchecked)` comment in `doc-drift.ts` is the seed's own unrelated E-006 — a
   same-number coincidence.)*
+- **2026-07-20** — **U5 / entropy-sensing pass — the refactor track's first "sense" cycle after the
+  structural queue drained** (dither `eeb5fdd`, local; push Gardener-gated;
+  [ring 0045](../../rings/0045-dither-sensing-pass-theme-layout.md)). With E-001/E-002/E-007/E-006 all
+  digested, the Gardener directed a sensing pass (AGENTS.md §"Nothing active?"). It found **dither
+  substantially clean** — `drift_count` 0, no genuine `// TODO`/`FIXME`/`HACK` (the 115 raw hits were the
+  phone's `todo_*` product feature), no stubs, the risk register fully accounted (2 pending-action
+  entries + 3 mitigated-by-decision excluded), 7 principles one-per-norm, well-tested (77 test files /
+  148 source; the seal has a tamper fixture). **One genuine finding, priced + converted: E-009** —
+  architecture.md's Repo-layout diagram omitted `@dither/theme` (a foundation package imported by ~10
+  files), a residual of the E-001 correction (which fixed the doc's build-order direction line but not
+  the layout diagram), uncaught because no gate reads prose for a *missing* entry; the `theme/` line was
+  added so the diagram matches `git ls-files` and the build-order line. Sensed-and-paid in one pass →
+  `ledger_trend` +4 unchanged, `drift_count` 0, all five gates + self-test green on `0f078ef..eeb5fdd`.
+  **Deliberately not priced** (the honesty filter — not manufacturing entropy): branch protection (the
+  seed's own main is also unprotected — inherited posture), graphify (a deliberate optional aid), the
+  `escalation_rate` / `plan_traceability` nulls (by-design); E-010 (vendored-doc reachability floor) left
+  as ring 0043's Revisit per the Gardener. Seed-side `npm run check` + `npm test` + `npm run garden` green.
 
 ## Next actions
 
-1. **E-001 (U1) / E-002 (U2) / E-007 (U3) — landed, pushed, hosted-CI green.** E-002's fix run
-   [29796090886](https://github.com/fliip92/dither/actions/runs/29796090886) (green on `edec7fd`) and
-   E-007's run [29797280462](https://github.com/fliip92/dither/actions/runs/29797280462) (green on
-   `c058fbc`) — all five gates + the gates self-test stand on dither `main`, on the reachability-swept
-   tree (`map_reachability` 48.2%).
-2. **E-006 (U4) — DONE, held for the Gardener's push** (seed
-   [ring 0044](../../rings/0044-dither-e006-stale-spike-refs-gardened.md) + dither `0f078ef`, local). The
-   two stale spike refs fixed by content-edit (`drift_count` 2 → 0), E-006 Open→Paid (`ledger_trend`
-   +5 → +4), no new instrument (`enforcement_ratio` 7/7). **Remaining: the Gardener pushes** the seed
-   record and dither `0f078ef` (the `607bc64` / `edec7fd` / `c058fbc` precedent — local commit, push via
-   bang), after which one dither CI run confirms all five gates + the self-test on the gardened tree.
-3. **The structural refactor queue is drained.** All four priced structural ledger entries —
-   E-001/E-002/E-007/E-006 — are digested. What remains: the **feature-track** entries
-   (E-003/E-004/E-005/E-008, owner-paced) at their build-order steps; the **vendored-doc residual** (43
-   `.agents/skills/*.md` counted as stranded, holding dither at 48.2%) — if worth excluding, price it
-   host-side and decide separately ([ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
-   Revisit); and the **branch-protection residual** (enforcing the gates on `main` is the owner's call).
-   With no priced structural entry pending, **sensing new entropy is the refactor track's default work**
-   (AGENTS.md §"Nothing active?").
+1. **E-001 (U1) / E-002 (U2) / E-006 (U4) / E-007 (U3) — landed, pushed, hosted-CI green.** The four
+   structural refactors all stand on dither `main`; E-006's run
+   [29798876491](https://github.com/fliip92/dither/actions/runs/29798876491) was the latest green (all
+   five gates + the gates self-test + lint/typecheck/test), on the reachability-swept, drift-0 tree
+   (`map_reachability` 48.2%, `enforcement_ratio` 7/7, `ledger_trend` +4).
+2. **E-009 (U5) — DONE, held for the Gardener's push** (seed
+   [ring 0045](../../rings/0045-dither-sensing-pass-theme-layout.md) + dither `eeb5fdd`, local). The first
+   entropy-sensing pass after the queue drained: dither found substantially clean, one genuine finding
+   priced + converted — `@dither/theme` added to architecture.md's Repo layout so it matches the
+   committed package set (`drift_count` 0, `ledger_trend` +4 unchanged — sensed-and-paid in one pass).
+   **Remaining: the Gardener pushes** the seed record and dither `eeb5fdd` (the local-commit / push-via-
+   bang precedent), after which one dither CI run confirms all five gates + the self-test.
+3. **Refactor track: sensing is now the recurring default.** The structural queue is drained
+   (E-001/E-002/E-007/E-006 digested); with no priced structural entry pending, the track's work is to
+   **sense new entropy on a cadence** and convert the highest-interest ungated finding (AGENTS.md
+   §"Nothing active?"). This pass's carried residuals, deliberately *not* priced: **E-010 / the
+   vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at 48.2% — decide host-side,
+   [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) Revisit); **branch
+   protection** on `main` (the seed's own main is likewise unprotected — inherited posture, not a defect);
+   **graphify** (a deliberate optional aid). The **feature-track** entries (E-003/E-004/E-005/E-008) stay
+   owner-paced at their build-order steps.
 4. **On cadence:** measure dither fitness (the before/after-graft delta is the pollination proof); watch
    the trend against the per-host exit criterion. When the trend is positive over a sustained window and
    the owner ships through the agent workflow without the seed being special, dither reaches **step 6 —

@@ -71,11 +71,16 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   still enforcing total reachability — then dither's own stranded docs linked; the seed reads 100% (94/94
   docs) unchanged, dither 11.9% → 48.2%. Its fourth refactor, **E-006** (the two stale spike refs,
   [ring 0044](docs/rings/0044-dither-e006-stale-spike-refs-gardened.md)), is **done** (dither `0f078ef`,
-  local) — the first refactor that adds **no instrument**: a gardening content-fix whose LAW-6
-  verification is the standing drift scan (`drift_count` 2 → 0, `ledger_trend` +5 → +4, no new principle).
-  With all four priced structural entries (E-001/E-002/E-007/E-006) digested, the structural refactor
-  queue is **drained** — the feature track is owner-paced, and sensing new entropy is the refactor track's
-  default (AGENTS.md §"Nothing active?").
+  pushed, hosted CI green) — the first refactor that adds **no instrument**: a gardening content-fix whose
+  LAW-6 verification is the standing drift scan (`drift_count` 2 → 0, `ledger_trend` +5 → +4, no new
+  principle). With all four priced structural entries (E-001/E-002/E-007/E-006) digested, the structural
+  refactor queue is **drained** — the feature track is owner-paced, and sensing new entropy is the
+  refactor track's default (AGENTS.md §"Nothing active?"). The **first sensing pass**
+  ([ring 0045](docs/rings/0045-dither-sensing-pass-theme-layout.md); dither `eeb5fdd`, local) found dither
+  substantially clean and converted one genuine finding — **E-009**, `@dither/theme` absent from
+  architecture.md's Repo layout (a residual of the E-001 correction), added so the layout matches the
+  committed package set; branch protection and graphify were checked and deliberately **not** priced (the
+  seed's own main is likewise unprotected — inherited posture, not a defect).
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
