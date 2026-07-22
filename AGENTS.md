@@ -87,7 +87,16 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   a **sixth dither gate**, `map-completeness.ts`, asserting every `packages/*`/`apps/*` workspace is listed
   in each of three layout maps, with the eighth principle `maps-are-complete` (`enforcement_ratio` 8/8) and
   self-test teeth (18/18 + a neuter test-of-the-test). Six gates + eight principles now stand on dither.
-  Every step's instrument was built across
+  A **third sensing pass** ([ring 0047](docs/rings/0047-dither-third-sensing-pass-stack-drift.md); dither
+  `8959b3e`, local) swept the surfaces the first two did not reach (ADR bodies vs code, dependency hygiene,
+  map claims vs code, the gate tooling — and confirmed the copied engine byte-identical to the seed's): it
+  converted **E-013** (the map-completeness gate lacked a `check:*` script, the sole gate of seven without
+  one — added `check:mapcomplete`) and priced **E-012** Open, held for the Gardener — architecture.md's
+  stack rows name libraries the built code does not use (`Zustand`, `react-native-unistyles`,
+  `react-three-fiber`) plus the pre-rename `react-native-wgpu`, the E-001 fix-docs-vs-fix-code fork
+  recurring on the stack rows (`ledger_trend` +4 → +5, the one net-new open debt). The honesty filter
+  declined to price three ADR-body discrepancies (append-only decision records), framework-managed version
+  skews, and POC logging hygiene. Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose
