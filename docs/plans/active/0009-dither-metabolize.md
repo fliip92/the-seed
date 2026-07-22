@@ -195,6 +195,36 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Depends-on: the structural queue drained (E-001/E-002/E-007/E-006 all Paid) — the sensing pass is the
   refactor track's default work once no priced structural entry is pending.
 
+### U6 — E-010/E-011: build the map-completeness gate (the recurrence triggers E-009's invariant)
+- Status: done
+- Landed: dither `1274d48` (local; push Gardener-gated) — [ring 0046](../../rings/0046-dither-map-completeness-gate.md)
+- Scope: the second sensing pass (Decision log) found E-009 was one instance of a class — `theme` +
+  `matrix-playground` also omitted from README.md's layout and CONTEXT-MAP.md's context list — meeting
+  E-009's Revisit-when. **(a) E-010:** add the two workspaces to README + CONTEXT-MAP so all three maps
+  are complete. **(b) E-011:** build
+  [map-completeness.ts](https://github.com/fliip92/dither/blob/main/.seed/checks/map-completeness.ts), a
+  sixth dither gate over the verbatim engine asserting every `packages/*`/`apps/*` workspace is listed in
+  each layout map, wired as a `ci.yml` step with the eighth principle `maps-are-complete` and a
+  gates-self-test tooth pair. In scope: the both-forks decision (fix instances + build the invariant), the
+  name-boundary matching (`matrix` ≠ `matrix-playground`), the test-of-the-test. Out of scope: a per-map
+  exclusion mechanism (a Revisit if a unit should legitimately be omitted from a map); any product-code
+  change.
+- Entry-context: [ring 0045](../../rings/0045-dither-sensing-pass-theme-layout.md)'s E-009 + its
+  Revisit-when; the second-pass findings (Decision log); dither's
+  [import-boundary.ts](https://github.com/fliip92/dither/blob/main/.seed/checks/import-boundary.ts) (the
+  runner + "new package fires" template) and
+  [gates-self-test.ts](https://github.com/fliip92/dither/blob/main/.seed/tests/gates-self-test.ts) (the
+  teeth harness); the three maps (architecture.md, README.md, CONTEXT-MAP.md).
+- Done-when: all three maps list every workspace; the map-completeness gate runs in dither CI, **GREEN**
+  (8 workspaces × 3 maps); **TEETH** — a new package in no map and a workspace dropped from one map both
+  fire it (self-test 18/18), and neutering the gate turns its cases red; the eighth principle keeps
+  `enforcement_ratio` at 100% (8/8); E-010 + E-011 Open→Paid in the same pass (`ledger_trend` +4
+  unchanged); the landing range green on all six gates + the self-test; seed-side `npm run check` +
+  `npm test` + `npm run garden` green.
+- Owner: agent
+- Depends-on: E-009 (ring 0045) landed — its Revisit-when is the trigger; the first sensing pass had to
+  find the class before the second could find its recurrence.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -368,26 +398,47 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   seed's own main is also unprotected — inherited posture), graphify (a deliberate optional aid), the
   `escalation_rate` / `plan_traceability` nulls (by-design); E-010 (vendored-doc reachability floor) left
   as ring 0043's Revisit per the Gardener. Seed-side `npm run check` + `npm test` + `npm run garden` green.
+- **2026-07-21** — **U6 / E-010 + E-011 done — the second sensing pass finds E-009 was a class, and
+  builds the invariant** (dither `1274d48`, local; push Gardener-gated;
+  [ring 0046](../../rings/0046-dither-map-completeness-gate.md)). The pass opened surfaces the first did
+  not (the 9 ADRs — index consistent, no staleness; coverage depth — solid, only the matrix-playground
+  dev-tool + workshop UI run light, both defensible; per-context docs) and surfaced one coherent thread:
+  **E-009 was one instance of a class.** `theme` (and `matrix-playground`) were also missing from
+  README.md's layout and CONTEXT-MAP.md's context list — E-009 had fixed only architecture.md — meeting
+  E-009's pre-registered Revisit-when. The Gardener chose to honor it fully: **E-010** added the two
+  workspaces to README + CONTEXT-MAP (all three maps now complete), and **E-011** built the sixth dither
+  gate, [map-completeness.ts](https://github.com/fliip92/dither/blob/main/.seed/checks/map-completeness.ts)
+  — a runner over the verbatim engine asserting every `packages/*`/`apps/*` workspace is listed in each of
+  the three layout maps (basename `theme/` or dir `packages/theme`, name-bounded so `matrix` ≠
+  `matrix-playground`), with the eighth principle `maps-are-complete` (`enforcement_ratio` 8/8) and a
+  gates-self-test tooth pair. Verified **GREEN + 18/18**, the **test-of-the-test** (neutering the gate
+  turns its three cases red), `drift_count` 0, `ledger_trend` +4 unchanged (E-010 + E-011 sensed and paid
+  in one pass), `map_reachability` 48.2% → 48.8%; landing range `eeb5fdd..1274d48` green on all six gates
+  + the self-test. Seed-side `npm run check` + `npm test` + `npm run garden` green. *(Label note: the
+  ledger's **E-010** is this map-omission fix; the "E-010" tag in ring 0045 / U5 was a provisional label
+  for the un-priced vendored-doc-reachability candidate, which never entered the ledger and remains
+  ring 0043's Revisit.)*
 
 ## Next actions
 
-1. **E-001 (U1) / E-002 (U2) / E-006 (U4) / E-007 (U3) — landed, pushed, hosted-CI green.** The four
-   structural refactors all stand on dither `main`; E-006's run
-   [29798876491](https://github.com/fliip92/dither/actions/runs/29798876491) was the latest green (all
-   five gates + the gates self-test + lint/typecheck/test), on the reachability-swept, drift-0 tree
-   (`map_reachability` 48.2%, `enforcement_ratio` 7/7, `ledger_trend` +4).
-2. **E-009 (U5) — DONE, held for the Gardener's push** (seed
-   [ring 0045](../../rings/0045-dither-sensing-pass-theme-layout.md) + dither `eeb5fdd`, local). The first
-   entropy-sensing pass after the queue drained: dither found substantially clean, one genuine finding
-   priced + converted — `@dither/theme` added to architecture.md's Repo layout so it matches the
-   committed package set (`drift_count` 0, `ledger_trend` +4 unchanged — sensed-and-paid in one pass).
-   **Remaining: the Gardener pushes** the seed record and dither `eeb5fdd` (the local-commit / push-via-
-   bang precedent), after which one dither CI run confirms all five gates + the self-test.
-3. **Refactor track: sensing is now the recurring default.** The structural queue is drained
-   (E-001/E-002/E-007/E-006 digested); with no priced structural entry pending, the track's work is to
-   **sense new entropy on a cadence** and convert the highest-interest ungated finding (AGENTS.md
-   §"Nothing active?"). This pass's carried residuals, deliberately *not* priced: **E-010 / the
-   vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at 48.2% — decide host-side,
+1. **E-001 / E-002 / E-006 / E-007 / E-009 — landed, pushed, hosted-CI green.** The four structural
+   refactors + the first sensing pass all stand on dither `main`; E-009's run
+   [29886045709](https://github.com/fliip92/dither/actions/runs/29886045709) was the latest green (five
+   gates + the self-test + lint/typecheck/test), on the drift-0 tree.
+2. **E-010 + E-011 (U6) — DONE, held for the Gardener's push** (seed
+   [ring 0046](../../rings/0046-dither-map-completeness-gate.md) + dither `1274d48`, local). The second
+   sensing pass found E-009 was a class (`theme`/`matrix-playground` also missing from README +
+   CONTEXT-MAP), tripping E-009's pre-registered Revisit trigger; the Gardener built the invariant — a
+   **sixth dither gate** (`map-completeness.ts`) asserting every workspace is listed in each of three
+   layout maps, with the eighth principle `maps-are-complete` (`enforcement_ratio` 8/8) and self-test
+   teeth (18/18 + neuter test-of-the-test). `drift_count` 0, `ledger_trend` +4 unchanged.
+   **Remaining: the Gardener pushes** the seed record and dither `1274d48`, after which one dither CI run
+   confirms all **six** gates + the self-test.
+3. **Refactor track: sensing is now the recurring default.** The structural queue is drained; the track's
+   work is to **sense new entropy on a cadence** and convert the highest-interest ungated finding
+   (AGENTS.md §"Nothing active?"). Six gates + eight principles now stand on dither. Carried residuals,
+   deliberately *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold
+   dither at ~48% — decide host-side,
    [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) Revisit); **branch
    protection** on `main` (the seed's own main is likewise unprotected — inherited posture, not a defect);
    **graphify** (a deliberate optional aid). The **feature-track** entries (E-003/E-004/E-005/E-008) stay

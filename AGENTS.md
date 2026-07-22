@@ -76,11 +76,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   principle). With all four priced structural entries (E-001/E-002/E-007/E-006) digested, the structural
   refactor queue is **drained** — the feature track is owner-paced, and sensing new entropy is the
   refactor track's default (AGENTS.md §"Nothing active?"). The **first sensing pass**
-  ([ring 0045](docs/rings/0045-dither-sensing-pass-theme-layout.md); dither `eeb5fdd`, local) found dither
-  substantially clean and converted one genuine finding — **E-009**, `@dither/theme` absent from
-  architecture.md's Repo layout (a residual of the E-001 correction), added so the layout matches the
+  ([ring 0045](docs/rings/0045-dither-sensing-pass-theme-layout.md); dither `eeb5fdd`, pushed, CI green)
+  found dither substantially clean and converted one genuine finding — **E-009**, `@dither/theme` absent
+  from architecture.md's Repo layout (a residual of the E-001 correction), added so the layout matches the
   committed package set; branch protection and graphify were checked and deliberately **not** priced (the
-  seed's own main is likewise unprotected — inherited posture, not a defect).
+  seed's own main is likewise unprotected — inherited posture, not a defect). A **second sensing pass**
+  ([ring 0046](docs/rings/0046-dither-map-completeness-gate.md); dither `1274d48`, local) found E-009 was
+  one instance of a class — `theme`/`matrix-playground` were also missing from README.md and
+  CONTEXT-MAP.md — which tripped E-009's pre-registered Revisit trigger; the Gardener built the invariant:
+  a **sixth dither gate**, `map-completeness.ts`, asserting every `packages/*`/`apps/*` workspace is listed
+  in each of three layout maps, with the eighth principle `maps-are-complete` (`enforcement_ratio` 8/8) and
+  self-test teeth (18/18 + a neuter test-of-the-test). Six gates + eight principles now stand on dither.
   Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
