@@ -91,10 +91,10 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   `8959b3e`, local) swept the surfaces the first two did not reach (ADR bodies vs code, dependency hygiene,
   map claims vs code, the gate tooling — and confirmed the copied engine byte-identical to the seed's): it
   converted **E-013** (the map-completeness gate lacked a `check:*` script, the sole gate of seven without
-  one — added `check:mapcomplete`) and priced **E-012** Open, held for the Gardener — architecture.md's
-  stack rows name libraries the built code does not use (`Zustand`, `react-native-unistyles`,
-  `react-three-fiber`) plus the pre-rename `react-native-wgpu`, the E-001 fix-docs-vs-fix-code fork
-  recurring on the stack rows (`ledger_trend` +4 → +5, the one net-new open debt). The honesty filter
+  one — added `check:mapcomplete`) and priced **E-012** — architecture.md's stack rows named libraries the
+  built code does not use (`Zustand`, `react-native-unistyles`, `react-three-fiber`) plus the pre-rename
+  `react-native-wgpu`, the E-001 fix-docs-vs-fix-code fork recurring on the stack rows; the Gardener chose
+  **fork A** and it was reconciled to the code (E-012 Paid, `ledger_trend` back to +4). The honesty filter
   declined to price three ADR-body discrepancies (append-only decision records), framework-managed version
   skews, and POC logging hygiene. Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in

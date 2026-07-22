@@ -258,6 +258,32 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Depends-on: the structural queue drained + the first two sensing passes (E-009/E-010/E-011) landed — the
   recurring-sense mode (AGENTS.md §"Nothing active?"); dither unchanged since ring 0046.
 
+### U8 — E-012 fork A: reconcile architecture.md's stack rows to the code
+- Status: done
+- Landed: dither `b8d3823` (local; push Gardener-gated) — [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md)
+  (the finding + fork; this conversion executes its anticipated fork-A branch — no new ring)
+- Scope: the Gardener chose **fork A** (fix docs to code) for E-012 (priced Open in U7 / ring 0047).
+  Reconcile [architecture.md](https://github.com/fliip92/dither/blob/main/docs/architecture.md)'s three
+  drifted stack descriptions to the built code: **(a)** the Decision register's Phone stack row
+  (`Zustand` + `react-native-unistyles` → `React hooks for state` + `StyleSheet`, what the phone actually
+  uses); **(b)** the topology + repo layout (the workshop as a `react-three-fiber` SPA → a `Vite + React`
+  SPA rendering the matrix face via WebGPU, with `react-three-fiber` marked the *deferred* 3D bust, build
+  order step 4); **(c)** the package rename `react-native-wgpu` → `react-native-webgpu` across
+  architecture.md (topology, build order, risk register) and the ledger's own E-003. In scope: the
+  **ADR-0005-left-append-only** scope call (ADR bodies are not reconciled — ring 0047's honesty-filter
+  stance; dither's adr-gate blesses aged citations), and E-012 Open→Paid. Out of scope: any product-code
+  change (fork B declined); a new instrument (a doc reconciliation, the E-006/E-009 gardening shape).
+- Entry-context: [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md) (E-012's finding +
+  the A/B fork + the append-only-ADR reasoning); the verified phone stack (React hooks + `StyleSheet`, no
+  zustand/unistyles) and workshop render path (WebGPU via `@dither/matrix`, no r3f); the
+  [E-001 precedent](../../rings/0041-dither-import-boundary-gate.md) (fork A = fix docs to code).
+- Done-when: architecture.md's stack rows match the code (no `Zustand` / `react-native-unistyles` /
+  current-r3f / old `react-native-wgpu` left, save the deferred-bust note); E-012 Open→Paid; `drift_count`
+  0, `ledger_trend` +5 → +4 (E-012 digested), `enforcement_ratio` 8/8 unchanged; the landing range green on
+  all six gates + the gates self-test; seed-side `npm run check` + `npm test` + `npm run garden` green.
+- Owner: agent (built); the fork decision was the Gardener's
+- Depends-on: U7 (E-012 priced Open) + the Gardener's fork choice (A).
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -473,27 +499,35 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   paid same-pass nets 0), `drift_count` 0, `enforcement_ratio` 8/8, `map_reachability` 48.8%. Landing range
   `1274d48..8959b3e` green on all **six** gates + the self-test (ledger gate 13 entries all priced);
   seed-side `npm run check` + `npm test` + `npm run garden` green (no seed code change).
+- **2026-07-21** — **U8 / E-012 fork A — architecture.md reconciled to the code** (dither `b8d3823`, local;
+  push Gardener-gated; the finding + fork are [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md),
+  whose Revisit-when anticipated this branch — so no new ring). The Gardener chose **fork A** (fix docs to
+  code). architecture.md's three drifted stack descriptions were reconciled to the built code: the Phone
+  stack row (`Zustand` + `react-native-unistyles` → React hooks for state + `StyleSheet`, the phone's real
+  stack); the workshop (a `react-three-fiber` SPA → a `Vite + React` SPA rendering the matrix face via
+  WebGPU, with `react-three-fiber` marked the *deferred* 3D bust, build order step 4); and
+  `react-native-wgpu` → `react-native-webgpu` across architecture.md (topology, build order, risk register)
+  and the ledger's own E-003. **ADR-0005 left as an append-only decision record** — its aged package-name
+  citations stay valid (ring 0047's honesty-filter stance; dither's adr-gate), not reconciled. E-012
+  **Open→Paid**: `ledger_trend` **+5 → +4** (E-012 digested), `drift_count` 0, `enforcement_ratio` 8/8
+  unchanged, `map_reachability` 48.8%. Landing range `8959b3e..b8d3823` green on all six gates + the gates
+  self-test; seed-side `npm run check` + `npm test` + `npm run garden` green (no seed code change).
 
 ## Next actions
 
-1. **E-001…E-011 (U1–U6) — landed, pushed, hosted-CI green.** The four structural refactors + the first
-   two sensing passes all stand on dither `main`; run
-   [29887418737](https://github.com/fliip92/dither/actions/runs/29887418737) was the latest green — all
-   **six** gates + the self-test (+ lint/typecheck/test) on the drift-0 tree (`1274d48`).
-2. **U7 / third sensing pass — DONE, held for the Gardener's push** (seed
-   [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md) + dither `8959b3e`, local). The
-   pass swept the four surfaces the first two did not audit against code (ADR bodies, dep hygiene, map
-   claims, gate tooling) and produced two findings. **E-013 (converted):** the map-completeness gate had a
-   CI step but no `check:*` script — the sole gate of seven without one; added `check:mapcomplete` (7 gate
-   steps → 7 scripts, `enforcement_ratio` held 8/8). **E-012 (priced Open, held):** architecture.md's stack
-   rows name `Zustand` / `react-native-unistyles` / `react-three-fiber` (all absent from the built code) +
-   the pre-rename `react-native-wgpu` — the E-001 pattern on the stack rows. **Two things now sit with the
-   Gardener:** **(i) push** the seed record + dither `8959b3e` (one dither CI run then confirms all six
-   gates + the self-test on `8959b3e`); **(ii) decide E-012's fork** — **(A)** fix docs to code
-   (recommended — the phone and workshop are built, so the code is the truth) or **(B)** adopt the stated
-   libraries (a phone/workshop refactor, unlikely for a built POC); on fork A a follow-up reconciliation
-   converts E-012 (→ Paid, `ledger_trend` back to +4). Current: `ledger_trend` +4 → **+5** (E-012 open),
-   `drift_count` 0, `enforcement_ratio` 8/8.
+1. **E-001…E-013 (U1–U7) — landed, pushed, hosted-CI green.** The structural refactors + the three sensing
+   passes stand on dither `main`; run
+   [29889791921](https://github.com/fliip92/dither/actions/runs/29889791921) was the latest green — all
+   **six** gates + the self-test (+ lint/typecheck/test) on `8959b3e`.
+2. **U8 / E-012 fork A — DONE, held for the Gardener's push** (dither `b8d3823`, local; the finding + fork
+   are [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md)). The Gardener chose **fork A**
+   (fix docs to code); architecture.md's stack rows were reconciled to the built code — Phone stack →
+   `React hooks for state` + `StyleSheet`; the workshop → a `Vite + React` SPA rendering via WebGPU with
+   `react-three-fiber` marked the *deferred* 3D bust; `react-native-wgpu` → `react-native-webgpu` (also in
+   the ledger's E-003) — and **E-012 Open→Paid** (`ledger_trend` +5 → **+4**, `drift_count` 0,
+   `enforcement_ratio` 8/8). ADR-0005 left append-only (ring 0047). **Remaining: the Gardener pushes** dither
+   `b8d3823` + the seed record, after which one dither CI run confirms all six gates + the self-test on
+   `b8d3823`.
 3. **Refactor track: sensing is now the recurring default.** The structural queue is drained; the track's
    work is to **sense new entropy on a cadence** and convert the highest-interest ungated finding
    (AGENTS.md §"Nothing active?"). Six gates + eight principles now stand on dither. Carried residuals,
