@@ -96,7 +96,12 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   `react-native-wgpu`, the E-001 fix-docs-vs-fix-code fork recurring on the stack rows; the Gardener chose
   **fork A** and it was reconciled to the code (E-012 Paid, `ledger_trend` back to +4). The honesty filter
   declined to price three ADR-body discrepancies (append-only decision records), framework-managed version
-  skews, and POC logging hygiene. Every step's instrument was built across
+  skews, and POC logging hygiene. A **fourth sensing pass**
+  ([ring 0048](docs/rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md)) found dither clean and
+  unchanged and fixed one seed-side residual — the seed's own elicited dither.md still called the workshop
+  "Vite + R3F" (the E-012 drift, which had been dither-scoped) → "Vite + React" — and recorded that
+  `ledger_trend` has matured from a level to its true 7-day rate (now -2, a healthy weekly digestion, not a
+  regression). Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

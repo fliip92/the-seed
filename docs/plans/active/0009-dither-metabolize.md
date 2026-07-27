@@ -284,6 +284,29 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Owner: agent (built); the fork decision was the Gardener's
 - Depends-on: U7 (E-012 priced Open) + the Gardener's fork choice (A).
 
+### U9 — fourth sensing pass: dither clean/unchanged; fix the seed's own dither.md R3F drift
+- Status: done
+- Landed: seed-side only (no dither mutation — dither is clean and unchanged at `b8d3823`) — [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md)
+- Scope: run the metabolism again with dither byte-identical to U8 (`b8d3823`). Re-verify dither clean
+  (`drift_count` 0, `enforcement_ratio` 8/8, `map_reachability` 48.8%; README prose accurate, only
+  `ci.yml`) — no new dither entropy. **The one finding is seed-side:** the seed's elicited target
+  [dither.md](../../architecture/dither.md) Shape line still described the workshop as "static Vite + R3F"
+  (the `react-three-fiber` drift E-012 fixed dither-side, uncaught here because E-012 was dither-scoped) →
+  corrected to "static Vite + React". In scope: the `ledger_trend` maturation observation (a 7-day rate,
+  not a level — now -2 = healthy weekly digestion; the memory shorthand corrected), and the honesty-filter
+  decision not to manufacture dither entropy on an unchanged, already-swept repo. Out of scope: any dither
+  mutation (nothing to fix there); a new instrument (a one-line stale-reference fix, LAW-7).
+- Entry-context: [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md); the
+  E-012 / fork-A work (U8, [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md)) this
+  completes seed-side; [E-001 / ring 0041](../../rings/0041-dither-import-boundary-gate.md) (the prior
+  seed-side dither.md correction); the `ledger_trend` definition in
+  [fitness-metrics.ts](../../../.seed/lib/fitness-metrics.ts).
+- Done-when: the seed's dither.md Shape matches dither's code (no R3F-as-current); dither confirmed
+  clean/unchanged (no dither commit); a seed-side ring records the pass + the `ledger_trend` observation;
+  seed-side `npm run check` + `npm test` + `npm run garden` green.
+- Owner: agent
+- Depends-on: U8 (E-012 fork A) landed — this is its seed-side residual; dither unchanged since `b8d3823`.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -512,22 +535,34 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   **Open→Paid**: `ledger_trend` **+5 → +4** (E-012 digested), `drift_count` 0, `enforcement_ratio` 8/8
   unchanged, `map_reachability` 48.8%. Landing range `8959b3e..b8d3823` green on all six gates + the gates
   self-test; seed-side `npm run check` + `npm test` + `npm run garden` green (no seed code change).
+- **2026-07-27** — **U9 / fourth sensing pass — dither clean/unchanged; the seed's own dither.md R3F drift
+  fixed** (seed-side only; no dither mutation; [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md)).
+  dither is byte-identical to U8 (`b8d3823`); re-verified clean (`drift_count` 0, `enforcement_ratio` 8/8,
+  `map_reachability` 48.8%; README prose accurate, only `ci.yml`) — no new dither entropy. **One finding,
+  seed-side:** the seed's elicited [dither.md](../../architecture/dither.md) Shape still read "Workshop
+  (static Vite + R3F)" — the `react-three-fiber` drift E-012 fixed dither-side, left here because E-012 was
+  dither-scoped; corrected to "static Vite + React" (the seed-side complement to E-012, parallel to E-001's
+  package-graph correction). **`ledger_trend` matured** from a level (+N open, while the ledger was <7 days
+  old) to its true 7-day rate — now **-2** (net 2 entries digested this week, healthy); no metric change
+  (SEED.md §6), the "+N = N open" shorthand was the imprecision. Seed-side `npm run check` + `npm test`
+  (241) + `npm run garden` (`drift_count` 0) green; no dither commit.
 
 ## Next actions
 
-1. **E-001…E-013 (U1–U7) — landed, pushed, hosted-CI green.** The structural refactors + the three sensing
-   passes stand on dither `main`; run
-   [29889791921](https://github.com/fliip92/dither/actions/runs/29889791921) was the latest green — all
-   **six** gates + the self-test (+ lint/typecheck/test) on `8959b3e`.
-2. **U8 / E-012 fork A — DONE, held for the Gardener's push** (dither `b8d3823`, local; the finding + fork
-   are [ring 0047](../../rings/0047-dither-third-sensing-pass-stack-drift.md)). The Gardener chose **fork A**
-   (fix docs to code); architecture.md's stack rows were reconciled to the built code — Phone stack →
-   `React hooks for state` + `StyleSheet`; the workshop → a `Vite + React` SPA rendering via WebGPU with
-   `react-three-fiber` marked the *deferred* 3D bust; `react-native-wgpu` → `react-native-webgpu` (also in
-   the ledger's E-003) — and **E-012 Open→Paid** (`ledger_trend` +5 → **+4**, `drift_count` 0,
-   `enforcement_ratio` 8/8). ADR-0005 left append-only (ring 0047). **Remaining: the Gardener pushes** dither
-   `b8d3823` + the seed record, after which one dither CI run confirms all six gates + the self-test on
-   `b8d3823`.
+1. **E-001…E-013 (U1–U8) — landed, pushed, hosted-CI green.** The structural refactors, the three sensing
+   passes, and the E-012 fork-A conversion all stand on dither `main`; the fork-A commits went green —
+   dither `b8d3823` (run [30315098067](https://github.com/fliip92/dither/actions/runs/30315098067)) and seed
+   `f518034` (run [30315139513](https://github.com/fliip92/the-seed/actions/runs/30315139513)). dither
+   carries **no open agent-gated debt**.
+2. **U9 / fourth sensing pass — DONE, held for the Gardener's push** (seed
+   [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md) only; **no dither
+   mutation** — dither is clean and unchanged at `b8d3823`). The pass re-verified dither clean and found one
+   seed-side residual: the seed's own elicited [dither.md](../../architecture/dither.md) still described the
+   workshop as "static Vite + R3F" (the E-012 drift, uncaught because E-012 was dither-scoped) → fixed to
+   "static Vite + React". It also recorded that `ledger_trend` has matured from a level to its true 7-day
+   rate (**-2** = net 2 digested this week, healthy — not a regression; see ring 0048). **Remaining: the
+   Gardener pushes** the seed record (seed only; nothing to push on dither), after which one seed-ci run
+   confirms.
 3. **Refactor track: sensing is now the recurring default.** The structural queue is drained; the track's
    work is to **sense new entropy on a cadence** and convert the highest-interest ungated finding
    (AGENTS.md §"Nothing active?"). Six gates + eight principles now stand on dither. Carried residuals,
