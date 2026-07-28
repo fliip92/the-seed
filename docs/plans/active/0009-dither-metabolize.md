@@ -825,7 +825,10 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    exactly once; and **[E-024](../entropy-ledger.md)** was priced in-pass (nothing enforces that a ring
    appears in the [rings index](../../rings/README.md); 0049–0051 were missing, content fixed by hand) —
    **PAID by U14 below**.
-8. **U14 / [E-024](../entropy-ledger.md) — PAID, committed, awaiting push** (ring
+8. **U14 / [E-024](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `dd88891`, run
+   [30324276666](https://github.com/fliip92/the-seed/actions/runs/30324276666) — run-all (14, 53 rings
+   valid) + self-test **259** + all five git-aware gates, the pollen-intent gate reading 12
+   portable-subtree commits since the cut against 12 intents; ring
    [0053](../../rings/0053-numbered-organs-index-every-entry.md); no dither mutation — its graft carries
    none of these organs). Every `NNNN-slug.md` in the five numbered organs must be listed in its own
    organ README, over one shared helper and one shared link resolver; the unindexed-but-reachable hole
