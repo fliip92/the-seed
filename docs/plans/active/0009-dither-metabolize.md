@@ -778,7 +778,9 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    `.seed/lib/repo.ts` now **lags** the mother's by this fix — the first divergence since the graft,
    and the designed propagation model (descendants upgrade through versioned releases, not continuous
    mirroring).
-7. **U13 / [E-023](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+7. **U13 / [E-023](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `96526e7`, run
+   [30322905783](https://github.com/fliip92/the-seed/actions/runs/30322905783) — the gate's first hosted
+   execution, reading 11 portable-subtree commits since the cut against 11 intents;
    [ring 0052](../../rings/0052-portable-changes-declare-their-intent.md); no dither mutation — its graft
    carries no release model). The [pollen-intent gate](../../../.seed/checks/pollen-intent.ts) proves no
    portable change since the last cut goes undeclared; the intent grammar accepts a plan as well as a
@@ -788,9 +790,7 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    trigger — confirm the window re-anchors on the new release file and the backfilled intents are consumed
    exactly once; and **[E-024](../entropy-ledger.md)** was priced in-pass (nothing enforces that a ring
    appears in the [rings index](../../rings/README.md); 0049–0051 were missing, content fixed by hand) —
-   agent-convertible, fold into the next change touching `validate-rings`. **Remaining: the Gardener
-   pushes** the seed record, after which one seed-ci run confirms — that run is also the gate's first
-   hosted execution.
+   agent-convertible, fold into the next change touching `validate-rings`.
 8. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
