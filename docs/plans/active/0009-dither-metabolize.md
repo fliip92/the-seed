@@ -878,7 +878,10 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    [pollen intent](../../../pollen/pending.md) declared. One follow-on rides the record: the slugged
    organs were checked in-pass and are index-complete, so extending the membership rule to them is the
    ring's Revisit trigger rather than a priced entry.
-9. **U15 / fifth sensing pass — landed, committed** (ring
+9. **U15 / fifth sensing pass — landed, pushed, seed-ci green** (seed `6f5e182`, run
+   [30325977869](https://github.com/fliip92/the-seed/actions/runs/30325977869) — the widened stage gate's
+   first hosted execution, reading *"AGENTS.md, .seed/checks/fitness.ts, README.md all state stage 4"*,
+   with self-test **261** and all five git-aware gates; ring
    [0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md); no dither mutation — the
    host is byte-identical to `b8d3823`). **[E-025](../entropy-ledger.md) PAID** (the stage's third place,
    `validate-stage` now a declared source set). **Two entries are the live follow-ons, and both are the
