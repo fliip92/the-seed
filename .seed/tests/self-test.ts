@@ -2930,7 +2930,7 @@ inTempCopy((root) => {
       // every null names WHY — the reason is the finding, so a shape-only check is too weak.
       String(notes.map_reachability).includes('no AGENTS.md') &&
       String(notes.enforcement_ratio).includes('no docs/principles/') &&
-      String(notes.plan_traceability).includes('no plans or rings') &&
+      String(notes.plan_traceability).includes('no plans, rings, or ADRs') &&
       String(notes.ledger_trend).includes('no entropy ledger');
     report(
       'repo-fitness: a foreign git repo degrades anatomy metrics to null (each with its reason); drift_count still computes',
@@ -2957,6 +2957,65 @@ inTempCopy((root) => {
         (m.map_reachability as number) > 0 &&
         String(notes.map_reachability).includes('CLAUDE.md'),
       `expected a numeric map_reachability resolved from CLAUDE.md with a naming note, got:\n${output}`,
+    );
+  });
+});
+
+// E-020 (ring 0051): a host that records decisions as numbered ADRs — dither's nine under
+// docs/adr/, whose commit→ADR gate the seed itself grafted (ring 0038) — computes a REAL
+// plan_traceability instead of the false "no decision log" null. The decision-log SHAPE is
+// resolved from the target (resolveDecisionLog), the E-016 move one level up: from "which file
+// is the map" to "which artifacts are the decision record". One fixture pins all three citation
+// forms the host's own gate recognizes (`ADR-0001`, the prose `ADR 0002`, a `docs/adr/0001-`
+// path) — the metric must never be STRICTER than the gate enforcing the same norm, or it
+// under-reads the host it is measuring, which is E-020 itself — plus the existence clause: a
+// citation of an ADR the repo does not carry traces to nothing, exactly as a dangling plan/ring
+// reference does.
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    mkdirSync(join(foreign, 'docs', 'adr'), { recursive: true });
+    writeFileSync(join(foreign, 'docs', 'adr', '0001-thin-gateway.md'), '# ADR-0001 — the gateway is thin\n');
+    writeFileSync(join(foreign, 'docs', 'adr', '0002-monorepo.md'), '# ADR-0002 — one monorepo\n');
+    gitCommitAll(foreign, 'docs: record the first two decisions'); // adds ADRs, cites none
+    writeFileSync(join(foreign, 'lib', 'gateway.ts'), 'export const gateway = 1;\n');
+    gitCommitAll(foreign, 'feat: the gateway stays thin, as ADR-0001 decided');
+    writeFileSync(join(foreign, 'lib', 'workspace.ts'), 'export const ws = 2;\n');
+    gitCommitAll(foreign, 'chore: one more workspace — ADR 0002 governs the layout');
+    writeFileSync(join(foreign, 'lib', 'seal.ts'), 'export const seal = 3;\n');
+    gitCommitAll(foreign, 'refactor: narrow the gateway (docs/adr/0001-thin-gateway.md)');
+    writeFileSync(join(foreign, 'lib', 'stray.ts'), 'export const stray = 4;\n');
+    gitCommitAll(foreign, 'chore: whatever ADR-0042 governs — an ADR this repo does not carry');
+    const { output } = runRepoFitness(root, [foreign, '--json']);
+    const m = repoFitnessMetrics(output);
+    const notes = (JSON.parse(output) as { notes: Record<string, string> }).notes;
+    report(
+      'repo-fitness (E-020): an ADR-governed host computes a real plan_traceability across all three citation forms, excludes a dangling citation, and names the resolved shape',
+      m.plan_traceability === 0.5 && String(notes.plan_traceability).includes('ADRs'),
+      `expected 0.5 (3 of 6 commits cite an ADR that exists) traced against ADRs, got:\n${output}`,
+    );
+  });
+});
+
+// A target keeping BOTH shapes resolves both, and a citation of either traces. This pins that
+// teaching the metric ADRs did not shadow the seed's own shape: plans/rings still resolve, and
+// the note names every shape found, so a reading is never compared across hosts blind to which
+// vocabulary produced it (SEED.md §6: fitness is a trend, not a grade).
+inTempCopy((root) => {
+  withForeignRepo({ git: true }, (foreign) => {
+    mkdirSync(join(foreign, 'docs', 'adr'), { recursive: true });
+    mkdirSync(join(foreign, 'docs', 'rings'), { recursive: true });
+    writeFileSync(join(foreign, 'docs', 'adr', '0001-thin-gateway.md'), '# ADR-0001 — the gateway is thin\n');
+    writeFileSync(join(foreign, 'docs', 'rings', '0001-decision.md'), '# Ring 0001 — a decision\n');
+    gitCommitAll(foreign, 'docs: record decisions on both surfaces (ring 0001)');
+    writeFileSync(join(foreign, 'lib', 'gateway.ts'), 'export const gateway = 1;\n');
+    gitCommitAll(foreign, 'feat: the gateway stays thin, as ADR-0001 decided');
+    const { output } = runRepoFitness(root, [foreign, '--json']);
+    const m = repoFitnessMetrics(output);
+    const note = String((JSON.parse(output) as { notes: Record<string, string> }).notes.plan_traceability);
+    report(
+      'repo-fitness (E-020): a repo keeping both rings and ADRs traces citations of either, and the note names both shapes',
+      m.plan_traceability === 2 / 3 && note.includes('rings') && note.includes('ADRs'),
+      `expected 2/3 (the ring-citing and ADR-citing commits trace, the initial import does not) against both shapes, got:\n${output}`,
     );
   });
 });

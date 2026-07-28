@@ -290,6 +290,89 @@ export function extractPlanRingRefs(text: string): PlanRingRef[] {
   return refs;
 }
 
+// ---------------------------------------------------------------------------------------------
+// The decision log a commit can trace to (E-020, ring 0051). The seed records decisions as
+// numbered plans and rings; a foreign host commonly records them as numbered ADRs. Both are
+// decision logs, so `plan_traceability` RESOLVES the target's shape instead of assuming the
+// seed's — the E-016 `resolveMapFilename` move one level up: from "which file is the map" to
+// "which artifacts are the decision record".
+//
+// This lives here, not beside the plan-traceability GATE, because that gate is an executable
+// script (top-level side effects — importing it would run it), unlike validate-map.ts which
+// exports its resolver. repo.ts already owns extractPlanRingRefs for exactly this reason: one
+// definition of what "traces" means, shared by every organ that asks (LAW-3).
+//
+// The seed's own gate stays plan/ring-strict and is untouched: it enforces the seed's law
+// (LAW-5), not a host convention — the same split E-016 drew between the metric's name set and
+// the AGENTS.md-strict validate-map gate.
+
+/** Where a repository keeps numbered decision records, in resolution order. `plan`/`ring` is the
+ *  seed's own shape and wins when both are present; `adr` is the common convention among repos
+ *  that record decisions at all (dither's, ring 0038). Kept painfully short and evidence-driven:
+ *  a shape enters this list when a real host is found keeping decisions that way, never
+ *  speculatively (LAW-7). */
+export const DECISION_LOG_SHAPES: ReadonlyArray<{ kind: DecisionKind; dirs: string[]; label: string }> = [
+  { kind: 'plan', dirs: ['docs/plans/active', 'docs/plans/completed'], label: 'plans' },
+  { kind: 'ring', dirs: ['docs/rings'], label: 'rings' },
+  { kind: 'adr', dirs: ['docs/adr'], label: 'ADRs (docs/adr/)' },
+];
+
+export type DecisionKind = 'plan' | 'ring' | 'adr';
+
+export interface DecisionRef {
+  kind: DecisionKind;
+  num: string;
+}
+
+/** Matches "ADR-0009", "ADR 0009", a slash-list "ADR-0003/0007", or a `docs/adr/0009-` path
+ *  mention. Deliberately a SUPERSET of the citation forms dither's grafted commit→ADR gate
+ *  recognizes (`ADR-NNNN`, slash lists, `docs/adr/NNNN-` paths — ring 0038): a metric stricter
+ *  than the gate enforcing the same norm would under-read the host it is measuring, which is the
+ *  E-020 defect itself. `#47`-style issue refs never match — they are prose, not citations. */
+export const ADR_REF_RE = /\bADRs?[-\s]?(\d{4}(?:\s*\/\s*\d{4})*)|\bdocs\/adr\/(\d{4})-/gi;
+
+/** Every decision-record reference named in free text, across all shapes. */
+export function extractDecisionRefs(text: string): DecisionRef[] {
+  const refs: DecisionRef[] = extractPlanRingRefs(text);
+  for (const m of text.matchAll(ADR_REF_RE)) {
+    if (m[2] !== undefined) {
+      refs.push({ kind: 'adr', num: m[2] });
+      continue;
+    }
+    for (const num of m[1].split('/')) refs.push({ kind: 'adr', num: num.trim() });
+  }
+  return refs;
+}
+
+export interface DecisionLog {
+  /** The numbers the target actually carries, per shape — a citation resolves against these. */
+  nums: Map<DecisionKind, Set<string>>;
+  /** The resolved shape, named for the metric note so the reading stays legible (LAW-2). */
+  label: string;
+}
+
+/** The target's decision log, or null when it keeps none — the honest "no decision record to
+ *  trace commits to" finding. Every shape present is resolved (a repo may keep both, and a
+ *  citation of either traces); the label names them in resolution order. */
+export function resolveDecisionLog(root: string): DecisionLog | null {
+  const nums = new Map<DecisionKind, Set<string>>();
+  const present: string[] = [];
+  for (const shape of DECISION_LOG_SHAPES) {
+    const found = new Set(shape.dirs.flatMap((dir) => numberedFilenames(dir, root)));
+    if (found.size === 0) continue;
+    nums.set(shape.kind, new Set([...(nums.get(shape.kind) ?? []), ...found]));
+    present.push(`${found.size} ${shape.label}`);
+  }
+  if (nums.size === 0) return null;
+  return { nums, label: present.join(' + ') };
+}
+
+/** Whether a commit message cites a decision record that EXISTS in `log`. A reference that
+ *  resolves to nothing traces to nothing — the same clause the plan-traceability gate applies. */
+export function tracesToDecisionLog(message: string, log: DecisionLog): boolean {
+  return extractDecisionRefs(message).some((r) => log.nums.get(r.kind)?.has(r.num) === true);
+}
+
 export interface SequenceIssue {
   kind: 'duplicate' | 'gap';
   number: number;

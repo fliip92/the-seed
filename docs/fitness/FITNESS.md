@@ -51,9 +51,13 @@ reversed. That delta is the Stage 3 exit proof (SEED.md §4).
 recorded in [pollination-dither.md](pollination-dither.md): `map_reachability` 6.8% → **48.8%**,
 `enforcement_ratio` null → **8/8**, `drift_count` 2 → **0**, `ledger_trend` null → **-2** (digesting),
 measured instrument-controlled (the pre-graft tree re-measured with today's engine, so the delta is the
-graft and not the [E-016](../plans/entropy-ledger.md)/[E-019](../plans/entropy-ledger.md) instrument
-fixes). It also records the one metric that reads *wrong* on a host — `plan_traceability`, blind to
-dither's ADR-shaped decision log ([E-020](../plans/entropy-ledger.md)).
+graft and not the [E-016](../plans/entropy-ledger.md)/[E-019](../plans/entropy-ledger.md)/[E-020](../plans/entropy-ledger.md)
+instrument fixes). Its sixth row is the one that declined: `plan_traceability` **45.2% → 39.5%**, which
+became readable at all only when E-020 was paid (ring
+[0051](../rings/0051-decision-log-shape-resolved-not-assumed.md) — the metric now resolves an
+ADR-shaped decision log instead of reporting a false null), and which fell because *the seed's own*
+commits on dither cite the seed's plans rather than dither's ADRs ([E-022](../plans/entropy-ledger.md)).
+dither's own commits trace exactly as they always did.
 
 Both are before/after measurements on a *target* (the fitness organ's §6 role — "prove pollination value
 with before/after measurement"), not snapshots of this seed, so they live here rather than in
@@ -66,15 +70,19 @@ with before/after measurement"), not snapshots of this seed, so they live here r
 | `map_reachability` | % of knowledge artifacts (docs) reachable ≤3 hops from AGENTS.md | `.seed/checks/validate-map.ts` |
 | `enforcement_ratio` | enforced principles ÷ stated principles | script over `docs/principles/` |
 | `drift_count` | open doc↔code divergences | doc-gardener skill (Stage 1) |
-| `plan_traceability` | % merged PRs tracing to a plan or ring | CI history |
-
-Definitions mirror SEED.md §6 verbatim — the genome states them, this file renders them (LAW-3).
-`map_reachability` counts **docs only**, not all files, since ring
-[0043](../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) rescoped it
-([E-019](../plans/entropy-ledger.md)); the *gate* still enforces total reachability over every file, so
-metric and gate deliberately answer different questions.
+| `plan_traceability` | % commits tracing to a decision record the repository carries — a plan or ring, or an ADR | CI history |
 | `escalation_rate` | Gardener interventions per completed task | run logs |
 | `ledger_trend` | entropy ledger net change per week | ledger diff |
+
+Definitions mirror SEED.md §6 verbatim — the genome states them, this file renders them (LAW-3).
+Two carry history worth keeping in view. `map_reachability` counts **docs only**, not all files, since
+ring [0043](../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) rescoped it
+([E-019](../plans/entropy-ledger.md)); the *gate* still enforces total reachability over every file, so
+metric and gate deliberately answer different questions. `plan_traceability` **resolves** the target's
+decision-log shape — plans and rings, or numbered ADRs — since ring
+[0051](../rings/0051-decision-log-shape-resolved-not-assumed.md) ([E-020](../plans/entropy-ledger.md));
+here too the *gate* stays plan/ring-strict, because it enforces this repository's law rather than
+measuring a host's convention.
 
 ## Snapshot schema (history/*.json)
 

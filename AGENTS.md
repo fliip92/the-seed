@@ -107,16 +107,30 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   ([docs/fitness/pollination-dither.md](docs/fitness/pollination-dither.md), the Stage-4 counterpart to
   Stage 3's [recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). It is **instrument-controlled** —
   dither's pre-graft tree re-measured with *today's* engine, since [E-016](docs/plans/entropy-ledger.md)
-  and [E-019](docs/plans/entropy-ledger.md) both move `map_reachability` — and **four of six metrics moved,
-  every one improved, none regressed**: `map_reachability` **6.8% → 48.8%**, `enforcement_ratio` **null →
-  8/8**, `drift_count` **2 → 0** (attributably E-006's two refs), `ledger_trend` **null → -2**. The
+  and [E-019](docs/plans/entropy-ledger.md) both move `map_reachability` — and, after the same-day
+  amendment below, **five of six metrics moved: four improved, one declined**: `map_reachability` **6.8% →
+  48.8%**, `enforcement_ratio` **null → 8/8**, `drift_count` **2 → 0** (attributably E-006's two refs),
+  `ledger_trend` **null → -2**, `plan_traceability` **45.2% → 39.5%**. The
   per-host **exit criterion is half-met**: the trend half is met, but the *owner-ships-features* half is
   **untested** — dither's last owner-authored commit is the pre-graft `2b2b3d5` — so **Independence (step 6)
-  waits on the feature track, not on more sensing**. One metric reads *wrong* on a host:
-  `plan_traceability` reports "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed
+  waits on the feature track, not on more sensing**. One metric read *wrong* on a host —
+  `plan_traceability` reported "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed
   itself grafted ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), leaving one graft organ invisible
-  in its own proof — priced [E-020](docs/plans/entropy-ledger.md) and **held for the Gardener** (it edits
-  SEED.md §6). That pass also sensed **[E-021](docs/plans/entropy-ledger.md)** by tripping over it, and the
+  in its own proof — priced [E-020](docs/plans/entropy-ledger.md), held for the Gardener (it edits SEED.md
+  §6), and **paid the same day on their ruling** (ring
+  [0051](docs/rings/0051-decision-log-shape-resolved-not-assumed.md)): the metric now **resolves the
+  target's decision-log shape** — plans and rings, or numbered ADRs under `docs/adr/` — instead of assuming
+  the seed's ([E-016](docs/plans/entropy-ledger.md)'s `resolveMapFilename` move one level up), **SEED.md §6
+  is amended** to match (and its stale *"merged PRs"* wording retired), the metric's name is kept so the
+  append-only snapshot series survives, and the seed's own plan-traceability *gate* stays plan/ring-strict —
+  a gate enforces this repo's law, a metric measures whatever a host is. Fixing the instrument changed the
+  finding: dither reads **45.2% pre-graft → 39.5% today**, the proof's one decline, and **the seed caused
+  it** — twelve of the fourteen commits the seed landed on dither cite *"Seed plan 0009"*, a decision log
+  dither does not carry, while dither's own 62 commits trace exactly as before. Priced
+  **[E-022](docs/plans/entropy-ledger.md)** (every decision *about* dither lives only in the seed's rings,
+  so the host has no record of why six CI gates appeared — owner-gated, rides the next commit there), with
+  **[E-023](docs/plans/entropy-ledger.md)** sensed alongside (three portable changes since the v0.1.0 cut
+  declared no pollen intent — pay before the next release is cut). That pass also sensed **[E-021](docs/plans/entropy-ledger.md)** by tripping over it, and the
   Gardener had it converted next (**paid**, ring
   [0050](docs/rings/0050-gates-honor-git-ignore-rules.md)): the working-tree gates were answering *"what is
   in this repository"* from a hardcoded skip list, so one git-ignored file an agent tool wrote turned a

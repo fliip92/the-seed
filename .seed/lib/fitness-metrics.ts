@@ -5,7 +5,10 @@
 // (.seed/checks/repo-fitness.ts) is the target=any-repo case. Both call in here.
 //
 // The metrics are defined over the seed's anatomy (an AGENTS.md map, docs/principles/, a
-// plan/ring decision log, an entropy ledger). A foreign repository that has not been grafted
+// decision log, an entropy ledger) — but where a host can carry the same organ under its own
+// convention, the metric RESOLVES the host's shape rather than assuming the seed's: the entry
+// map from a name set (E-016), the decision log from plans/rings or ADRs (E-020). A foreign
+// repository that has not been grafted
 // carries little of it, so each metric DEGRADES TO null with a stated reason when the target
 // lacks the structure that metric is defined over — the same null-when-absent contract
 // escalation_rate already uses (no run-log instrument → null). The null and its reason ARE
@@ -22,7 +25,7 @@
 // tree is byte-identical before and after (LAW-6).
 import { lstatSync } from 'node:fs';
 import { join } from 'node:path';
-import { git, gitRootStatus, listRepoFiles, readRepoFile, numberedFilenames, extractPlanRingRefs } from './repo.ts';
+import { git, gitRootStatus, listRepoFiles, readRepoFile, resolveDecisionLog, tracesToDecisionLog } from './repo.ts';
 import { analyzeReachability, resolveMapFilename } from '../checks/validate-map.ts';
 import { scanDrift } from '../checks/doc-drift.ts';
 
@@ -127,30 +130,30 @@ function driftCount(files: string[], root: string): number {
   return scanDrift(files, root).length;
 }
 
-// % of the target's entire non-merge commit history whose message traces to a plan or ring
-// that exists today. Null when the target is not a git repo (no history) or has no
-// plan/ring decision log to trace to — a repo without that system is not failing
-// traceability, the metric simply does not apply.
+// % of the target's entire non-merge commit history whose message traces to a decision record
+// that exists today. The record's SHAPE is resolved from the target rather than assumed to be
+// the seed's own (resolveDecisionLog): numbered plans and rings, or numbered ADRs under
+// docs/adr/ — so an ADR-governed host reports a real fraction instead of a false "no decision
+// log" about a repo whose commit→ADR traceability the seed itself grafts (E-020, ring 0051; the
+// E-016 shape on the sibling metric). The resolved shape rides in the note so the reading stays
+// legible even when it computes (LAW-2). Null when the target is not a git repo (no history) or
+// keeps no decision log at all — a repo without that system is not failing traceability, the
+// metric simply does not apply.
 function planTraceability(root: string): { value: number | null; note?: string } {
   const g = gitRootStatus(root);
   if (!g.ok) return { value: null, note: g.note };
-  const ringNums = new Set(numberedFilenames('docs/rings', root));
-  const planNums = new Set([
-    ...numberedFilenames('docs/plans/active', root),
-    ...numberedFilenames('docs/plans/completed', root),
-  ]);
-  if (ringNums.size === 0 && planNums.size === 0) {
-    return { value: null, note: 'no plans or rings — no decision log to trace commits to' };
+  const log = resolveDecisionLog(root);
+  if (log === null) {
+    return { value: null, note: 'no plans, rings, or ADRs — no decision log to trace commits to' };
   }
   const revList = git(root, ['rev-list', '--no-merges', 'HEAD']);
   if (revList === null) return { value: null, note: 'no commits yet' };
   const shas = revList.split('\n').filter((s) => s !== '');
-  if (shas.length === 0) return { value: 1 };
-  const traced = shas.filter((sha) => {
-    const message = git(root, ['show', '-s', '--format=%B', sha]) ?? '';
-    return extractPlanRingRefs(message).some((r) => (r.kind === 'plan' ? planNums : ringNums).has(r.num));
-  }).length;
-  return { value: traced / shas.length };
+  if (shas.length === 0) return { value: 1, note: `traced against ${log.label}` };
+  const traced = shas.filter((sha) =>
+    tracesToDecisionLog(git(root, ['show', '-s', '--format=%B', sha]) ?? '', log),
+  ).length;
+  return { value: traced / shas.length, note: `traced against ${log.label}` };
 }
 
 interface LedgerCounts {

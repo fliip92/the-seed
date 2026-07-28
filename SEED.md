@@ -296,7 +296,7 @@ v0 metrics — crude is fine, computable is mandatory:
 | `map_reachability` | % of knowledge artifacts (docs) reachable ≤3 hops from AGENTS.md | script |
 | `enforcement_ratio` | enforced principles ÷ stated principles | script over `docs/principles/` |
 | `drift_count` | open doc↔code divergences | doc-gardener |
-| `plan_traceability` | % merged PRs tracing to a plan or ring | CI history |
+| `plan_traceability` | % commits tracing to a decision record the repository carries — a plan or ring, or an ADR | CI history |
 | `escalation_rate` | Gardener interventions per completed task | run logs |
 | `ledger_trend` | entropy ledger net change per week | ledger diff |
 

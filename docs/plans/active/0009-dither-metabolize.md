@@ -658,6 +658,39 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   test-of-the-test (neutering turns the first two red and returns the 26 fixture failures).
   `npm run check` (18) + `npm test` (244) + `npm run garden` (`drift_count` 0) green **with the ignored
   file present**. E-021 Open→Paid; no dither commit.
+- **2026-07-27** — **U12 / E-020 paid: the decision log is resolved, not assumed — and the fixed
+  instrument found a regression the seed itself caused** (seed-side only;
+  [ring 0051](../../rings/0051-decision-log-shape-resolved-not-assumed.md)). On the Gardener's ruling
+  (*"fix E-020"*), converted the entry U10 priced and held. `plan_traceability` now **resolves the
+  target's decision-log shape** — numbered plans and rings, or numbered ADRs under `docs/adr/`
+  ([`resolveDecisionLog`](../../../.seed/lib/repo.ts)) — instead of assuming the seed's, the
+  [E-016](../entropy-ledger.md) `resolveMapFilename` move one level up. Because that changes the metric's
+  stated definition, **SEED.md §6 is amended** (*"% commits tracing to a decision record the repository
+  carries — a plan or ring, or an ADR"*), which also retires the row's older inaccuracy — it said "merged
+  PRs" while the engine has walked full non-merge history since plan 0002. The metric **name** is
+  deliberately unchanged (renaming it would break the append-only snapshot series to buy a better word);
+  the seed's own **gate** stays plan/ring-strict, enforcing this repo's law rather than a host's
+  convention, and the seed's own reading is unchanged at **100%**. dither now reads **39.5%**, note
+  *"traced against 9 ADRs (docs/adr/)"* — the graft organ that was invisible in its own proof is visible.
+  **Fixing the instrument changed the finding.** Measured on both sides with the fixed engine, the row
+  reads **45.2% pre-graft (28/62) → 39.5% (30/76)** — the one metric that moved *down*, and the cause is
+  the seed: twelve of the fourteen commits the seed has landed on dither cite *"Seed plan 0009 / E-NNN"*,
+  a decision log dither does not carry, while dither's own 62 commits trace exactly as they always did.
+  Priced **[E-022](../entropy-ledger.md)** — the debt is not the number but that every decision *about
+  dither* lives only in the seed's rings, so a dither maintainer finds no record of why six CI gates
+  appeared in their repo; conversion is owner-gated and rides the next commit the seed lands there.
+  [pollination-dither.md](../../fitness/pollination-dither.md) was amended same-day from the measurement
+  (five of six moved: four improved, one declined, with the decline decomposed by author) and the exit
+  criterion's trend half **stands** — dither's own traceability did not regress. Also sensed in-pass and
+  priced **[E-023](../entropy-ledger.md)**: three portable-machinery changes have landed since the v0.1.0
+  cut (E-012, E-016, E-019) with **no declared pollen intent**, so `pending.md` under-declares the
+  unreleased delta and a cut would bake the omission into append-only history — fix before the next
+  release. Verification: two new self-tests (**246**, was 244) — an ADR-governed host across all three
+  citation forms plus a dangling `ADR-0042` (pinned at 3/6, shape named in the note), and a repo keeping
+  both rings and ADRs — plus the test-of-the-test (removing the `adr` shape turns exactly those two red).
+  `npm run check` (18) + `npm test` (246) + `npm run garden` (`drift_count` 0) green. Declared a `minor`
+  [pollen intent](../../../pollen/pending.md) (next release would be v0.2.0). No dither mutation — the
+  defect was the mother's instrument, not the host.
 
 ## Next actions
 
@@ -674,22 +707,29 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md); no dither
    mutation — the pass was read-only on the host, a clone rather than a worktree). The before/after-graft
    delta is landed as [pollination-dither.md](../../fitness/pollination-dither.md):
-   instrument-controlled, **four of six metrics moved and every one improved** — `map_reachability` 6.8% →
-   **48.8%**, `enforcement_ratio` null → **8/8**, `drift_count` 2 → **0** (attributably E-006's two refs),
-   `ledger_trend` null → **-2**.
+   instrument-controlled, and **amended same-day by U12** once E-020 was paid — **five of six metrics
+   moved, four improved and one declined**: `map_reachability` 6.8% → **48.8%**, `enforcement_ratio` null
+   → **8/8**, `drift_count` 2 → **0** (attributably E-006's two refs), `ledger_trend` null → **-2**, and
+   `plan_traceability` 45.2% → **39.5%** (the decline, caused by the seed's own commits — E-022).
 4. **The exit criterion is HALF-MET — Independence waits on the feature track, not on more sensing.** The
-   trend half is met (ten days, nine entries digested, no regression). The **owner-ships-features half is
-   untested**: dither's last owner-authored commit is the pre-graft `2b2b3d5`, so every commit on `main`
-   since is seed-driven. The highest-value next work on this plan is therefore **one feature shipped
-   through the agent workflow** (E-003 / E-004 / E-005 / E-008 at their build-order steps) — owner-paced,
-   and the trigger to re-measure and judge **step 6 — Independence** (its own carried seed, lineage
-   recorded, feedback channel live).
-5. **Gardener decision pending — [E-020](../entropy-ledger.md):** `plan_traceability` reports "no plans or
-   rings — no decision log" about dither, which keeps nine ADRs whose commit→ADR traceability the seed
-   itself grafted ([ring 0038](../../rings/0038-dither-adr-gate-graft.md)) — so one of the four graft
-   organs is invisible in its own pollination proof. Teaching the metric a second decision-log shape edits
-   SEED.md §6's stated definition, which §6 and the amendment rule both route to the Gardener; priced Open
-   and held (the E-012 fork precedent). Ruling on it unblocks a real `plan_traceability` reading on dither.
+   trend half is met (ten days, nine entries digested; the one decline is the seed's own citation
+   practice, not host decay — dither's own commits trace exactly as before). The
+   **owner-ships-features half is untested**: dither's last owner-authored commit is the pre-graft
+   `2b2b3d5`, so every commit on `main` since is seed-driven. The highest-value next work on this plan is
+   therefore **one feature shipped through the agent workflow** (E-003 / E-004 / E-005 / E-008 at their
+   build-order steps) — owner-paced, and the trigger to re-measure and judge **step 6 — Independence**
+   (its own carried seed, lineage recorded, feedback channel live).
+5. **U12 / [E-020](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+   [ring 0051](../../rings/0051-decision-log-shape-resolved-not-assumed.md); no dither mutation).
+   `plan_traceability` resolves the host's decision-log shape, **SEED.md §6 is amended**, and dither reads
+   **39.5%** where it read null. Two entries were opened by the pass and are the live follow-ons:
+   **[E-022](../entropy-ledger.md)** — the seed's decisions about dither live only in the seed's rings, so
+   its commits there trace to nothing locally and a dither maintainer finds no host-side record of why six
+   CI gates appeared; **owner-gated**, and it rides the next commit the seed lands on dither (which is the
+   feature-track work item 4 is waiting on — pay it *in* that commit, not after). **[E-023](../entropy-ledger.md)**
+   — `pollen/pending.md` under-declares the unreleased portable delta (E-012, E-016, E-019 landed with no
+   intent); agent-convertible, and it must be paid **before the next release is cut**, since a cut freezes
+   the omission into append-only history.
 6. **U11 / [E-021](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
    [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md); no dither mutation — dither's runners
    already list via `git ls-files -z`, so it is unaffected). The gates now take their file set from git;

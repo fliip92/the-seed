@@ -15,3 +15,4 @@ pollen version, and clears this file. The pending-release notes
 this file and byte-exact-gated by `npm run check`.
 
 - Impact: patch — [ring 0050](../docs/rings/0050-gates-honor-git-ignore-rules.md) — the working-tree gates take their file set from git, so a git-ignored file (an agent tool's local state, editor or build output) no longer fails every check and self-test on a working machine while CI stays green
+- Impact: minor — [ring 0051](../docs/rings/0051-decision-log-shape-resolved-not-assumed.md) — `plan_traceability` resolves the target's decision-log shape (plans and rings, or numbered ADRs under `docs/adr/`) instead of assuming the seed's, so an ADR-governed host computes a real fraction instead of a false "no decision log" null

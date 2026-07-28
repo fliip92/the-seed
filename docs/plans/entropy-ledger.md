@@ -100,43 +100,81 @@ ledger is also a record of digestion.
   speculatively (LAW-7: own the small subset, and only once the need is evidenced). Host-facing
   tooling, not the mother seed's corpus
 
-## E-020 — `plan_traceability` only knows plans and rings, so it reads null on an ADR-governed host
+## E-022 — the seed's decisions about a host are recorded only in the seed, so they are invisible from inside the host
 
-- First observed: 2026-07-27, landing the dither **pollination proof**
-  ([pollination-dither.md](../fitness/pollination-dither.md); [plan 0009](active/0009-dither-metabolize.md)
-  fitness-cadence item, ring [0049](../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)) —
-  the before/after-graft measurement is the one reading where the blindness has a visible cost
-- Where: [`planTraceability`](../../.seed/lib/fitness-metrics.ts) resolves the target's decision log by
-  looking for numbered files under `docs/rings/` and `docs/plans/{active,completed}/` only; finding
-  neither it returns null with the reason *"no plans or rings — no decision log to trace commits to"*.
-  For dither that reason is **factually false**: dither keeps nine numbered ADRs under `docs/adr/`, its
-  commits cite them, and the seed itself grafted the gate that *enforces* commit→ADR traceability (ring
-  [0038](../rings/0038-dither-adr-gate-graft.md), the second of the four graft organs). So the metric
-  reports "no decision log" about a host whose decision log the seed mechanically polices — the
-  [E-016](entropy-ledger.md) shape (a Scout instrument systematically under-reading a real host,
-  surfaced by pointing it at one) recurring on the sibling metric
-- Interest rate: medium — it does not merely under-read, it **hides a graft organ from the pollination
-  proof**: `plan_traceability` null → null is the one row of dither's before/after where an installed,
-  green, enforcing organ shows no delta at all (SEED.md §6's stated purpose for fitness is proving
-  pollination value with before/after measurement). The cost scales with hosts, since ADRs are the
-  common decision-record convention in repos that have one at all, and the seed's own reading stays
-  correct either way, so nothing local surfaces it
-- Price: small–medium — resolve the target's *decision-log shape* rather than assume the seed's own,
-  the [E-016](entropy-ledger.md) `resolveMapFilename` move one level up: recognize numbered
-  `docs/adr/NNNN-*.md` as a decision log, extend the commit-message reference extractor to `ADR-NNNN` /
-  `ADR NNNN` alongside `plan`/`ring`, and report the resolved shape in the metric note so the reading
-  stays legible (LAW-2); self-tests pinning that an ADR-governed fixture computes a real fraction and
-  that a repo with no decision log still reads null. The genuinely uncertain part is not the code but
-  the **definition**: whether "traces to a decision record" is one metric over a resolved shape or two
-  metrics that should not be averaged across hosts
-- Conversion path: **ring, then invariant — Gardener-gated, not agent-convertible.** Unlike E-016 (a
-  filename set, no definition change), teaching the metric a second decision-log shape changes SEED.md
-  §6's stated definition (*"% merged PRs tracing to a plan or ring"*), and both §6 ("When a metric stops
-  correlating with real health, propose its replacement — via ring") and the genome's amendment rule
-  (SEED.md: "amend only via approved PR + ring") route a §6 edit to the Gardener. Hence priced Open and
-  held, not converted in-pass — the [E-012](entropy-ledger.md) fork precedent. Fold the build into the
-  next repo-fitness change once the ring lands; until then dither's proof states the null is wrong
-  rather than quoting it
+- First observed: 2026-07-27, the moment [E-020](entropy-ledger.md) was paid (ring
+  [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md)) and `plan_traceability` could read
+  dither at all: it read a **decline** — 45.2% (28/62) pre-graft → 39.5% (30/76) today. The graft
+  installed a commit→ADR traceability organ and then diluted the very metric that organ serves
+- Where: the seed's commit convention (AGENTS.md § Protocols — every commit names the plan or ring
+  governing it) names the **seed's** decision log, and the seed's rings are where every decision *about
+  dither* is recorded: the four graft organs (rings [0037](../rings/0037-dither-map-gate-graft.md)–[0040](../rings/0040-dither-ledger-graft.md)),
+  the import boundary, the map-completeness gate, the metric rescoping. Twelve of the fourteen commits the
+  seed has landed on dither's `main` therefore cite *"Seed plan 0009 / E-NNN"* — a plan dither does not
+  carry and cannot verify — while dither's own nine ADRs record none of it. The two that do trace do so
+  incidentally (their bodies discuss ADR-0009). The metric decline is the *symptom*; the debt is that a
+  dither maintainer reading dither's own decision log finds **no record of why six CI gates appeared in
+  their repository**, and the pointer back to the governing ring exists only in commit prose
+- Interest rate: medium, and it scales with the fleet — every host the seed touches accumulates
+  seed-driven commits that trace to nothing locally, so the metric the seed uses to prove pollination
+  value is depressed by pollination itself, on every host, permanently. It also cuts against the exit
+  criterion's spirit (SEED.md §4: owners shipping through the agent workflow *without the seed being
+  special*): decisions that live only in the mother make the seed a load-bearing external dependency for
+  understanding the host. Bounded today only because dither has one graft and one reader
+- Price: small–medium. The cheap half is the **commit convention** — a seed-authored commit on a host
+  cites the host's decision record when one governs the change, alongside its own plan/ring. The real
+  half is **where a host-shaping decision gets recorded**: an ADR (or the host's equivalent) landed *in
+  the host* for decisions that change the host's shape, summarizing the ring and pointing at it, so the
+  host's decision log is complete on its own terms. Not every seed commit needs one — dither's own gate
+  deliberately does not require universal citation (ring [0038](../rings/0038-dither-adr-gate-graft.md)),
+  and a gardening fix genuinely traces to no decision — so the target is not 100%, it is *no
+  host-shaping change without a host-side record*
+- Conversion path: **ring, then host mutation — owner-gated, not agent-convertible in full.** The seed
+  half (the commit convention, and writing the host-side record as part of the change rather than after)
+  is a ring and a protocol line in AGENTS.md. The host half mutates dither's ADR set, which is the
+  owner's decision surface — SEED.md §4 gates mutating steps on owner review, and ring 0038 already
+  established that dither's ADR practice is the owner's to define. Natural trigger: the next commit the
+  seed lands on dither, which is the feature-track work the exit criterion is waiting on anyway. Once
+  converted, dither's `plan_traceability` should start climbing again, and
+  [pollination-dither.md](../fitness/pollination-dither.md) gets its next row — the check that the
+  conversion actually worked
+
+## E-023 — portable machinery has changed three times since the v0.1.0 cut with no declared release intent
+
+- First observed: 2026-07-27, declaring this pass's own pollen intent ([E-020](entropy-ledger.md), ring
+  [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md)) — reading
+  [pollen/pending.md](../../pollen/pending.md) to add a line showed it holding exactly one, for ring 0050
+- Where: the release model composes a release from **committed intent** (ring
+  [0026](../rings/0026-pollen-boundary-versioning-lineage.md)): every change to the portable subtree
+  declares its impact in `pending.md`, and the next version is a pure function of the maximum declared.
+  But three portable-machinery changes have landed since the v0.1.0 cut (2026-07-16) without touching
+  that file — `99ecc96` (E-012: the metrics engine counts the committed repository), `89c6b9e`
+  ([E-016](entropy-ledger.md): `map_reachability` resolves the host's map filename), and `a9779fa`
+  ([E-019](entropy-ledger.md): the fraction counts knowledge artifacts). All three change
+  [`.seed/`](../../.seed/README.md), all three are portable by the manifest, and all three move a metric a
+  descendant computes. Only ring 0050 and this pass declared. So `pending.md` — the artifact whose whole
+  job is to be the truthful unreleased delta — currently **under-declares it**, and the generated
+  [pending-release notes](../generated/pending-release.md), which are byte-exact-gated and therefore look
+  authoritative, inherit the omission
+- Interest rate: medium and compounding by construction — the gap is invisible until a release is cut,
+  and then it is baked into append-only history: v0.2.0's notes would credit two rings while shipping
+  five changes' worth of behavior, so a descendant reading the release to decide whether to upgrade is
+  told less than it is getting. It is the LAW-2 shape exactly — a rule that is legible (the format is
+  documented) and *not* enforceable (nothing fails when a portable change declares nothing) — and every
+  future portable change inherits it. The counterweight: the decision log is the real changelog (rings
+  are complete), so the information exists, just not where the release model reads it
+- Price: small for the gate, a judgment call for the backfill. The gate: `pending.md` (or the release
+  history) must account for every ring whose commit touched a portable path since the last cut —
+  computable from git + the pollen manifest, which the seed already owns, and it fails in CI rather than
+  at cut time. The backfill is the part that needs a decision, not code: whether to declare the three
+  retroactively now (making v0.2.0 honest), or record them in the release as "composed before the intent
+  discipline was enforced"
+- Conversion path: invariant — a check in `npm run check` (or a clause in
+  [validate-pollen](../../.seed/checks/validate-pollen.ts), which already owns the manifest) asserting
+  that every portable-touching ring since the last cut appears in `pending.md`, self-tested with the pair
+  that matters: a portable change with no intent fails, the same change with one passes. Do it **before
+  the next release is cut**, since a cut freezes the omission into append-only history; the backfill
+  question rides with it and is a Gardener call
 
 ## Paid
 
@@ -668,3 +706,69 @@ ledger is also a record of digestion.
   fallback; neutering the filter turns the first two red and returns the 26 fixture failures.
   `npm run check` (18 checks) + `npm test` (244) + `npm run garden` (`drift_count` 0) green **with the
   ignored file present** — the condition that broke everything.
+
+## E-020 — `plan_traceability` only knows plans and rings, so it reads null on an ADR-governed host
+
+- First observed: 2026-07-27, landing the dither **pollination proof**
+  ([pollination-dither.md](../fitness/pollination-dither.md); [plan 0009](active/0009-dither-metabolize.md)
+  fitness-cadence item, ring [0049](../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)) —
+  the before/after-graft measurement is the one reading where the blindness has a visible cost
+- Where: [`planTraceability`](../../.seed/lib/fitness-metrics.ts) resolves the target's decision log by
+  looking for numbered files under `docs/rings/` and `docs/plans/{active,completed}/` only; finding
+  neither it returns null with the reason *"no plans or rings — no decision log to trace commits to"*.
+  For dither that reason is **factually false**: dither keeps nine numbered ADRs under `docs/adr/`, its
+  commits cite them, and the seed itself grafted the gate that *enforces* commit→ADR traceability (ring
+  [0038](../rings/0038-dither-adr-gate-graft.md), the second of the four graft organs). So the metric
+  reports "no decision log" about a host whose decision log the seed mechanically polices — the
+  [E-016](entropy-ledger.md) shape (a Scout instrument systematically under-reading a real host,
+  surfaced by pointing it at one) recurring on the sibling metric
+- Interest rate: medium — it does not merely under-read, it **hides a graft organ from the pollination
+  proof**: `plan_traceability` null → null is the one row of dither's before/after where an installed,
+  green, enforcing organ shows no delta at all (SEED.md §6's stated purpose for fitness is proving
+  pollination value with before/after measurement). The cost scales with hosts, since ADRs are the
+  common decision-record convention in repos that have one at all, and the seed's own reading stays
+  correct either way, so nothing local surfaces it
+- Price: small–medium — resolve the target's *decision-log shape* rather than assume the seed's own,
+  the [E-016](entropy-ledger.md) `resolveMapFilename` move one level up: recognize numbered
+  `docs/adr/NNNN-*.md` as a decision log, extend the commit-message reference extractor to `ADR-NNNN` /
+  `ADR NNNN` alongside `plan`/`ring`, and report the resolved shape in the metric note so the reading
+  stays legible (LAW-2); self-tests pinning that an ADR-governed fixture computes a real fraction and
+  that a repo with no decision log still reads null. The genuinely uncertain part is not the code but
+  the **definition**: whether "traces to a decision record" is one metric over a resolved shape or two
+  metrics that should not be averaged across hosts
+- Conversion path: **ring, then invariant — Gardener-gated, not agent-convertible.** Unlike E-016 (a
+  filename set, no definition change), teaching the metric a second decision-log shape changes SEED.md
+  §6's stated definition (*"% merged PRs tracing to a plan or ring"*), and both §6 ("When a metric stops
+  correlating with real health, propose its replacement — via ring") and the genome's amendment rule
+  (SEED.md: "amend only via approved PR + ring") route a §6 edit to the Gardener. Hence priced Open and
+  held, not converted in-pass — the [E-012](entropy-ledger.md) fork precedent. Fold the build into the
+  next repo-fitness change once the ring lands; until then dither's proof states the null is wrong
+  rather than quoting it
+- Paid: 2026-07-27 (ring [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md), on the
+  Gardener's ruling — *"fix E-020"*). `plan_traceability` now **resolves the target's decision-log
+  shape** instead of assuming the seed's: numbered plans and rings, or numbered ADRs under `docs/adr/`
+  ([`resolveDecisionLog`](../../.seed/lib/repo.ts)), with a citation counted only when the record it
+  names exists in the repository being measured. **SEED.md §6 is amended** to *"% commits tracing to a
+  decision record the repository carries — a plan or ring, or an ADR"*, which also retires the row's
+  older inaccuracy (*"merged PRs"*; the metric has walked full non-merge commit history since
+  [plan 0002](completed/0002-rooting.md)). The **metric name is deliberately unchanged** — the key is
+  the schema of every dated snapshot in [docs/fitness/history/](../fitness/history/README.md), and
+  renaming it would break the trend series to buy a better word; the resolved shape rides in the metric
+  note instead (LAW-2). The seed's own plan-traceability **gate** stays plan/ring-strict — it enforces
+  the seed's law, not a host convention — exactly the split [E-016](entropy-ledger.md) drew for
+  `validate-map`, and the seed's own reading is unchanged at 100%. The ADR citation forms are a
+  deliberate **superset** of the host gate's (`ADR-0009`, slash-lists, `docs/adr/0009-` paths, plus the
+  prose `ADR 0009`): a metric stricter than the gate enforcing the same norm under-reads the host it
+  measures, which is this entry recurring one level down. **dither now reads 39.5%, note "traced against
+  9 ADRs (docs/adr/)", where it read null this morning** — the graft organ that was invisible in its own
+  pollination proof is visible. Fixing the instrument changed the finding: the row moved **45.2%
+  pre-graft → 39.5% today**, a decline caused by the seed's own commits citing the seed's plan rather
+  than dither's decision record — priced as [E-022](entropy-ledger.md) and reported in
+  [pollination-dither.md](../fitness/pollination-dither.md) rather than smoothed. Verification (LAW-6):
+  two self-tests (**246** total, was 244) — an ADR-governed host driven through all three citation forms
+  plus a dangling `ADR-0042`, pinned at exactly 3/6 with the shape named in the note; and a repo keeping
+  **both** rings and ADRs, where a citation of either traces (the case that catches ADR support shadowing
+  the seed's own shape) — plus the updated no-decision-log case pinning the corrected null reason.
+  Test-of-the-test: removing the `adr` shape turns exactly those two red. `npm run check` (18) +
+  `npm test` (246) + `npm run garden` (`drift_count` 0) green; no dither mutation (the defect was the
+  mother's instrument, not the host)
