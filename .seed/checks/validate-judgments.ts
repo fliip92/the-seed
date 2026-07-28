@@ -26,7 +26,7 @@
 // pattern): the format binds the moment the first verdict lands.
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { REPO_ROOT } from '../lib/repo.ts';
+import { REPO_ROOT, indexCompletenessViolations } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 import {
   JUDGMENTS_DIR,
@@ -149,6 +149,9 @@ export const check: Check = {
         );
       }
     }
+
+    // The verdict record is only findable through its index (E-024) — a numbered organ, like rings.
+    violations.push(...indexCompletenessViolations(files, { check: ID, dir: JUDGMENTS_DIR, entry: 'verdict' }));
 
     // Coverage — advisory (ring 0011): how many distilled references carry a fresh faithfulness verdict.
     const references = files.filter(

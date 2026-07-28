@@ -139,35 +139,6 @@ ledger is also a record of digestion.
   [pollination-dither.md](../fitness/pollination-dither.md) gets its next row — the check that the
   conversion actually worked
 
-## E-024 — the rings index is not enforced complete, and three rings were missing from it
-
-- First observed: 2026-07-27, adding ring 0052's index line during the [E-023](entropy-ledger.md)
-  conversion — the [rings README](../rings/README.md) listed 48 of the 51 rings that existed: **0049,
-  0050 and 0051 had never been added**, three consecutive rings, all landed within the previous two days
-- Where: [docs/rings/README.md](../rings/README.md) carries the ring index, and its own Procedure step 1
-  says *"take the next free number (check the list above — and add your ring to it)"*.
-  [validate-rings](../../.seed/checks/validate-rings.ts) enforces filenames, sequence and the field
-  format; nothing checks that a ring **appears in the index**. `validate-map` does not catch it either —
-  a ring stays reachable through the plan that cites it, so the map metric reads 100% while the index it
-  is nominally built from is stale. The same hole exists for the other numbered organs with README
-  indices (plans, postmortems, assessments, judgments); rings is where it has actually bitten
-- Interest rate: medium. Each miss is invisible (nothing fails) and permanent unless someone notices, so
-  the index degrades monotonically — and it is the artifact an agent is told to read to find the next
-  free number and to see what has already been decided (LAW-10: never ask what a ring already answers).
-  An index silently omitting the three most recent rings sends exactly the reader who needs them to the
-  wrong answer. Bounded today only because the ring *files* are the source of truth and the index is a
-  convenience
-- Price: small — the mother already owns the shape she grafted into her host: dither's
-  [map-completeness gate](../rings/0046-dither-map-completeness-gate.md) asserts every workspace appears
-  in each of three layout maps, with the eighth principle `maps-are-complete`. This is the same invariant
-  over `docs/rings/*.md` → `docs/rings/README.md`, and it generalizes to the other numbered organs for
-  little extra
-- Conversion path: invariant — a clause in `validate-rings` (or a small shared helper the numbered-organ
-  validators call) asserting every `NNNN-*.md` in the organ's directory is linked from that organ's
-  README, self-tested with the pair: an unindexed ring fails, the same ring indexed passes. Fold into the
-  next change touching the ring validator. The three missing entries were written by hand in the E-023
-  pass, so the debt is the *enforcement*, not the current content
-
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
@@ -832,3 +803,55 @@ ledger is also a record of digestion.
   widening is load-bearing). `npm run check` (14 checks) + `npm test` (252) + `npm run garden`
   (`drift_count` 0) green, and the gate green on real history: 10 portable-subtree commits since
   `c514a6ce929b`, 11 intents.
+
+## E-024 — the rings index is not enforced complete, and three rings were missing from it
+
+- First observed: 2026-07-27, adding ring 0052's index line during the [E-023](entropy-ledger.md)
+  conversion — the [rings README](../rings/README.md) listed 48 of the 51 rings that existed: **0049,
+  0050 and 0051 had never been added**, three consecutive rings, all landed within the previous two days
+- Where: [docs/rings/README.md](../rings/README.md) carries the ring index, and its own Procedure step 1
+  says *"take the next free number (check the list above — and add your ring to it)"*.
+  [validate-rings](../../.seed/checks/validate-rings.ts) enforces filenames, sequence and the field
+  format; nothing checks that a ring **appears in the index**. `validate-map` does not catch it either —
+  a ring stays reachable through the plan that cites it, so the map metric reads 100% while the index it
+  is nominally built from is stale. The same hole exists for the other numbered organs with README
+  indices (plans, postmortems, assessments, judgments); rings is where it has actually bitten
+- Interest rate: medium. Each miss is invisible (nothing fails) and permanent unless someone notices, so
+  the index degrades monotonically — and it is the artifact an agent is told to read to find the next
+  free number and to see what has already been decided (LAW-10: never ask what a ring already answers).
+  An index silently omitting the three most recent rings sends exactly the reader who needs them to the
+  wrong answer. Bounded today only because the ring *files* are the source of truth and the index is a
+  convenience
+- Price: small — the mother already owns the shape she grafted into her host: dither's
+  [map-completeness gate](../rings/0046-dither-map-completeness-gate.md) asserts every workspace appears
+  in each of three layout maps, with the eighth principle `maps-are-complete`. This is the same invariant
+  over `docs/rings/*.md` → `docs/rings/README.md`, and it generalizes to the other numbered organs for
+  little extra
+- Conversion path: invariant — a clause in `validate-rings` (or a small shared helper the numbered-organ
+  validators call) asserting every `NNNN-*.md` in the organ's directory is linked from that organ's
+  README, self-tested with the pair: an unindexed ring fails, the same ring indexed passes. Fold into the
+  next change touching the ring validator. The three missing entries were written by hand in the E-023
+  pass, so the debt is the *enforcement*, not the current content
+- Paid: 2026-07-27 (plan [0009](active/0009-dither-metabolize.md) U14; ring
+  [0053](../rings/0053-numbered-organs-index-every-entry.md), on the Gardener's ruling *"fix E-024"*).
+  The invariant is [`indexCompletenessViolations`](../../.seed/lib/repo.ts) — one shared helper, called
+  by the validators of **all five** numbered organs (rings, plans per directory, postmortems,
+  assessments, judgments), so the rule has one definition and one message (LAW-3) while the violation
+  carries the calling check's id and sends the agent to the organ whose format it broke. It is a
+  `run-all` **clause**, not a gate: unlike [E-023](entropy-ledger.md)'s sibling one unit back, the
+  question is a pure function of the working tree, and it fires before the commit, which is the only
+  moment the fix is one line. The entry priced rings and noted the class; **the class was paid on day
+  one** — one helper, five call sites, four extra self-tests — and two validators' own headers had
+  already been asserting *"indexed by the README"* as though it were enforced. Building it moved the
+  active/⇄completed/ link resolver (ring [0013](../rings/0013-plan-links-resolve-across-active-completed.md))
+  from `validate-map` into [lib/repo.ts](../../.seed/lib/repo.ts): *"does this link point at that plan"*
+  now has two askers, and two implementations would eventually disagree about whether a closing plan is
+  indexed. Verification (LAW-6): seven self-tests (**259**, was 252) — a reachable-but-unindexed entry
+  fails in each of the five organs, the hole itself is pinned (an unindexed ring reddens `validate-rings`
+  **while `validate-map` stays green**), and the same ring indexed passes; the test-of-the-test neuters
+  the helper (exactly the six fail cases red) and narrows its resolution to literal paths (the two
+  ring-0013 plan-link cases red). `npm run check` (14) + `npm test` (259) + `npm run garden`
+  (`drift_count` 0) green. Declared a `minor` [pollen intent](../../pollen/pending.md). Checked and
+  **not** priced: the slugged organs (`skills/`, `docs/references/`, `docs/principles/`,
+  `docs/architecture/`) are all currently index-complete, so generalizing the membership rule to them
+  waits on evidence (LAW-7) — it is the ring's Revisit trigger, not a new entry

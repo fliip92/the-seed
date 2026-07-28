@@ -154,9 +154,17 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   permits a plan-only citation, so a plan-governed portable change was undeclarable), and the entry's
   *three* undeclared changes turned out to be **eight** of ten — all now backfilled, so v0.2.0 will credit
   eleven decisions instead of two. Pricing by eye under-read the debt by five; the instrument found the
-  rest. Sensed in the same pass and priced: **[E-024](docs/plans/entropy-ledger.md)** — nothing enforces
+  rest. Sensed in the same pass and priced: **[E-024](docs/plans/entropy-ledger.md)** — nothing enforced
   that a ring appears in the [rings index](docs/rings/README.md), and rings 0049–0051 were missing from it
-  (content fixed in-pass; the enforcement is the debt). Every step's instrument was built across
+  — **paid the same day** (ring [0053](docs/rings/0053-numbered-organs-index-every-entry.md)): a
+  [shared clause](.seed/lib/repo.ts) now asserts that every `NNNN-slug.md` in the **five** numbered
+  organs (rings, plans per directory, postmortems, assessments, judgments) is listed in its own organ
+  README. The hole was a reachability illusion — an unindexed entry stays reachable through whatever
+  cites it, so `map_reachability` read 100% while the index listed 48 of 51 rings, and a self-test now
+  pins exactly that contrast (`validate-map` green, `validate-rings` red). It is dither's
+  `maps-are-complete` ([ring 0046](docs/rings/0046-dither-map-completeness-gate.md)) turned on the
+  mother's own organs — the second time in three units the **host** held the practice first. Every step's
+  instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

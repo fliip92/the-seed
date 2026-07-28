@@ -3,7 +3,7 @@
 // map_reachability metric (SEED.md §6).
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { REPO_ROOT, extractLocalLinks, visibleMarkdownLines } from '../lib/repo.ts';
+import { REPO_ROOT, extractLocalLinks, resolveLinkTarget, visibleMarkdownLines } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-4 — the map is the entry point';
@@ -43,34 +43,10 @@ const FORBIDDEN_LINK_FORMS: Array<{ re: RegExp; name: string }> = [
   { re: /<(?:a|img)\s[^>]*(?:href|src)\s*=/i, name: 'HTML link' },
 ];
 
-// A plan is a stable artifact identified by its number; its filing location — active/ vs
-// completed/ — is mutable state (a plan is `git mv`d to completed/ when it closes;
-// docs/plans/README.md § Procedure). A link written to one path therefore stays valid when
-// the plan moves to the other, so a plan link's existence is checked against the plan
-// wherever it currently lives. This closes the one place literal-path resolution collided
-// with append-only rings: ring 0009 links plan 0002 by its active/ path, and 0002 closes
-// into completed/, which no ring may be edited to follow (ring 0013). Only the
-// active/⇄completed/ segment flexes — the four-digit number and slug must still match
-// exactly, so a genuine typo stays a dead link. Mirrors the traceability rule that a prose
-// "plan NNNN" resolves against either directory (lib/repo.ts, plan-traceability.ts).
-const PLAN_LINK_RE = /^docs\/plans\/(?:active|completed)\/(\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md)$/;
-
-/**
- * The existing repo file a link target resolves to — honoring the active/⇄completed/
- * relocation of plans — or null if nothing exists at either location. Non-plan targets
- * resolve iff they exist literally.
- */
-function resolveLinkTarget(target: string, present: Set<string>): string | null {
-  if (present.has(target)) return target;
-  const plan = target.match(PLAN_LINK_RE);
-  if (plan) {
-    for (const dir of ['active', 'completed'] as const) {
-      const alt = `docs/plans/${dir}/${plan[1]}`;
-      if (present.has(alt)) return alt;
-    }
-  }
-  return null;
-}
+// The active/⇄completed/-aware link resolver this walk uses lives in lib/repo.ts (ring 0013 for
+// the rule, ring 0053 for the move): the index-completeness clause asks the same question about
+// the same links, and two definitions of "this link points at that plan" would eventually
+// disagree (LAW-3).
 
 export interface ReachabilityResult {
   violations: Violation[];

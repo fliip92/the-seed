@@ -13,7 +13,7 @@
 // docs/principles/ pattern): the format is defined and enforced-when-present, binding the
 // moment the skill lands a postmortem. Entries are numbered NNNN-slug.md — a postmortem is a
 // dated incident in a sequential record, like a ring — indexed by the README.
-import { readRepoFile, extractLocalLinks, findSequenceIssues } from '../lib/repo.ts';
+import { readRepoFile, extractLocalLinks, findSequenceIssues, indexCompletenessViolations } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation, MdLink } from '../lib/repo.ts';
 
 const LAW = 'LAW-2 — legible and enforceable, or it doesn\'t exist';
@@ -225,6 +225,9 @@ export const check: Check = {
             },
       );
     }
+
+    // Indexed by the README, per this file's own header — enforced, not assumed (E-024).
+    violations.push(...indexCompletenessViolations(files, { check: ID, dir: DIR, entry: 'postmortem' }));
 
     return { summary: `${docs.length} postmortem(s) valid`, violations };
   },

@@ -1,7 +1,7 @@
 // Enforces LAW-5 (plans are first-class artifacts) and LAW-8 (entropy is paid
 // continuously): plan files carry the sections a hand-off needs, numbering is sequential
 // across active+completed, and every ledger entry is priced with a conversion path.
-import { readRepoFile, findSequenceIssues } from '../lib/repo.ts';
+import { readRepoFile, findSequenceIssues, indexCompletenessViolations } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const ID = 'seed/validate-plans';
@@ -312,6 +312,13 @@ export const check: Check = {
               },
         );
       }
+    }
+
+    // Each directory indexes its own plans (E-024). A plan closing by `git mv` into completed/
+    // must carry its index line across with it — the resolver counts a link written for either
+    // directory (ring 0013), so the move is legal; leaving the entry out of both is not.
+    for (const dir of [ACTIVE, COMPLETED]) {
+      violations.push(...indexCompletenessViolations(files, { check: ID, dir, entry: 'plan' }));
     }
 
     return {

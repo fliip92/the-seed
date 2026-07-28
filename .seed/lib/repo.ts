@@ -269,6 +269,92 @@ export function numberedFilenames(dir: string, root: string = REPO_ROOT): string
     .filter((n): n is string => n !== undefined);
 }
 
+// ---------------------------------------------------------------------------------------------
+// Link resolution + index completeness for the numbered organs (rings, plans, postmortems,
+// assessments, judgments).
+
+// A plan is a stable artifact identified by its number; its filing location — active/ vs
+// completed/ — is mutable state (a plan is `git mv`d to completed/ when it closes;
+// docs/plans/README.md § Procedure). A link written to one path therefore stays valid when
+// the plan moves to the other, so a plan link's existence is checked against the plan
+// wherever it currently lives. This closes the one place literal-path resolution collided
+// with append-only rings: ring 0009 links plan 0002 by its active/ path, and 0002 closes
+// into completed/, which no ring may be edited to follow (ring 0013). Only the
+// active/⇄completed/ segment flexes — the four-digit number and slug must still match
+// exactly, so a genuine typo stays a dead link. Mirrors the traceability rule that a prose
+// "plan NNNN" resolves against either directory (extractPlanRingRefs, plan-traceability.ts).
+const PLAN_LINK_RE = /^docs\/plans\/(?:active|completed)\/(\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md)$/;
+
+/**
+ * The existing repo file a link target resolves to — honoring the active/⇄completed/
+ * relocation of plans — or null if nothing exists at either location. Non-plan targets
+ * resolve iff they exist literally.
+ *
+ * Lives here rather than in validate-map because "does this link point at that file" now has
+ * two askers: the map's reachability walk and the index-completeness clause below (LAW-3 —
+ * one definition, so the two cannot disagree about whether a plan is linked).
+ */
+export function resolveLinkTarget(target: string, present: Set<string>): string | null {
+  if (present.has(target)) return target;
+  const plan = target.match(PLAN_LINK_RE);
+  if (plan) {
+    for (const dir of ['active', 'completed'] as const) {
+      const alt = `docs/plans/${dir}/${plan[1]}`;
+      if (present.has(alt)) return alt;
+    }
+  }
+  return null;
+}
+
+/** The filename shape every numbered organ shares — the same NNNN-slug.md its own validator
+ *  enforces. Matched against the basename, so a nested file never counts as an entry. */
+const NUMBERED_ENTRY_RE = /^\d{4}-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
+
+const INDEX_LAW = 'LAW-4 — the map is the entry point';
+
+/**
+ * Every `NNNN-slug.md` under `dir` must be linked from that organ's `README.md` — the index the
+ * map itself points at (AGENTS.md § Territory names one per organ).
+ *
+ * The hole this closes (E-024, ring 0053): an entry stays *reachable* through whatever plan or
+ * ring happens to cite it, so validate-map reads 100% while the index is stale — three
+ * consecutive rings (0049–0051) had never been added to docs/rings/README.md, and nothing failed.
+ * Each miss is invisible and permanent unless someone notices, so the index degrades
+ * monotonically — and it is the artifact an agent is told to read to take the next free number
+ * and to see what has already been decided (LAW-10). It is the same invariant the seed grafted
+ * into dither as `maps-are-complete` (ring 0046), turned on the mother's own organs.
+ *
+ * Silent when the organ has no README (a foreign repo need not carry the seed's anatomy) and
+ * vacuous when it has no numbered entries yet.
+ */
+export function indexCompletenessViolations(
+  files: string[],
+  opts: { check: string; dir: string; entry: string },
+  root: string = REPO_ROOT,
+): Violation[] {
+  const readme = `${opts.dir}/README.md`;
+  const present = new Set(files);
+  if (!present.has(readme)) return [];
+
+  const linked = new Set<string>();
+  for (const link of extractLocalLinks(readme, root)) {
+    const resolved = resolveLinkTarget(link.target, present);
+    if (resolved !== null) linked.add(resolved);
+  }
+
+  return files
+    .filter((f) => {
+      if (!f.startsWith(`${opts.dir}/`)) return false;
+      return NUMBERED_ENTRY_RE.test(f.slice(opts.dir.length + 1)) && !linked.has(f);
+    })
+    .map((f) => ({
+      check: opts.check,
+      law: INDEX_LAW,
+      problem: `${f} is not listed in ${readme} — the ${opts.entry} index is incomplete`,
+      fix: `add a line to ${readme} linking ${f.slice(opts.dir.length + 1)}. An index that silently omits an entry sends the reader who needs it to the wrong answer — and the omission is permanent, because nothing else looks.`,
+    }));
+}
+
 export interface PlanRingRef {
   kind: 'plan' | 'ring';
   num: string;

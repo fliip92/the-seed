@@ -697,6 +697,17 @@ const CASES: ViolationCase[] = [
     expect: { check: RINGS, law: LAW10, contains: [`ring numbering gap: found ${RING_GAP} where ${RING_NEXT} was expected`] },
   },
   {
+    // E-024, in the shape it actually bit: the ring is REACHABLE (something cites it, so the map
+    // reads 100%) and still absent from the index its own Procedure sends the next agent to. The
+    // standalone block below pins the other half — that validate-map stays green on this fixture.
+    name: 'rings: a reachable ring missing from the index',
+    seed: (r) => {
+      write(r, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
+      append(r, 'AGENTS.md', `\nSee [the fixture ring](docs/rings/${RING_NEXT}-fixture.md).\n`);
+    },
+    expect: { check: RINGS, law: LAW4, contains: [`docs/rings/${RING_NEXT}-fixture.md is not listed in docs/rings/README.md`] },
+  },
+  {
     name: 'plans: plan file at docs/plans/ root',
     seed: (r) => write(r, `docs/plans/${PLAN_NEXT}-stray.md`, validPlan(PLAN_NEXT)),
     expect: { check: PLANS, law: LAW5, contains: ['sits directly in docs/plans/'] },
@@ -782,6 +793,16 @@ const CASES: ViolationCase[] = [
     name: 'plans: a present-but-empty Work units section',
     seed: (r) => write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT, { workUnits: [] })),
     expect: { check: PLANS, law: LAW5, contains: ['section with no units'] },
+  },
+  {
+    // E-024 generalized: each numbered organ indexes its own entries, and plans index per
+    // directory — a plan closing into completed/ carries its index line across or fails here.
+    name: 'plans: a reachable plan missing from the active/ index',
+    seed: (r) => {
+      write(r, `docs/plans/active/${PLAN_NEXT}-fixture.md`, validPlan(PLAN_NEXT));
+      append(r, 'AGENTS.md', `\nSee [the fixture plan](docs/plans/active/${PLAN_NEXT}-fixture.md).\n`);
+    },
+    expect: { check: PLANS, law: LAW4, contains: [`docs/plans/active/${PLAN_NEXT}-fixture.md is not listed in docs/plans/active/README.md`] },
   },
   {
     name: 'ledger: missing ## Paid section',
@@ -978,6 +999,15 @@ const CASES: ViolationCase[] = [
     expect: { check: POSTMORTEM, law: LAW2, contains: [`postmortem numbering gap: found ${POSTMORTEM_GAP} where ${POSTMORTEM_NEXT} was expected`] },
   },
   {
+    // E-024 generalized — the organ's own header already said "indexed by the README"; now it is.
+    name: 'postmortem: a reachable entry missing from the index',
+    seed: (r) => {
+      write(r, `docs/postmortems/${POSTMORTEM_NEXT}-fixture.md`, validPostmortem(POSTMORTEM_NEXT));
+      append(r, 'AGENTS.md', `\nSee [the fixture postmortem](docs/postmortems/${POSTMORTEM_NEXT}-fixture.md).\n`);
+    },
+    expect: { check: POSTMORTEM, law: LAW4, contains: [`docs/postmortems/${POSTMORTEM_NEXT}-fixture.md is not listed in docs/postmortems/README.md`] },
+  },
+  {
     // A present-but-malformed Date pins the Date-format branch, distinct from the missing-field
     // branch — `July 5` keeps the field present (fieldRanges still resolves Date) while failing
     // DATE_RE. Without this case, deleting that branch or loosening DATE_RE would ship green.
@@ -1104,6 +1134,15 @@ const CASES: ViolationCase[] = [
     name: 'assessment: numbering gap',
     seed: (r) => write(r, `docs/assessments/${ASSESS_GAP}-fixture.md`, validAssessment(ASSESS_GAP)),
     expect: { check: ASSESS, law: LAW2, contains: [`assessment numbering gap: found ${ASSESS_GAP} where ${ASSESS_NEXT} was expected`] },
+  },
+  {
+    // E-024 generalized.
+    name: 'assessment: a reachable entry missing from the index',
+    seed: (r) => {
+      write(r, `docs/assessments/${ASSESS_NEXT}-fixture.md`, validAssessment(ASSESS_NEXT));
+      append(r, 'AGENTS.md', `\nSee [the fixture assessment](docs/assessments/${ASSESS_NEXT}-fixture.md).\n`);
+    },
+    expect: { check: ASSESS, law: LAW4, contains: [`docs/assessments/${ASSESS_NEXT}-fixture.md is not listed in docs/assessments/README.md`] },
   },
   // --- principle format (plan 0004 scope item 1, ring 0023 — the seed's first principle). Each
   // --- writes an unreachable principle into docs/principles/, so validate-map also fires — the
@@ -1540,6 +1579,17 @@ const CASES: ViolationCase[] = [
     seed: (r) => seedVerdict(r, JUDGMENT_NEXT, { stalePin: true }),
     expect: { check: JUDGMENTS, law: LAW6, contains: ['is STALE'] },
   },
+  {
+    // E-024 generalized. The AGENTS.md link is appended BEFORE the verdict is seeded, so the
+    // fixture pins the artifact as it then reads — appending after would make it STALE and the
+    // case would pass for the wrong reason.
+    name: 'judgments: a reachable verdict missing from the index',
+    seed: (r) => {
+      append(r, 'AGENTS.md', `\nSee [the fixture verdict](docs/judgments/${JUDGMENT_NEXT}-fixture.md).\n`);
+      seedVerdict(r, JUDGMENT_NEXT);
+    },
+    expect: { check: JUDGMENTS, law: LAW4, contains: [`docs/judgments/${JUDGMENT_NEXT}-fixture.md is not listed in docs/judgments/README.md`] },
+  },
 ];
 
 // --- runner ---
@@ -1654,6 +1704,32 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'plans: a plan with well-formed work units passes all checks (ring 0036)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- index completeness (E-024, ring 0053). Two halves the CASES entries cannot state on their
+// --- own: that the MAP does not catch this (the reason three rings went missing unnoticed), and
+// --- that indexing the very same ring turns the check green — the pair the ledger entry named.
+
+inTempCopy((root) => {
+  write(root, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
+  append(root, 'AGENTS.md', `\nSee [the fixture ring](docs/rings/${RING_NEXT}-fixture.md).\n`);
+  const { status, output } = runChecks(root);
+  report(
+    'rings: an unindexed ring fails validate-rings while validate-map stays green (the E-024 hole)',
+    status === 1 && output.includes(`✓ ${MAP}`) && output.includes(`[${RINGS}] docs/rings/${RING_NEXT}-fixture.md is not listed`),
+    `expected exit 1 with validate-map GREEN and the ring index violation, got exit ${status}:\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  write(root, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
+  append(root, 'docs/rings/README.md', `\n- [${RING_NEXT} — Self-test fixture](${RING_NEXT}-fixture.md)\n`);
+  const { status, output } = runChecks(root);
+  report(
+    'rings: the same ring, listed in the index, passes all checks',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );

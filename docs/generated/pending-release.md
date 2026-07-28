@@ -21,6 +21,7 @@ version lines — genome and pollen — are never conflated, ring 0026).
   - patch — ring 0050 — the working-tree gates take their file set from git, so a git-ignored file (an agent tool's local state, editor or build output) no longer fails every check and self-test on a working machine while CI stays green
   - minor — ring 0051 — `plan_traceability` resolves the target's decision-log shape (plans and rings, or numbered ADRs under `docs/adr/`) instead of assuming the seed's, so an ADR-governed host computes a real fraction instead of a false "no decision log" null
   - minor — ring 0052 — the `pollen-intent` gate: no portable change since the last cut may go undeclared, proved from git against the manifest; an intent may now cite a plan as well as a ring, matching the decision-record vocabulary the commit convention already permits
+  - minor — ring 0053 — index completeness for the numbered organs: every `NNNN-slug.md` under rings, plans, postmortems, assessments and judgments must be linked from its own organ README, so a descendant's index cannot silently omit an entry that stays reachable by some other path
 
 Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD`. This list is proved
 COMPLETE against git by the pollen-intent gate (ring 0052): every portable change since the last

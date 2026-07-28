@@ -731,6 +731,40 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   `minor` [pollen intent](../../../pollen/pending.md) for itself. **No dither mutation** — its graft
   carries a scoped engine and no release model at all.
 
+- **2026-07-27** — **U14 / E-024 paid: a numbered organ lists every entry, or CI fails — the class paid
+  on day one, not just the instance** (seed-side only;
+  [ring 0053](../../rings/0053-numbered-organs-index-every-entry.md)). On the Gardener's ruling
+  (*"fix E-024"*), converted the entry U13 sensed. The invariant is one shared helper,
+  [`indexCompletenessViolations`](../../../.seed/lib/repo.ts): every `NNNN-slug.md` in a numbered organ's
+  directory must be linked from that organ's README — called by the validators of **all five** organs
+  (rings, plans per directory, postmortems, assessments, judgments), so the rule has one definition and
+  one message (LAW-3) while each violation carries the calling check's id and lands the agent on the
+  organ whose format it broke. A `run-all` **clause**, not a gate: unlike U13's sibling one unit back,
+  the question is a pure function of the working tree, and it fires before the commit, which is the only
+  moment the fix is one line. **The hole it closes is a reachability illusion** — an unindexed entry
+  stays reachable through whatever cites it, so `map_reachability` read **100%** while the rings index
+  listed 48 of 51 rings; the self-test pins exactly that (an unindexed ring reddens `validate-rings`
+  **while `validate-map` stays green**). The entry priced rings and *noted* the class; generalizing cost
+  one helper, five call sites and four extra tests, and it made two validators' own headers
+  (*"indexed by the README"*) true rather than aspirational. Building it moved the active/⇄completed/
+  link resolver (ring [0013](../../rings/0013-plan-links-resolve-across-active-completed.md)) out of
+  `validate-map` into [lib/repo.ts](../../../.seed/lib/repo.ts): *"does this link point at that plan"*
+  now has two askers, and two implementations would eventually disagree about whether a closing plan is
+  indexed. **The mother converged on her host again** — this is dither's `maps-are-complete`
+  ([ring 0046](../../rings/0046-dither-map-completeness-gate.md)) turned on the seed's own organs, the
+  second time in three units the host held the practice first ([E-021](../entropy-ledger.md) was the
+  first). **No eighth-principle move**: the rule is about this repository's anatomy and is already
+  LAW-4, so restating it as a principle would inflate `enforcement_ratio` without adding a norm.
+  Verification: seven new self-tests (**259**, was 252) — a reachable-but-unindexed entry fails in each
+  of the five organs, the map-green/rings-red contrast, and the same ring indexed passes — plus the
+  test-of-the-test (neutering the helper reddens exactly the six fail cases and nothing else; narrowing
+  its resolution to literal paths reddens the two ring-0013 plan-link cases, so the shared resolver is
+  load-bearing). `npm run check` (14) + `npm test` (259) + `npm run garden` (`drift_count` 0) green.
+  Declared a `minor` [pollen intent](../../../pollen/pending.md). Checked and **not** priced: the slugged
+  organs (`skills/`, `docs/references/`, `docs/principles/`, `docs/architecture/`) are all currently
+  index-complete, so generalizing the membership rule waits on evidence (LAW-7) — the ring's Revisit
+  trigger, not a new entry. **No dither mutation** — its graft carries none of these organs.
+
 ## Next actions
 
 1. **E-001…E-013 (U1–U8) — landed, pushed, hosted-CI green.** The structural refactors, the three sensing
@@ -790,16 +824,25 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    trigger — confirm the window re-anchors on the new release file and the backfilled intents are consumed
    exactly once; and **[E-024](../entropy-ledger.md)** was priced in-pass (nothing enforces that a ring
    appears in the [rings index](../../rings/README.md); 0049–0051 were missing, content fixed by hand) —
-   agent-convertible, fold into the next change touching `validate-rings`.
-8. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+   **PAID by U14 below**.
+8. **U14 / [E-024](../entropy-ledger.md) — PAID, committed, awaiting push** (ring
+   [0053](../../rings/0053-numbered-organs-index-every-entry.md); no dither mutation — its graft carries
+   none of these organs). Every `NNNN-slug.md` in the five numbered organs must be listed in its own
+   organ README, over one shared helper and one shared link resolver; the unindexed-but-reachable hole
+   that hid rings 0049–0051 is pinned by a self-test that holds `validate-map` green while
+   `validate-rings` goes red. Checks (14), tests (**259**), garden (`drift_count` 0) green; a `minor`
+   [pollen intent](../../../pollen/pending.md) declared. One follow-on rides the record: the slugged
+   organs were checked in-pass and are index-complete, so extending the membership rule to them is the
+   ring's Revisit trigger rather than a priced entry.
+9. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-9. **On cadence:** re-measure after any dither commit and extend
-   [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
-   hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
-   a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact
-   (ring 0049 Revisit).
+10. **On cadence:** re-measure after any dither commit and extend
+    [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
+    hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
+    a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact
+    (ring 0049 Revisit).

@@ -1,7 +1,7 @@
 // Enforces the ring format of SEED.md §2 and docs/rings/README.md: sequential numbering,
-// matching titles, and every required field present. Rings are how questions stay retired
-// (LAW-10).
-import { readRepoFile, findSequenceIssues } from '../lib/repo.ts';
+// matching titles, every required field present, and every ring listed in the index its own
+// Procedure step 1 tells the next agent to read. Rings are how questions stay retired (LAW-10).
+import { readRepoFile, findSequenceIssues, indexCompletenessViolations } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-10 — escalate scarce judgment; never ask twice';
@@ -112,6 +112,11 @@ export const check: Check = {
             },
       );
     }
+
+    // The index is part of the format: docs/rings/README.md § Procedure step 1 sends the next
+    // agent to the list for the free number and for what is already decided, so a ring missing
+    // from it is a ring that reader will not find (E-024).
+    violations.push(...indexCompletenessViolations(files, { check: ID, dir: DIR, entry: 'ring' }));
 
     return { summary: `${ringFiles.length} ring(s) valid`, violations };
   },

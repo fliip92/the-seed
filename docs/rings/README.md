@@ -59,6 +59,7 @@ directory — if a ring answers it, asking again is drift in you.
 - [0050 — the working-tree gates take their file set from git: "what is in this repository" gets one definition (E-021 paid); one `.claude/settings.local.json` written mid-session had failed `npm run check` and 26 of 241 self-tests on a working machine while CI, which clones and carries no ignored state, stayed green; the fixture now shares the gates' own listing so the two cannot drift; dither unaffected — its runners already list via `git ls-files -z`](0050-gates-honor-git-ignore-rules.md)
 - [0051 — the decision log is resolved, not assumed: `plan_traceability` learns ADRs and SEED.md §6 is amended (E-020 paid); the fixed instrument then found a regression the seed itself caused — dither reads 45.2% pre-graft → 39.5%, because twelve of the fourteen commits the seed landed there cite the seed's own plan, a decision log dither cannot verify (priced E-022); the metric name deliberately unchanged to protect the append-only snapshot series](0051-decision-log-shape-resolved-not-assumed.md)
 - [0052 — a portable change declares its intent, or CI fails (E-023 paid): the `pollen-intent` gate proves every portable-subtree commit since the last cut is declared in pending.md — a STATE assertion, not a diff, so a green run is the precondition for a cut; the intent grammar widens to plan-or-ring citations (matching SEED.md §6 as amended by ring 0051), without which a plan-governed portable change could not be declared at all; the entry priced three undeclared changes, git found eight — pricing by eye under-read the debt by five](0052-portable-changes-declare-their-intent.md)
+- [0053 — a numbered organ lists every entry, or CI fails (E-024 paid): the index-completeness clause — every `NNNN-slug.md` in rings, plans, postmortems, assessments and judgments must be linked from its own organ README, over one shared link resolver now that the map walk and the index clause both ask whether a link points at a plan; the hole it closes is that an unindexed entry stays *reachable* through whatever cites it, so `map_reachability` read 100% while this index listed 48 of 51 rings (0049–0051 missing); the same invariant the seed grafted into dither as `maps-are-complete`, absent at home](0053-numbered-organs-index-every-entry.md)
 
 ## Format (enforced by `.seed/checks/validate-rings.ts`)
 
@@ -74,7 +75,10 @@ directory — if a ring answers it, asking again is drift in you.
 
 ## Procedure
 
-1. Take the next free number (check the list above — and add your ring to it).
+1. Take the next free number (check the list above — and add your ring to it). Adding it is
+   **enforced**: a ring absent from the list above fails `npm run check`, because an index that
+   silently omits an entry sends the next reader to the wrong answer (ring
+   [0053](0053-numbered-organs-index-every-entry.md), paying [E-024](../plans/entropy-ledger.md)).
 2. Write the ring using the format. State the enforcement mechanically wherever possible;
    `doc-only` must justify why not mechanical (LAW-2).
 3. Run `npm run check` — the ring validator must pass.

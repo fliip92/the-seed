@@ -15,7 +15,7 @@
 // docs/postmortems/ pattern): the format is defined and enforced-when-present, binding the
 // moment an assessment lands. Entries are numbered NNNN-slug.md — a dated assessment is an
 // item in a sequential record, like a ring or a postmortem — indexed by the README.
-import { readRepoFile, findSequenceIssues, sectionBody, topLevelBullets } from '../lib/repo.ts';
+import { readRepoFile, findSequenceIssues, indexCompletenessViolations, sectionBody, topLevelBullets } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-2 — legible and enforceable, or it doesn\'t exist';
@@ -274,6 +274,9 @@ export const check: Check = {
             },
       );
     }
+
+    // Indexed by the README, per this file's own header — enforced, not assumed (E-024).
+    violations.push(...indexCompletenessViolations(files, { check: ID, dir: DIR, entry: 'assessment' }));
 
     return { summary: `${docs.length} assessment(s) valid`, violations };
   },
