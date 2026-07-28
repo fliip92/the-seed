@@ -100,6 +100,87 @@ ledger is also a record of digestion.
   speculatively (LAW-7: own the small subset, and only once the need is evidenced). Host-facing
   tooling, not the mother seed's corpus
 
+## E-020 — `plan_traceability` only knows plans and rings, so it reads null on an ADR-governed host
+
+- First observed: 2026-07-27, landing the dither **pollination proof**
+  ([pollination-dither.md](../fitness/pollination-dither.md); [plan 0009](active/0009-dither-metabolize.md)
+  fitness-cadence item, ring [0049](../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)) —
+  the before/after-graft measurement is the one reading where the blindness has a visible cost
+- Where: [`planTraceability`](../../.seed/lib/fitness-metrics.ts) resolves the target's decision log by
+  looking for numbered files under `docs/rings/` and `docs/plans/{active,completed}/` only; finding
+  neither it returns null with the reason *"no plans or rings — no decision log to trace commits to"*.
+  For dither that reason is **factually false**: dither keeps nine numbered ADRs under `docs/adr/`, its
+  commits cite them, and the seed itself grafted the gate that *enforces* commit→ADR traceability (ring
+  [0038](../rings/0038-dither-adr-gate-graft.md), the second of the four graft organs). So the metric
+  reports "no decision log" about a host whose decision log the seed mechanically polices — the
+  [E-016](entropy-ledger.md) shape (a Scout instrument systematically under-reading a real host,
+  surfaced by pointing it at one) recurring on the sibling metric
+- Interest rate: medium — it does not merely under-read, it **hides a graft organ from the pollination
+  proof**: `plan_traceability` null → null is the one row of dither's before/after where an installed,
+  green, enforcing organ shows no delta at all (SEED.md §6's stated purpose for fitness is proving
+  pollination value with before/after measurement). The cost scales with hosts, since ADRs are the
+  common decision-record convention in repos that have one at all, and the seed's own reading stays
+  correct either way, so nothing local surfaces it
+- Price: small–medium — resolve the target's *decision-log shape* rather than assume the seed's own,
+  the [E-016](entropy-ledger.md) `resolveMapFilename` move one level up: recognize numbered
+  `docs/adr/NNNN-*.md` as a decision log, extend the commit-message reference extractor to `ADR-NNNN` /
+  `ADR NNNN` alongside `plan`/`ring`, and report the resolved shape in the metric note so the reading
+  stays legible (LAW-2); self-tests pinning that an ADR-governed fixture computes a real fraction and
+  that a repo with no decision log still reads null. The genuinely uncertain part is not the code but
+  the **definition**: whether "traces to a decision record" is one metric over a resolved shape or two
+  metrics that should not be averaged across hosts
+- Conversion path: **ring, then invariant — Gardener-gated, not agent-convertible.** Unlike E-016 (a
+  filename set, no definition change), teaching the metric a second decision-log shape changes SEED.md
+  §6's stated definition (*"% merged PRs tracing to a plan or ring"*), and both §6 ("When a metric stops
+  correlating with real health, propose its replacement — via ring") and the genome's amendment rule
+  (SEED.md: "amend only via approved PR + ring") route a §6 edit to the Gardener. Hence priced Open and
+  held, not converted in-pass — the [E-012](entropy-ledger.md) fork precedent. Fold the build into the
+  next repo-fitness change once the ring lands; until then dither's proof states the null is wrong
+  rather than quoting it
+
+## E-021 — the working-tree gates ignore git's ignore rules, so a git-ignored file fails `npm run check`
+
+- First observed: 2026-07-27, during the U10 fitness-cadence pass ([plan 0009](active/0009-dither-metabolize.md),
+  ring [0049](../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)) — the agent tool wrote
+  `.claude/settings.local.json` (a permission grant) into the working tree mid-session, and the repo's two
+  done-criteria went from green to **3 `npm run check` violations and 26 of 241 failing self-tests**, with
+  `git status` still reporting a **clean tree**. Measured both ways: with that one file held aside, checks
+  and all 241 self-tests pass
+- Where: [`listRepoFiles`](../../.seed/lib/repo.ts) walks the directory with `readdirSync`, skipping only a
+  hardcoded `EXCLUDED_DIRS` / `EXCLUDED_FILES` set (`.git`, `node_modules`, OS noise). It never consults
+  git's ignore rules, so a file git has *already declared out of the repository* — here via the user's
+  global `~/.config/git/ignore`, but repo `.gitignore` and `.git/info/exclude` behave identically — is
+  still walked. Every working-tree gate inherits it: `validate-map` demands the file be reachable ≤3 hops
+  from AGENTS.md (LAW-4), `validate-pollen` demands its top-level directory be classified in the pollen
+  manifest (LAW-3), and `doc-drift` scans it. The **self-tests inherit it twice over**, which is where the
+  26 failures come from: each fixture copies the tree into a scratch repo and asserts the pristine copy is
+  green, so one ignored file in the source tree fails every one of them at once The repository therefore has **two disagreeing definitions of
+  "what is in this repository"** — git's ignore rules and `repo.ts`'s hardcoded set, which already
+  duplicates `.gitignore`'s `node_modules/` and `.DS_Store` entries. That duplication is the LAW-3 break in
+  miniature: one invariant, two implementations, now observably out of sync. It also falsifies the standing
+  assumption recorded in [E-012](entropy-ledger.md)'s Paid note — *"the seed's own tracked set equals its
+  on-disk set, so its self-fitness is unchanged"* — which held only until an agent tool wrote local state
+- Interest rate: high — it breaks the repo's own done-criterion on the Gardener's machine (AGENTS.md
+  Protocols: `npm run check` green before any change is claimed done) for a file they never authored and
+  cannot see in `git status`, and it presents as a contradiction — clean tree, red check — that costs a
+  session's trust before it is diagnosed. It is silent in CI (a clone has no ignored local state), so it
+  fires *only* on a real working machine, the worst place for a false alarm. Every agent tool that writes
+  local state (editor dirs, `.claude/`, worktree snapshots) is a new trigger, so it recurs by default
+- Price: small — resolve "not repo content" from git rather than a hardcoded list: filter `listRepoFiles`
+  through `git check-ignore --stdin` (or list `git ls-files` plus `--others --exclude-standard`) when the
+  root is a git repo, keeping the on-disk walk as the non-git fallback — the exact fallback shape
+  [E-012](entropy-ledger.md) already built for the metrics engine, so the pattern is proven here. **The
+  intent E-012 protected is preserved:** an uncommitted, non-ignored file is still walked and still
+  gated — only files git has been *told* to ignore drop out
+- Conversion path: invariant — one change inside `listRepoFiles`, self-tested with the pair E-012's own
+  test used (an ignored file does not trip the gates; the same file, un-ignored, still does), plus a case
+  pinning that global-ignore and repo-`.gitignore` rules are honored alike (the observed trigger came from
+  the *global* file). Fold into the next change touching `repo.ts`. Two smaller questions ride along and
+  should be settled in the same pass rather than separately: whether `EXCLUDED_DIRS`/`EXCLUDED_FILES`
+  survives at all once git is the source of truth (it should shrink to `.git` itself), and whether the
+  repo's own `.gitignore` should name `.claude/` explicitly so the exclusion does not depend on a
+  machine-local global file that a second Gardener would not have
+
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced

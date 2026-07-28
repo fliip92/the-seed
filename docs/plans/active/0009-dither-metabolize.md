@@ -307,6 +307,37 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Owner: agent
 - Depends-on: U8 (E-012 fork A) landed — this is its seed-side residual; dither unchanged since `b8d3823`.
 
+### U10 — the fitness cadence: land the dither pollination proof and judge the exit criterion
+- Status: done
+- Landed: seed-side only (no dither mutation — read-only on the host) — [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)
+- Scope: execute this plan's standing cadence item (`Next actions` 4) — the one live item never yet
+  executed as an artifact. Measure dither's before/after-graft delta **instrument-controlled** (clone the
+  pre-graft tree at `2b2b3d5` and re-measure it with *today's* engine, so the [E-016](../entropy-ledger.md)
+  / [E-019](../entropy-ledger.md) instrument fixes are not credited to the graft), land it as
+  [pollination-dither.md](../../fitness/pollination-dither.md), and judge the per-host exit criterion.
+  In scope: the seed's own lapsed fitness cadence (one snapshot, stage 1, 23 days stale) — take the tick
+  and re-render [FITNESS.md](../../fitness/FITNESS.md), including its `map_reachability` definition, which
+  had drifted from SEED.md §6 since ring 0043; and pricing what the pass sensed in the seed itself
+  ([E-021](../entropy-ledger.md) — the working-tree gates ignore git's ignore rules, surfaced when the
+  agent tool wrote `.claude/settings.local.json` mid-session and turned a clean tree into a red
+  `npm run check`). Out of scope: converting [E-020](../entropy-ledger.md) (it edits SEED.md §6 —
+  Gardener-gated) or [E-021](../entropy-ledger.md) (it changes `listRepoFiles`, which every gate inherits
+  — its own pass, not a ride-along); any dither mutation; mechanizing the fitness cadence
+  ([E-008](../entropy-ledger.md) already prices that).
+- Entry-context: [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md);
+  [recursive-upgrade.md](../../fitness/recursive-upgrade.md) (the Stage-3 proof this parallels);
+  [assessment 0002](../../assessments/0002-dither.md) (the recorded Scout baseline, superseded as the
+  "before" column but kept as history); the four graft rings
+  ([0037](../../rings/0037-dither-map-gate-graft.md)–[0040](../../rings/0040-dither-ledger-graft.md)),
+  each of which the delta attributes a move to.
+- Done-when: the proof is landed with reproducible commands and an instrument-controlled "before";
+  four moved metrics attributed to named work; the exit criterion judged **half-met** with the missing
+  half named (the owner has not shipped a feature post-graft — dither's last owner commit is pre-graft
+  `2b2b3d5`); the `plan_traceability` blindness priced as E-020 and held for the Gardener; today's seed
+  snapshot landed; seed-side `npm run check` + `npm test` + `npm run garden` green.
+- Owner: agent
+- Depends-on: U1–U9 (the nine digested entries the delta measures); dither unchanged at `b8d3823`.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -546,6 +577,35 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   old) to its true 7-day rate — now **-2** (net 2 entries digested this week, healthy); no metric change
   (SEED.md §6), the "+N = N open" shorthand was the imprecision. Seed-side `npm run check` + `npm test`
   (241) + `npm run garden` (`drift_count` 0) green; no dither commit.
+- **2026-07-27** — **U10 / the fitness cadence: the dither pollination proof lands, and the exit criterion
+  is judged half-met** (seed-side only; read-only on the host; [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md)).
+  Executed this plan's standing cadence item — the before/after-graft delta, landed as
+  [pollination-dither.md](../../fitness/pollination-dither.md), the Stage-4 counterpart to the Stage-3
+  [recursive-upgrade.md](../../fitness/recursive-upgrade.md). **Instrument-controlled:** the "before"
+  column is dither's pre-graft tree (`2b2b3d5`) *cloned and re-measured with today's engine*, because
+  [E-016](../entropy-ledger.md) and [E-019](../entropy-ledger.md) both move `map_reachability` — quoting
+  the Scout's recorded `null` would have credited the graft with the seed's own instrument fixes. **Four
+  of six metrics moved, all improved, none regressed:** `map_reachability` **6.8% (5/74 docs) → 48.8%
+  (42/86)**, `enforcement_ratio` **null → 8/8**, `drift_count` **2 → 0**, `ledger_trend` **null → -2**.
+  The `drift_count` move is *attributable*: the two pre-graft drifts re-scanned today are exactly the two
+  E-006 paid. **Exit criterion: HALF-MET** — the trend half is met; the owner-ships-features half is
+  **untested**, since dither's last owner-authored commit is the pre-graft `2b2b3d5`, so **Independence
+  waits on the feature track, not on more sensing** (which also explains passes 3–4 finding progressively
+  less: an unchanged host generates no entropy). **One metric reads wrong on a host:** `plan_traceability`
+  reports "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed itself grafted
+  (ring 0038) — one graft organ invisible in its own proof; priced **[E-020](../entropy-ledger.md)** and
+  **held for the Gardener** (it edits SEED.md §6). Also took the seed's own lapsed fitness tick (one
+  snapshot, stage 1, 23 days stale) — landed [2026-07-27](../../fitness/history/2026-07-27.json), re-rendered
+  FITNESS.md as a trend, and fixed its `map_reachability` *definition*, which had contradicted SEED.md §6
+  since ring 0043. **Sensed in-pass and priced [E-021](../entropy-ledger.md):** the agent tool wrote
+  `.claude/settings.local.json` into the working tree and `npm run check` went green → three violations
+  while `git status` stayed **clean** — the file is git-ignored (global `~/.config/git/ignore`) but
+  [`listRepoFiles`](../../../.seed/lib/repo.ts) consults a hardcoded exclusion set instead of git's ignore
+  rules, so the repo carries two disagreeing definitions of "what is in this repository" (LAW-3), and
+  E-012's recorded assumption that on-disk equals tracked is falsified. Priced **high** (it breaks the
+  repo's own done-criterion on a real machine and is invisible in CI), not converted — every gate inherits
+  that helper. Seed-side `npm test` + `npm run garden` (`drift_count` 0) green; `npm run check` green on
+  all committed content (verified with the ignored `.claude/` held aside); no dither commit.
 
 ## Next actions
 
@@ -554,25 +614,45 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    dither `b8d3823` (run [30315098067](https://github.com/fliip92/dither/actions/runs/30315098067)) and seed
    `f518034` (run [30315139513](https://github.com/fliip92/the-seed/actions/runs/30315139513)). dither
    carries **no open agent-gated debt**.
-2. **U9 / fourth sensing pass — DONE, held for the Gardener's push** (seed
-   [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md) only; **no dither
-   mutation** — dither is clean and unchanged at `b8d3823`). The pass re-verified dither clean and found one
-   seed-side residual: the seed's own elicited [dither.md](../../architecture/dither.md) still described the
-   workshop as "static Vite + R3F" (the E-012 drift, uncaught because E-012 was dither-scoped) → fixed to
-   "static Vite + React". It also recorded that `ledger_trend` has matured from a level to its true 7-day
-   rate (**-2** = net 2 digested this week, healthy — not a regression; see ring 0048). **Remaining: the
-   Gardener pushes** the seed record (seed only; nothing to push on dither), after which one seed-ci run
-   confirms.
-3. **Refactor track: sensing is now the recurring default.** The structural queue is drained; the track's
-   work is to **sense new entropy on a cadence** and convert the highest-interest ungated finding
-   (AGENTS.md §"Nothing active?"). Six gates + eight principles now stand on dither. Carried residuals,
-   deliberately *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold
-   dither at ~48% — decide host-side,
-   [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) Revisit); **branch
-   protection** on `main` (the seed's own main is likewise unprotected — inherited posture, not a defect);
-   **graphify** (a deliberate optional aid). The **feature-track** entries (E-003/E-004/E-005/E-008) stay
-   owner-paced at their build-order steps.
-4. **On cadence:** measure dither fitness (the before/after-graft delta is the pollination proof); watch
-   the trend against the per-host exit criterion. When the trend is positive over a sustained window and
-   the owner ships through the agent workflow without the seed being special, dither reaches **step 6 —
-   Independence** (its own carried seed, lineage recorded, feedback channel live).
+2. **U9 (fourth sensing pass) — landed, pushed, seed-ci green** (seed `9765e1a`, run
+   [30316121224](https://github.com/fliip92/the-seed/actions/runs/30316121224);
+   [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md); no dither mutation).
+3. **U10 / the pollination proof — DONE, held for the Gardener's push** (seed
+   [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md); **no dither
+   mutation** — the whole pass was read-only on the host, a clone rather than a worktree). The
+   before/after-graft delta is landed as [pollination-dither.md](../../fitness/pollination-dither.md):
+   instrument-controlled, **four of six metrics moved and every one improved** — `map_reachability` 6.8% →
+   **48.8%**, `enforcement_ratio` null → **8/8**, `drift_count` 2 → **0** (attributably E-006's two refs),
+   `ledger_trend` null → **-2**. **Remaining: the Gardener pushes** the seed record (seed only), after which
+   one seed-ci run confirms.
+4. **The exit criterion is HALF-MET — Independence waits on the feature track, not on more sensing.** The
+   trend half is met (ten days, nine entries digested, no regression). The **owner-ships-features half is
+   untested**: dither's last owner-authored commit is the pre-graft `2b2b3d5`, so every commit on `main`
+   since is seed-driven. The highest-value next work on this plan is therefore **one feature shipped
+   through the agent workflow** (E-003 / E-004 / E-005 / E-008 at their build-order steps) — owner-paced,
+   and the trigger to re-measure and judge **step 6 — Independence** (its own carried seed, lineage
+   recorded, feedback channel live).
+5. **Gardener decision pending — [E-020](../entropy-ledger.md):** `plan_traceability` reports "no plans or
+   rings — no decision log" about dither, which keeps nine ADRs whose commit→ADR traceability the seed
+   itself grafted ([ring 0038](../../rings/0038-dither-adr-gate-graft.md)) — so one of the four graft
+   organs is invisible in its own pollination proof. Teaching the metric a second decision-log shape edits
+   SEED.md §6's stated definition, which §6 and the amendment rule both route to the Gardener; priced Open
+   and held (the E-012 fork precedent). Ruling on it unblocks a real `plan_traceability` reading on dither.
+6. **Seed-side queue — [E-021](../entropy-ledger.md) is the highest-interest open entry** (priced U10,
+   not converted): the working-tree gates consult a hardcoded exclusion set instead of git's ignore rules,
+   so any agent tool writing local state turns a clean `git status` into a red `npm run check` on the
+   Gardener's machine while CI stays green. Small fix inside `listRepoFiles` with the self-test pair
+   [E-012](../entropy-ledger.md) already established, but every gate inherits that helper — it warrants
+   its own unit, not a ride-along.
+7. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+   drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
+   find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
+   *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
+   decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
+   Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
+   posture, not a defect); **graphify** (a deliberate optional aid).
+8. **On cadence:** re-measure after any dither commit and extend
+   [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
+   hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
+   a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact
+   (ring 0049 Revisit).

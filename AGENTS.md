@@ -101,7 +101,22 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   unchanged and fixed one seed-side residual — the seed's own elicited dither.md still called the workshop
   "Vite + R3F" (the E-012 drift, which had been dither-scoped) → "Vite + React" — and recorded that
   `ledger_trend` has matured from a level to its true 7-day rate (now -2, a healthy weekly digestion, not a
-  regression). Every step's instrument was built across
+  regression). With the refactor track drained, the plan's standing **fitness-cadence** item was executed
+  ([ring 0049](docs/rings/0049-dither-pollination-proof-exit-criterion-half-met.md)): the before/after-graft
+  delta — SEED.md §6's second job for fitness — is landed as the **pollination proof**
+  ([docs/fitness/pollination-dither.md](docs/fitness/pollination-dither.md), the Stage-4 counterpart to
+  Stage 3's [recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). It is **instrument-controlled** —
+  dither's pre-graft tree re-measured with *today's* engine, since [E-016](docs/plans/entropy-ledger.md)
+  and [E-019](docs/plans/entropy-ledger.md) both move `map_reachability` — and **four of six metrics moved,
+  every one improved, none regressed**: `map_reachability` **6.8% → 48.8%**, `enforcement_ratio` **null →
+  8/8**, `drift_count` **2 → 0** (attributably E-006's two refs), `ledger_trend` **null → -2**. The
+  per-host **exit criterion is half-met**: the trend half is met, but the *owner-ships-features* half is
+  **untested** — dither's last owner-authored commit is the pre-graft `2b2b3d5` — so **Independence (step 6)
+  waits on the feature track, not on more sensing**. One metric reads *wrong* on a host:
+  `plan_traceability` reports "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed
+  itself grafted ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), leaving one graft organ invisible
+  in its own proof — priced [E-020](docs/plans/entropy-ledger.md) and **held for the Gardener** (it edits
+  SEED.md §6). Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

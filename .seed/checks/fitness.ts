@@ -25,7 +25,10 @@ function main(): void {
   const json = process.argv.includes('--json');
   const snapshot = computeSnapshot(REPO_ROOT, CURRENT_STAGE);
   if (json) {
-    console.log(JSON.stringify(snapshot));
+    // Two-space-indented, matching the schema FITNESS.md documents and the landed snapshots —
+    // this output is meant to be redirected straight into docs/fitness/history/ (see header),
+    // so it must produce the directory's convention, not a second format.
+    console.log(JSON.stringify(snapshot, null, 2));
     return;
   }
   const pct = (f: number | null): string => (f === null ? 'null' : `${(f * 100).toFixed(1)}%`);
