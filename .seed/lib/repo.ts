@@ -1,13 +1,73 @@
 // Shared machinery helpers. Zero dependencies (ring 0002, LAW-7): the needed subset —
 // walking the repo, extracting markdown links, formatting violations — is small enough
 // to own outright.
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { join, relative, resolve, dirname, posix } from 'node:path';
 
 export const REPO_ROOT = resolve(import.meta.dirname, '..', '..');
 
+// The on-disk walk's own skip list. With a git root, git's ignore rules are the authority
+// (see listRepoFiles) and this set only spares the walk the cost of descending into
+// node_modules; without one it is the whole exclusion policy — the honest fallback for a
+// target that has not told us what it considers its own.
 const EXCLUDED_DIRS = new Set(['.git', 'node_modules']);
 const EXCLUDED_FILES = new Set(['.DS_Store']);
+
+/** One read-only git invocation against `root`. Null when git fails for any reason (not a
+ *  repository, unknown ref, git absent) — every caller treats null as "not computable here"
+ *  rather than crashing, so a non-git target degrades cleanly. */
+export function git(root: string, args: string[]): string | null {
+  try {
+    return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch {
+    return null;
+  }
+}
+
+export type GitRootStatus = { ok: true } | { ok: false; note: string };
+
+/** Whether `root` IS a git repository's top level. A nested subdirectory answers git questions
+ *  about the ENCLOSING repository — the wrong repository, and a plausible-but-wrong answer
+ *  attributed to the target — so callers degrade rather than measure the wrong tree (ring 0016). */
+export function gitRootStatus(root: string): GitRootStatus {
+  const top = git(root, ['rev-parse', '--show-toplevel']);
+  if (top === null) return { ok: false, note: 'not a git repository — no commit history' };
+  let sameRoot: boolean;
+  try {
+    sameRoot = realpathSync(top) === realpathSync(root);
+  } catch {
+    sameRoot = top === root;
+  }
+  if (!sameRoot) {
+    return {
+      ok: false,
+      note: `not the git repository root (its root is ${top}) — a nested subdirectory's history would measure the enclosing repo`,
+    };
+  }
+  return { ok: true };
+}
+
+// The paths git does NOT ignore: tracked files plus untracked ones no ignore rule covers
+// (`--cached --others --exclude-standard`). Null when `root` is not a git repository root, or
+// git cannot answer — the caller then keeps its unfiltered walk.
+//
+// Deliberately NOT `git ls-files` alone. The metrics engine counts the COMMITTED repository
+// (E-012), but the GATES must still judge work that is written and not yet committed — that is
+// the whole point of running them before you commit. So the set is "the working tree, minus what
+// git has been told to ignore": an uncommitted file is gated; an ignored one is not repo content
+// at all. Ignore rules never apply to a tracked file, and `--cached` reflects that — a file that
+// matches an ignore pattern but IS tracked stays in the set, exactly as git treats it.
+//
+// No unborn-HEAD guard (unlike the metrics engine's `trackedFiles`, which has nothing committed
+// to match): ignore rules are fully meaningful in a freshly `git init`'d repository, and the
+// recursive-upgrade proof grafts into exactly such a target.
+function notIgnored(root: string): Set<string> | null {
+  if (!gitRootStatus(root).ok) return null;
+  const out = git(root, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']);
+  if (out === null) return null;
+  return new Set(out.split('\0').filter((f) => f !== ''));
+}
 
 export interface Violation {
   check: string;   // e.g. "seed/validate-map"
@@ -37,7 +97,23 @@ export function toPosix(p: string): string {
 // the seed measures a foreign repo by running its own instruments against that repo's
 // root, so "what a metric means" has a single implementation (LAW-3).
 
-/** All files under `root` as sorted root-relative posix paths, minus .git/node_modules/OS noise. */
+/**
+ * The repository's own files under `root`, as sorted root-relative posix paths: the working tree
+ * minus everything git ignores.
+ *
+ * "What is in this repository" has ONE definition, and it is git's (LAW-3). The walk finds the
+ * files; `.gitignore` — repo, global (`core.excludesFile`), and `.git/info/exclude` alike —
+ * decides which of them are the repository's. Before E-021 the walk answered on its own from a
+ * hardcoded skip list, so any tool that wrote local state into the tree (an editor directory, an
+ * agent's `.claude/settings.local.json`, a worktree snapshot) became a file every gate demanded be
+ * mapped and classified: on a real machine `git status` read clean while `npm run check` failed
+ * and 26 of 241 self-tests broke — and CI, which clones and therefore carries no ignored local
+ * state, stayed green and never saw it.
+ *
+ * A target that is not a git repository root keeps the unfiltered walk (the EXCLUDED_* skip list
+ * is then the whole policy) — it has no ignore rules to consult, so the walk is the only honest
+ * listing there is.
+ */
 export function listRepoFiles(root: string = REPO_ROOT): string[] {
   const out: string[] = [];
   const walk = (dir: string): void => {
@@ -51,7 +127,8 @@ export function listRepoFiles(root: string = REPO_ROOT): string[] {
     }
   };
   walk(root);
-  return out.sort();
+  const own = notIgnored(root);
+  return (own === null ? out : out.filter((f) => own.has(f))).sort();
 }
 
 export function readRepoFile(repoRelPath: string, root: string = REPO_ROOT): string {

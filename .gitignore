@@ -1,2 +1,8 @@
 node_modules/
 .DS_Store
+
+# Agent-tool state written into the working tree, machine-local by convention. Named here so
+# the exclusion belongs to the repository rather than to one machine's global ignore file — a
+# second Gardener cloning this repo gets it too (E-021). Only the .local.json is excluded:
+# a shared .claude/settings.json is repo content and stays gated like anything else.
+.claude/settings.local.json

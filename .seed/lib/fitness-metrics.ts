@@ -20,10 +20,9 @@
 // snapshots never inflate a metric denominator (E-012); a non-git target — or a git repo with
 // no commit yet — degrades to the on-disk walk. repo-fitness's verification proves the target
 // tree is byte-identical before and after (LAW-6).
-import { execFileSync } from 'node:child_process';
-import { lstatSync, realpathSync } from 'node:fs';
+import { lstatSync } from 'node:fs';
 import { join } from 'node:path';
-import { listRepoFiles, readRepoFile, numberedFilenames, extractPlanRingRefs } from './repo.ts';
+import { git, gitRootStatus, listRepoFiles, readRepoFile, numberedFilenames, extractPlanRingRefs } from './repo.ts';
 import { analyzeReachability, resolveMapFilename } from '../checks/validate-map.ts';
 import { scanDrift } from '../checks/doc-drift.ts';
 
@@ -56,43 +55,13 @@ export interface FitnessSnapshot {
   metrics: FitnessMetrics;
 }
 
-// One read-only git invocation against `root`. Returns null when git fails for any reason
-// (not a repository, no commits yet, unknown ref) — every history metric treats null as
-// "not computable here" rather than crashing, so a non-git target degrades cleanly.
-function git(root: string, args: string[]): string | null {
-  try {
-    return execFileSync('git', ['-C', root, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-  } catch {
-    return null;
-  }
-}
-
-// Whether `root` is the TOP LEVEL of a git work tree — not merely somewhere inside one.
-// `git rev-parse --git-dir` succeeds from any subdirectory by walking up to the enclosing
-// .git, so gating on it would make a nested subdirectory look like a repo and compute the
-// history metrics (plan_traceability, ledger_trend) over the ENCLOSING repo's commits — the
-// wrong repository, and a plausible-but-wrong number attributed to the target. So compare the
-// git top-level to the target: the history metrics describe the target only when they are the
-// same directory; otherwise they degrade to null with an honest reason (ring 0016).
-type GitRootStatus = { ok: true } | { ok: false; note: string };
-
-function gitRootStatus(root: string): GitRootStatus {
-  const top = git(root, ['rev-parse', '--show-toplevel']);
-  if (top === null) return { ok: false, note: 'not a git repository — no commit history' };
-  let sameRoot: boolean;
-  try {
-    sameRoot = realpathSync(top) === realpathSync(root);
-  } catch {
-    sameRoot = top === root;
-  }
-  if (!sameRoot) {
-    return {
-      ok: false,
-      note: `not the git repository root (its root is ${top}) — a nested subdirectory's history would measure the enclosing repo`,
-    };
-  }
-  return { ok: true };
-}
+// `git` and `gitRootStatus` live in repo.ts (imported above) — the same two helpers the file
+// listing needs, so there is one way to ask git about a root (LAW-3). The reason the root guard
+// exists is worth keeping in view here, where the history metrics use it: `git rev-parse
+// --git-dir` succeeds from any subdirectory by walking up to the enclosing `.git`, so gating on
+// it would make a nested subdirectory compute plan_traceability and ledger_trend over the
+// ENCLOSING repo's commits — the wrong repository, and a plausible-but-wrong number attributed to
+// the target (ring 0016).
 
 // The file set the metrics are computed over, for a git target: its TRACKED files, listed via
 // `git ls-files` (read-only — it consults the index, so the Scout's byte-identical contract

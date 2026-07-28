@@ -9,12 +9,12 @@
 // Each case copies the working tree (minus .git/node_modules) to a fresh temp dir,
 // mutates it, and asserts on the real end-to-end path CI runs — exit code included.
 // The append-only gate cases additionally `git init` the copy, so gate history is real.
-import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync, existsSync } from 'node:fs';
+import { copyFileSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync, appendFileSync, readdirSync, symlinkSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, basename } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { REPO_ROOT } from '../lib/repo.ts';
+import { REPO_ROOT, listRepoFiles } from '../lib/repo.ts';
 import { pin } from '../lib/judge.ts';
 
 const ANATOMY = 'seed/validate-anatomy';
@@ -101,12 +101,24 @@ const ASSESS_GAP = pad4(assessmentMax + 2);
 const judgmentMax = maxOf(readdirSync(join(REPO_ROOT, 'docs/judgments')), /^(\d{4})-/);
 const JUDGMENT_NEXT = pad4(judgmentMax + 1);
 
+// The fixture is built from listRepoFiles — THE repository's own files, git's ignore rules
+// included (E-021) — not a raw directory copy. A fixture assembled by walking the tree inherits
+// whatever local state the machine happens to hold: one `.claude/settings.local.json` written
+// mid-session put an unmappable, unclassifiable file into every copy at once and broke 26 of 241
+// cases, on a working machine only, while CI (which clones, so carries no ignored state) stayed
+// green. Sharing the definition with the gates means the fixture is by construction the same set
+// the gates judge — and if that definition ever breaks, these cases break with it, loudly.
+//
+// The copy is deliberately NOT a git repository (no `.git`): the cases that need history
+// `git init` it themselves, so the rest prove the checks work on a bare tree.
 function copyRepo(): string {
   const root = mkdtempSync(join(tmpdir(), 'seed-selftest-'));
-  cpSync(REPO_ROOT, root, {
-    recursive: true,
-    filter: (src) => !COPY_SKIP.has(basename(src)),
-  });
+  for (const rel of listRepoFiles(REPO_ROOT)) {
+    if (COPY_SKIP.has(basename(rel))) continue;
+    const dest = join(root, rel);
+    mkdirSync(dirname(dest), { recursive: true });
+    copyFileSync(join(REPO_ROOT, rel), dest);
+  }
   return root;
 }
 
@@ -3054,6 +3066,75 @@ inTempCopy((root) => {
       `expected drift_count 1 while stray.md is untracked and 2 once committed; got untracked ${untracked}, tracked ${tracked}`,
     );
   });
+});
+
+// E-021 (ring 0050): the GATES judge the working tree minus what git ignores — the twin of the
+// E-012 case above, which scoped the METRICS to the committed repository. The two sets differ on
+// purpose: metrics count what is committed, gates must still judge what is written and not yet
+// committed, or running them before you commit would be pointless.
+//
+// The proof is a four-step contrast on ONE file, so it is the ignore RULE that decides and not
+// the filename: an unreachable `stray-local.md` is gated while merely uncommitted (E-012's intent,
+// preserved), goes silent once `.gitignore` covers it (the fix), and is gated again once tracked
+// — because git's own ignore rules never apply to a tracked file, and the set mirrors git exactly.
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  const violates = (): boolean => {
+    const { status, output } = runChecks(root);
+    return status === 1 && output.includes('stray-local.md is not reachable within 3 hops');
+  };
+  writeFileSync(join(root, 'stray-local.md'), '# Stray\n\nNothing links here.\n');
+  const uncommitted = violates();
+  appendFileSync(join(root, '.gitignore'), 'stray-local.md\n');
+  const ignored = violates();
+  git(root, 'add', '-f', 'stray-local.md');
+  const trackedAnyway = violates();
+  report(
+    'gates: an ignored file is not repo content; the same file is gated while merely uncommitted, and again once tracked (E-021)',
+    uncommitted && !ignored && trackedAnyway,
+    `expected gated → silent → gated; got uncommitted ${uncommitted}, ignored ${ignored}, tracked-anyway ${trackedAnyway}`,
+  );
+});
+
+// E-021, the trigger case: the real failure came from the user's GLOBAL ignore file
+// (~/.config/git/ignore), not the repo's `.gitignore` — so a fix that reads only `.gitignore`
+// would not have caught it. Any source git honors must count, which is what `--exclude-standard`
+// buys; this pins core.excludesFile specifically, since that is the one that actually bit.
+inTempCopy((root) => {
+  // The excludes file lives OUTSIDE the copy, as a real global ignore does — and must, since a
+  // file inside would itself be an unmapped repo file and fail the very check being measured.
+  const home = mkdtempSync(join(tmpdir(), 'seed-excludes-'));
+  try {
+    git(root, 'init', '--quiet');
+    writeFileSync(join(root, 'stray-local.md'), '# Stray\n\nNothing links here.\n');
+    const before = runChecks(root);
+    const excludes = join(home, 'ignore');
+    writeFileSync(excludes, 'stray-local.md\n');
+    git(root, 'config', 'core.excludesFile', excludes);
+    const after = runChecks(root);
+    report(
+      'gates: a file excluded by core.excludesFile — not .gitignore — is honored too (E-021, the global-ignore trigger)',
+      before.status === 1 && before.output.includes('stray-local.md is not reachable') && after.status === 0,
+      `expected gated before the exclude rule and silent after; got before ${before.status}, after ${after.status}\n${after.output}`,
+    );
+  } finally {
+    rmSync(home, { recursive: true, force: true });
+  }
+});
+
+// E-021's degradation contract: with no git repository there are no ignore rules to consult, so
+// the walk is the only honest listing and NOTHING is filtered — a `.gitignore` sitting in a
+// non-git tree must not silence a gate, or a target could hide files from the seed by shipping a
+// file git never reads. (Every other case in this suite runs on exactly such a copy.)
+inTempCopy((root) => {
+  writeFileSync(join(root, 'stray-local.md'), '# Stray\n\nNothing links here.\n');
+  appendFileSync(join(root, '.gitignore'), 'stray-local.md\n');
+  const { status, output } = runChecks(root);
+  report(
+    'gates: without a git repository the walk is unfiltered — a .gitignore alone cannot silence a check (E-021)',
+    status === 1 && output.includes('stray-local.md is not reachable within 3 hops'),
+    `expected the unreachable file still gated in a non-git copy; got status ${status}\n${output}`,
+  );
 });
 
 // --- parallel-worktrees (plan 0003 scope item 4, ring 0019): the dry-run creates N ISOLATED

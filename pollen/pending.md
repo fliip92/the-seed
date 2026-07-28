@@ -14,4 +14,4 @@ pollen version, and clears this file. The pending-release notes
 ([docs/generated/pending-release.md](../docs/generated/pending-release.md)) are computed from
 this file and byte-exact-gated by `npm run check`.
 
-_No pending intents — the pollen line rests. Declare one above to compose the next release._
+- Impact: patch — [ring 0050](../docs/rings/0050-gates-honor-git-ignore-rules.md) — the working-tree gates take their file set from git, so a git-ignored file (an agent tool's local state, editor or build output) no longer fails every check and self-test on a working machine while CI stays green

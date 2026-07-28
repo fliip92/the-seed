@@ -7,8 +7,13 @@ version lines — genome and pollen — are never conflated, ring 0026).
 
 ## Next release
 
-- **No pending intents.** Declare a portable-subtree change in [`pollen/pending.md`](../../pollen/pending.md) — `- Impact: <major|minor|patch> — [ring NNNN](…) — <summary>` —
-  to compose the next release.
+- **Version:** v0.1.1 (patch) — bumped from v0.1.0 by the maximum declared impact.
+- **Migration required:** no — a patch release is a backward-compatible graft.
+- **Composing:**
+  - patch — ring 0050 — the working-tree gates take their file set from git, so a git-ignored file (an agent tool's local state, editor or build output) no longer fails every check and self-test on a working machine while CI stays green
+
+Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD` — the first real cut is
+the recursive self-upgrade test ([plan 0005](../plans/completed/0005-flowering.md) scope item 4).
 
 ---
 

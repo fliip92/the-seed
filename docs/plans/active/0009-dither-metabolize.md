@@ -338,6 +338,37 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Owner: agent
 - Depends-on: U1–U9 (the nine digested entries the delta measures); dither unchanged at `b8d3823`.
 
+### U11 — E-021: the working-tree gates take their file set from git
+- Status: done
+- Landed: seed-side only (dither is provably unaffected) — [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md)
+- Scope: convert the entry U10 sensed and priced, on the Gardener's go. Make
+  [`listRepoFiles`](../../../.seed/lib/repo.ts) filter the walk through
+  `git ls-files --cached --others --exclude-standard`, so repo `.gitignore`, global
+  `core.excludesFile`, and `.git/info/exclude` are honored because **git** honors them — one
+  definition of repository membership (LAW-3) instead of a hardcoded list drifting beside it; the old
+  set stays as the non-git fallback. In scope, because measurement showed it was the larger half: the
+  **self-test fixtures**, where `copyRepo` raw-copied the tree so one ignored file broke 26 cases at
+  once — it now assembles from `listRepoFiles`, sharing the gates' definition. Also in scope, both
+  sub-questions the entry flagged: `.claude/settings.local.json` named in the repo's own
+  [`.gitignore`](../../../.gitignore) (so the exclusion is not one machine's global rule), and the
+  `pollen` `patch` intent, since `.seed/` is portable. Out of scope: narrowing the *metrics* set
+  (E-012 scoped it deliberately, and the gates must stay broader — they judge uncommitted work); any
+  dither mutation (its runners already list via `git ls-files -z`); a general LAW-8 pause on plan 0009
+  — this is the [ring 0035](../../rings/0035-stage-agreement-invariant.md) shape, a seed-side entry
+  paid while the dither track waits on the owner.
+- Entry-context: [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md);
+  [E-021](../entropy-ledger.md) and [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md),
+  where the defect surfaced by breaking U10's own verification run;
+  [E-012](../entropy-ledger.md), whose Paid note both established the git-listing pattern and
+  recorded the assumption this falsified; the four graft rings, whose runners were already right.
+- Done-when: `npm run check`, `npm test`, and `npm run garden` are green **with
+  `.claude/settings.local.json` present** — the condition that broke them; three new self-tests pin
+  the ignore-rule contrast, `core.excludesFile` (the source that actually bit), and the non-git
+  fallback; the test-of-the-test (neuter the filter) turns them red; a ring records the decision;
+  E-021 Open→Paid; the portable change is declared as a pollen intent.
+- Owner: agent
+- Depends-on: U10 (which priced it); the Gardener's go.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -606,6 +637,27 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   repo's own done-criterion on a real machine and is invisible in CI), not converted — every gate inherits
   that helper. Seed-side `npm test` + `npm run garden` (`drift_count` 0) green; `npm run check` green on
   all committed content (verified with the ignored `.claude/` held aside); no dither commit.
+- **2026-07-27** — **U11 / E-021 paid: the working-tree gates take their file set from git**
+  (seed-side only; [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md)). On the Gardener's
+  go, converted the entry U10 sensed. [`listRepoFiles`](../../../.seed/lib/repo.ts) now filters the
+  walk through `git ls-files --cached --others --exclude-standard`, so repo `.gitignore`, global
+  `core.excludesFile`, and `.git/info/exclude` are honored because git honors them — **one definition
+  of repository membership** (LAW-3); the hardcoded set survives only as the non-git fallback. The
+  gates' set stays deliberately broader than the metrics' (E-012 scoped metrics to the committed
+  repository; a pre-commit gate blind to uncommitted work is pointless), and a tracked file is never
+  ignored, as git treats it. **Measurement changed the scope:** with the gates fixed and the fixtures
+  untouched, 26 self-tests still failed — `copyRepo` raw-copied the tree, so every case inherited local
+  state; it now assembles from `listRepoFiles`, sharing the gates' definition. Both sub-questions the
+  entry flagged were settled: `.claude/settings.local.json` is in the repo's own `.gitignore` (not just
+  one machine's global file), and the portable change is declared as a `patch`
+  [pollen intent](../../../pollen/pending.md). **dither is unaffected and needs no mutation** — its
+  grafted runners already list via `git ls-files -z`, so the mother converged on the practice her own
+  host was already following; the fix reaches descendants as a pollen release, not a hand-copy.
+  Verification: three new self-tests (**244**, was 241) — the four-step ignore-rule contrast,
+  `core.excludesFile` (the source that actually bit), and the non-git fallback — plus the
+  test-of-the-test (neutering turns the first two red and returns the 26 fixture failures).
+  `npm run check` (18) + `npm test` (244) + `npm run garden` (`drift_count` 0) green **with the ignored
+  file present**. E-021 Open→Paid; no dither commit.
 
 ## Next actions
 
@@ -617,14 +669,14 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 2. **U9 (fourth sensing pass) — landed, pushed, seed-ci green** (seed `9765e1a`, run
    [30316121224](https://github.com/fliip92/the-seed/actions/runs/30316121224);
    [ring 0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md); no dither mutation).
-3. **U10 / the pollination proof — DONE, held for the Gardener's push** (seed
-   [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md); **no dither
-   mutation** — the whole pass was read-only on the host, a clone rather than a worktree). The
-   before/after-graft delta is landed as [pollination-dither.md](../../fitness/pollination-dither.md):
+3. **U10 (the pollination proof) — landed, pushed, seed-ci green** (seed `99eb321`, run
+   [30318228020](https://github.com/fliip92/the-seed/actions/runs/30318228020);
+   [ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md); no dither
+   mutation — the pass was read-only on the host, a clone rather than a worktree). The before/after-graft
+   delta is landed as [pollination-dither.md](../../fitness/pollination-dither.md):
    instrument-controlled, **four of six metrics moved and every one improved** — `map_reachability` 6.8% →
    **48.8%**, `enforcement_ratio` null → **8/8**, `drift_count` 2 → **0** (attributably E-006's two refs),
-   `ledger_trend` null → **-2**. **Remaining: the Gardener pushes** the seed record (seed only), after which
-   one seed-ci run confirms.
+   `ledger_trend` null → **-2**.
 4. **The exit criterion is HALF-MET — Independence waits on the feature track, not on more sensing.** The
    trend half is met (ten days, nine entries digested, no regression). The **owner-ships-features half is
    untested**: dither's last owner-authored commit is the pre-graft `2b2b3d5`, so every commit on `main`
@@ -638,12 +690,15 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    organs is invisible in its own pollination proof. Teaching the metric a second decision-log shape edits
    SEED.md §6's stated definition, which §6 and the amendment rule both route to the Gardener; priced Open
    and held (the E-012 fork precedent). Ruling on it unblocks a real `plan_traceability` reading on dither.
-6. **Seed-side queue — [E-021](../entropy-ledger.md) is the highest-interest open entry** (priced U10,
-   not converted): the working-tree gates consult a hardcoded exclusion set instead of git's ignore rules,
-   so any agent tool writing local state turns a clean `git status` into a red `npm run check` on the
-   Gardener's machine while CI stays green. Small fix inside `listRepoFiles` with the self-test pair
-   [E-012](../entropy-ledger.md) already established, but every gate inherits that helper — it warrants
-   its own unit, not a ride-along.
+6. **U11 / [E-021](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+   [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md); no dither mutation — dither's runners
+   already list via `git ls-files -z`, so it is unaffected). The gates now take their file set from git;
+   check, tests (244), and garden are green **with the ignored file present**. Two follow-ons ride the
+   record rather than needing work: the change is declared as a `patch`
+   [pollen intent](../../../pollen/pending.md) awaiting the next release, and dither's copied
+   `.seed/lib/repo.ts` now **lags** the mother's by this fix — the first divergence since the graft,
+   and the designed propagation model (descendants upgrade through versioned releases, not continuous
+   mirroring). **Remaining: the Gardener pushes** the seed record, after which one seed-ci run confirms.
 7. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately

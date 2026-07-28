@@ -116,7 +116,21 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   `plan_traceability` reports "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed
   itself grafted ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), leaving one graft organ invisible
   in its own proof — priced [E-020](docs/plans/entropy-ledger.md) and **held for the Gardener** (it edits
-  SEED.md §6). Every step's instrument was built across
+  SEED.md §6). That pass also sensed **[E-021](docs/plans/entropy-ledger.md)** by tripping over it, and the
+  Gardener had it converted next (**paid**, ring
+  [0050](docs/rings/0050-gates-honor-git-ignore-rules.md)): the working-tree gates were answering *"what is
+  in this repository"* from a hardcoded skip list, so one git-ignored file an agent tool wrote turned a
+  clean `git status` into 3 failing checks and 26 of 241 broken self-tests — on a working machine only,
+  invisible to CI, which clones and carries no ignored state. [`listRepoFiles`](.seed/lib/repo.ts) now
+  filters the walk through `git ls-files --cached --others --exclude-standard`, so **git's ignore rules are
+  the one definition of repository membership** (LAW-3) — repo `.gitignore`, global `core.excludesFile`,
+  and `.git/info/exclude` alike — with the old set kept only as the non-git fallback. The gates' set stays
+  deliberately broader than the *metrics'* ([E-012](docs/plans/entropy-ledger.md) scoped those to the
+  committed repository; a pre-commit gate blind to uncommitted work is pointless). The self-test fixtures
+  carried the same defect and were the larger half — `copyRepo` now assembles from the same listing (244
+  self-tests, was 241). **dither was already immune** (its grafted runners list via `git ls-files -z`), so
+  the mother converged on the practice her own host was following, and the fix reaches descendants as a
+  `patch` [pollen intent](pollen/pending.md) rather than a hand-copy. Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose
