@@ -43,6 +43,17 @@ ledger is also a record of digestion.
   [postmortem 0001](../postmortems/0001-agents-current-state-drift.md) (ring
   [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
   prose-state shape is the trigger to build the class
+- **Trigger FIRED: 2026-07-27**, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — two further recurrences in one
+  sweep. [plan 0006](active/0006-pollination.md)'s step 5 named E-002/E-007/E-006 as *"Next"* (all landed
+  2026-07-20) and called a pushed commit *"local, push Gardener-gated"* — and it is the section the map
+  routes a fresh agent to; and the front door's six false state claims ([E-026](entropy-ledger.md)). Both
+  contents are fixed; **the class is now owed an instrument**. What the pass also measured is why it was
+  deferred and what it will cost: distinguishing a live claim from permanent history is the whole problem
+  — ~19 correct provenance mentions of `Stage N` alone — so the class most likely lands as
+  *generate-don't-detect* (E-026's path) for the countable half, plus a narrow detector for the shape that
+  actually bit twice: a **plan's `Next actions` naming work its own progress log records as done**. That
+  one is computable — both halves are in the same file, in formats the plan validator already parses
 
 ## E-017 — the seed asserts LLM/context efficiency but never measures it
 
@@ -138,6 +149,81 @@ ledger is also a record of digestion.
   converted, dither's `plan_traceability` should start climbing again, and
   [pollination-dither.md](../fitness/pollination-dither.md) gets its next row — the check that the
   conversion actually worked
+
+## E-026 — the public front door's state claims are hand-maintained and unread by any instrument
+
+- First observed: 2026-07-27, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — reading [README.md](../../README.md)
+  against the tree it describes. Six claims were false, some for weeks: *21 rings* (53), *seven planted
+  skills* (9 — `intake` and `judge` were missing from the list entirely), *two completed plans plus one
+  active* (7 + 2), *principles … none stated yet* (grounded-or-ask, ring
+  [0023](../rings/0023-grounded-or-ask-first-principle.md), stated a week before the README was last
+  touched), *a **solo experiment*** (ring [0032](../rings/0032-stage-4-transition-first-host-dither.md)
+  retired that), and *pollen … does not exist until Stage 3 … deliberately empty* (v0.1.0 cut 2026-07-16).
+  The stage claim in the same file is [E-025](entropy-ledger.md), paid in the same pass because a gate
+  already existed for it
+- Where: [README.md](../../README.md) — the repository's public face (public by ring
+  [0004](../rings/0004-name-hosting-visibility.md)) — plus, in principle, any hand-written count in a
+  current-state doc. It **is** inside the [drift scan](../../.seed/checks/doc-drift.ts) surface, and the
+  scan is honest about what it reads: `stale-path-reference` is the only class, so a path that stops
+  resolving fires and a *number* that stops being true does not. `validate-map` reads links, not claims.
+  `drift_count 0` was correct and blind at the same time
+- Interest rate: medium, and it is the **only** entropy here with an audience outside the repository.
+  Every count drifts monotonically the moment it is written; the file is edited only when someone
+  remembers it exists (last touched 2026-07-15, twelve days and 32 rings before this pass). The specific
+  cost is credibility: the document's own pitch is *"don't take it on faith — clone it and watch it verify
+  itself"*, and the first numbers a visitor could check were the ones nothing checked. Bounded only by the
+  project's obscurity
+- Price: small–medium, and the shape is already owned. The seed generates artifacts from repo state and
+  gates them byte-exact ([validate-generated](../../.seed/checks/validate-generated.ts), the generation
+  manifest [generated.ts](../../.seed/lib/generated.ts), ring
+  [0020](../rings/0020-onboard-human-generated-briefing.md), paying E-001). The counts are all pure
+  functions of the tree — rings, plans, skills, principles, metrics — so the work is one generator plus
+  the decision of how a *hand-written, voiced* README consumes it
+- Conversion path: invariant — **generate, don't detect.** Add a `docs/generated/` state block (counts +
+  the live fitness line) to the manifest, and have README link it rather than restate it; the
+  regeneration gate then makes a stale count impossible instead of merely detectable. The alternative — a
+  `stale-count` drift class — is second choice: it needs a regex over prose that distinguishes *"53
+  rings"* (a live claim) from *"the four graft organs"* (permanent history), which is the same
+  false-positive surface that keeps [E-009](entropy-ledger.md)'s prose class deferred. Do it when the next
+  reader-facing change touches README, or immediately if the seed goes looking for readers. The content is
+  correct as of 2026-07-27 — hand-fixed in the sensing pass — so the debt is the **enforcement**, not the
+  current text
+
+## E-027 — the map is 71% current-state narrative, restating what four other artifacts already record
+
+- First observed: 2026-07-27, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)), measuring the map's sections:
+  **§ Current state is 198 of [AGENTS.md](../../AGENTS.md)'s 279 lines.** Its growth is the finding — 9
+  lines on 2026-07-04, 35 on 07-05, 93 on 07-17, 135 on 07-27 morning, **198 by evening** — while every
+  other section stayed flat across the same 23 days (Start here 10, Territory 19, Protocols 36, Laws 6)
+- Where: [AGENTS.md](../../AGENTS.md) § Current state. The navigational half of the map does its LAW-4 job
+  in ~80 stable lines; the narrative half is a **second progress log**, restating what
+  [plan 0009](active/0009-dither-metabolize.md)'s progress log, this ledger's Paid notes, and the ring
+  bodies each already record in full. Three costs, all real: every session (and every fresh agent, by
+  instruction) reads it before doing anything; the human briefing
+  [docs/generated/onboarding.md](../generated/onboarding.md) is generated *from* it, so bloat propagates
+  to the artifact meant to be short; and it is the most drift-prone prose in the repository — the one
+  place with its own [postmortem](../postmortems/0001-agents-current-state-drift.md) and a ring
+  ([0018](../rings/0018-map-current-state-drift-doc-only.md)) that consciously left it doc-only, taken
+  when the section was 35 lines and now 5.6× that
+- Interest rate: medium and compounding by construction — each unit appends a paragraph and none removes
+  one, so the entry point grows without bound while the thing it is *for* (orienting a fresh agent in
+  three hops) degrades. It is also the substrate every prose-state defect this pass found grows in
+- Price: small to execute, but the decision is not the agent's. The mechanical part is trivial (move the
+  per-unit narrative behind the links that already carry it, leave a short state + pointer). What needs
+  taste is the **fork**: (A) the map states *state* only — stage, live plan, correct first action,
+  standing gates — and history lives one hop away in the plan; (B) the section is capped (a line budget,
+  enforced like the architecture doc's one-page rule, ring
+  [0015](../rings/0015-grill-the-gardener-architecture-doc.md)); (C) it is *generated* from the active
+  plan's latest progress entries, which makes it unable to drift but also unable to be written well; or
+  (D) it stays as-is, deliberately, because a self-describing repository would rather pay context than
+  lose the narrative that makes it legible
+- Conversion path: ring — the Gardener picks a fork, then the mechanical edit follows in the same unit.
+  Held rather than converted because it edits the seed's own entry point on a matter of taste (the
+  [E-012](entropy-ledger.md) precedent: sense it, price it, present the fork, do not choose unilaterally).
+  Natural trigger: the next unit that would append another paragraph to § Current state — which is every
+  unit, so the first one after a ruling
 
 ## Paid
 
@@ -855,3 +941,42 @@ ledger is also a record of digestion.
   **not** priced: the slugged organs (`skills/`, `docs/references/`, `docs/principles/`,
   `docs/architecture/`) are all currently index-complete, so generalizing the membership rule to them
   waits on evidence (LAW-7) — it is the ring's Revisit trigger, not a new entry
+
+## E-025 — the growth stage is stated in a third place the stage gate does not know about
+
+- First observed: 2026-07-27, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — [README.md](../../README.md)
+  read *"currently at **Stage 2 — Growth** … entered 2026-07-05"* while the repository has been at Stage 4
+  since 2026-07-17 (ring [0032](../rings/0032-stage-4-transition-first-host-dither.md)). **Ten days wrong,
+  on the public front door**, with a stage-agreement gate green the whole time
+- Where: [validate-stage](../../.seed/checks/validate-stage.ts) proved agreement between exactly **two**
+  hand-bumped places — the map's `- **Stage:** N` bullet and `CURRENT_STAGE` in
+  [fitness.ts](../../.seed/checks/fitness.ts) — because those were the two that existed when
+  [E-011](entropy-ledger.md) was priced (ring [0035](../rings/0035-stage-agreement-invariant.md)). README's
+  *"currently at"* sentence is a third, and a gate that names its members can only be as complete as that
+  list: the same residual [E-024](entropy-ledger.md) closed for organ indices, one artifact over
+- Interest rate: medium — a stage transition happens rarely and touches everything, so the forgotten place
+  is silently wrong for the whole stage, and this one faced outward. It is E-011 recurring, which makes it
+  the class the seed has now paid twice
+- Price: small — the gate exists; it needed a source *set* instead of a pair, plus one canonical form for
+  the new source
+- Conversion path: invariant — generalize `validate-stage` to a declared list of (file, canonical form)
+  sources compared against the map, self-tested with the pair that matters: a third place disagreeing
+  fails, a source stating nothing stays silent
+- Paid: 2026-07-27 (plan [0009](active/0009-dither-metabolize.md) U15; ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md), in the sensing pass that found
+  it). `validate-stage` now compares a **declared source set** — the map is the reference, `fitness.ts`
+  and README's *"currently at **Stage N**"* sentence are compared to it — and it went **red on the real
+  repository on its first run**, which is the fire the conversion is built on; the README line was then
+  corrected to Stage 4. Per-source silence is kept (ring 0035's contract, now applied per source), so a
+  descendant carrying the check but not the mother's README prose is unbound. **The list stays explicit
+  and that is the measured choice**: this repository carries ~19 *correct* provenance mentions of
+  `Stage N` (*"the Stage 2 exit criterion"*, *"the Stage 1 organ"*) that no regex separates from a
+  current-state claim, so a prose scan would fire 19 false positives to catch one real defect and train
+  every agent to ignore it. The completeness of the list is therefore the acknowledged residual, named in
+  the failure message. Verification (LAW-6): two self-tests (**261**, was 259) — README disagreeing with
+  the map fails, a source stating no stage keeps everything green — plus the test-of-the-test (reverting
+  to the two hardcoded places turns exactly the README case red, nothing else). `npm run check` (14) +
+  `npm test` (261) + `npm run garden` (`drift_count` 0) green. Declared a `minor`
+  [pollen intent](../../pollen/pending.md). The end state is single-sourcing the stage (generated from one
+  constant), recorded as the ring's Revisit rather than built now

@@ -44,7 +44,7 @@ npm run repo-fitness -- <path> # the same engine, read-only, against ANY repo
 The laws are not vibes. Each is legible to a fresh agent and verifiable by CI — "legible and enforceable, or it doesn't exist" ([LAW-2](SEED.md)). Concretely:
 
 - **The map is CI-enforced.** [AGENTS.md](AGENTS.md) is the agent's daily entry point; a check fails on any dead link or any file more than three hops from it ([LAW-4](SEED.md)). No knowledge hides off the map. Break a link, run `npm run check`, watch it catch you.
-- **Every decision is traceable.** A CI gate rejects any commit whose message doesn't reference an existing plan or ring — 21 rings so far, each a numbered, append-only entry in the [decision log](docs/rings/README.md).
+- **Every decision is traceable.** A CI gate rejects any commit whose message doesn't reference an existing plan or ring — 53 rings so far, each a numbered, append-only entry in the [decision log](docs/rings/README.md).
 - **Generated docs can't drift.** The human onboarding briefing ([docs/generated/onboarding.md](docs/generated/onboarding.md)) is regenerated from repo state; a gate fails if the committed bytes differ from a fresh generation.
 - **Errors are written for the next agent.** Every lint names the LAW it enforces and states exactly how to comply — the agent reading the failure *is* the context window the message is written to.
 
@@ -60,14 +60,15 @@ The whole apparatus — checks, gates, fitness scripts, CI definitions — lives
 | [the decision log](docs/rings/README.md) | Every answered question, permanently retired — how the Seed actually reasons |
 | [plans](docs/plans/README.md) | Plans as first-class artifacts, plus the [entropy ledger](docs/plans/entropy-ledger.md) |
 | [docs/fitness/FITNESS.md](docs/fitness/FITNESS.md) | Fitness as a *trend*, not a grade — current scores and method |
-| [principles](docs/principles/README.md) | The frame for golden principles — each will name its own enforcement; none stated yet |
+| [principles](docs/principles/README.md) | Golden principles, each naming its own enforcement — [grounded-or-ask](docs/principles/grounded-or-ask.md) is the first stated |
 | [architecture](docs/architecture/README.md) | Elicited target architectures — one page, expressible as lintable rules |
 | [postmortems](docs/postmortems/README.md) | Failures metabolized into fix + invariant + ring |
-| [the skill garden](skills/README.md) | The seven planted skills (below) |
+| [pollen](pollen/README.md) | The portable distribution — the method, versioned and graftable (v0.1.0) |
+| [the skill garden](skills/README.md) | The nine planted skills (below) |
 
 ### The skill garden
 
-Stage 2 grows the skills that make the Seed useful beyond itself. All seven are planted:
+Stage 2 grew the skills that make the Seed useful beyond itself; Stages 2–3 added two more. All nine:
 
 - [doc-gardener](skills/doc-gardener/SKILL.md) — detects doc↔code drift, opens fix-up PRs, sources the `drift_count` metric.
 - [grill-the-gardener](skills/grill-the-gardener/SKILL.md) — interviews the Gardener until the target architecture fits one page, is expressible as lintable rules, and has an explicit human/agent ownership split.
@@ -76,24 +77,26 @@ Stage 2 grows the skills that make the Seed useful beyond itself. All seven are 
 - [parallel-worktrees](skills/parallel-worktrees/SKILL.md) — decompose a large task across isolated git worktrees, one booted instance per worktree, torn down at task end.
 - [onboard-human](skills/onboard-human/SKILL.md) — brief a new human from a briefing *generated* from repo state, so it can't drift, verified by a regeneration gate.
 - [feedback](skills/feedback/SKILL.md) — compose (never post) a well-formed upstream issue against the mother seed from any repository ([LAW-11](SEED.md)).
+- [intake](skills/intake/SKILL.md) — metabolize an external corpus into a distilled, pinned [reference](docs/references/README.md), network-free and provenance-recorded.
+- [judge](skills/judge/SKILL.md) — the seed's one *inferential* control: an LLM-as-judge verdict scored against a rubric, carried in a deterministic, staleness-gated [envelope](docs/judgments/README.md).
 
 ## Suggestions of use
 
-The Seed is a **solo experiment** right now, by recorded decision (see the [decision log](docs/rings/README.md)). There is no package to install and plant in your own repository yet — the portable "pollen" distribution does not exist until Stage 3. What you *can* do today:
+The Seed is no longer solo: [ring 0032](docs/rings/0032-stage-4-transition-first-host-dither.md) retired the solo-until-Flowering decision and named its **first external host**. The portable distribution now exists — [pollen](pollen/README.md) v0.1.0, cut 2026-07-16 — but grafting it is still a hand-driven, Gardener-gated protocol (SEED.md §4), not an install command. What you *can* do today:
 
 - **Clone it and run the checks** (above) — see the invariants fire against a live repo, and `npm test` prove the testers work.
 - **Read the genome**, [SEED.md](SEED.md) — it is short, and it is the whole argument — then the map, [AGENTS.md](AGENTS.md).
-- **Follow the reasoning** — the [rings](docs/rings/README.md) are the append-only trail of every decision and why the alternatives were rejected; the [active plan](docs/plans/completed/0003-growth.md) shows what it is building next.
+- **Follow the reasoning** — the [rings](docs/rings/README.md) are the append-only trail of every decision and why the alternatives were rejected; the [active plans](docs/plans/active/README.md) show what it is building next.
 - **Point the read-only instrument at your own project** — `npm run repo-fitness -- <path>` reads a foreign repo without touching it.
-- **Star / watch** [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed) and follow it toward Flowering.
+- **Star / watch** [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed) and follow it through Pollination.
 
 ## Status & roadmap
 
-This is an **experiment**, currently at **Stage 2 — Growth** (the skill garden), entered 2026-07-05. The stages are: **0 Germination → 1 Rooting → 2 Growth → 3 Flowering → 4 Pollination.** Stages 0 and 1 are complete, each closed by a plan ([Germination](docs/plans/completed/0001-germination.md), [Rooting](docs/plans/completed/0002-rooting.md)).
+This is an **experiment**, currently at **Stage 4 — Pollination** (entering other repositories), entered 2026-07-17. The stages are: **0 Germination → 1 Rooting → 2 Growth → 3 Flowering → 4 Pollination.** Stages 0 through 3 are complete, each closed by a plan ([Germination](docs/plans/completed/0001-germination.md), [Rooting](docs/plans/completed/0002-rooting.md), [Growth](docs/plans/completed/0003-growth.md), [Flowering](docs/plans/completed/0005-flowering.md)). Pollination is terminal and ongoing — a repository is never "done".
 
-Grown so far, on its own, under this discipline: **21 rings**, two completed plans plus one active, an entropy ledger, and seven planted skills. Six fitness metrics are defined; five compute in CI today — `map_reachability` 100%, `drift_count` 0, `plan_traceability` 100%, `enforcement_ratio` 100% (vacuous — no principles stated yet), `ledger_trend` tracked; `escalation_rate` is not yet instrumented (an honest gap, not a hidden zero). Straight from [docs/fitness/FITNESS.md](docs/fitness/FITNESS.md).
+Grown so far, on its own, under this discipline: **53 rings**, seven completed plans plus two active, an entropy ledger, and nine planted skills. Six fitness metrics are defined; five compute in CI today — `map_reachability` 100%, `drift_count` 0, `plan_traceability` 100%, `enforcement_ratio` 100% (1/1 — one principle stated, and enforced), `ledger_trend` tracked as a trailing-7-day rate; `escalation_rate` is not yet instrumented (an honest gap, not a hidden zero). Straight from [docs/fitness/FITNESS.md](docs/fitness/FITNESS.md).
 
-At **Stage 3 (Flowering)** the portable subset ships as [pollen](pollen/README.md) — the thing you will one day be able to plant in other repositories. That is the roadmap, not a thing available today; [pollen](pollen/README.md) is deliberately empty until then.
+**Stage 3 (Flowering)** shipped the portable subset as [pollen](pollen/README.md) and proved the transplant on the Seed itself — v0.1.0 was cut 2026-07-16, and the next release is composed from twelve declared intents. **Stage 4 (Pollination)** is the live work: the Seed is inside its first external host, running the genome's six-step per-host protocol — Scout → Grill → Propose → Graft → Metabolize → Independence — with every mutating step gated on the host owner's approval.
 
 ## License
 

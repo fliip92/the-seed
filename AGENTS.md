@@ -163,8 +163,26 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   cites it, so `map_reachability` read 100% while the index listed 48 of 51 rings, and a self-test now
   pins exactly that contrast (`validate-map` green, `validate-rings` red). It is dither's
   `maps-are-complete` ([ring 0046](docs/rings/0046-dither-map-completeness-gate.md)) turned on the
-  mother's own organs — the second time in three units the **host** held the practice first. Every step's
-  instrument was built across
+  mother's own organs — the second time in three units the **host** held the practice first. The **fifth
+  sensing pass** ([ring 0054](docs/rings/0054-prose-state-rots-where-work-stops-touching-it.md)) then
+  turned the sweep on the mother, dither being unchanged since `b8d3823`, and found one shape in three
+  artifacts: **prose state rots exactly where the work stopped touching it.** The docs every unit edits
+  are current; the ones outside its blast radius are stale in proportion — the public
+  [README](README.md), untouched since 2026-07-15, said *"currently at **Stage 2**"* ten days into
+  Stage 4, alongside five other false claims, and [plan 0006](docs/plans/active/0006-pollination.md)'s
+  `Next actions` still named four refactors as *"Next"* that landed on 2026-07-20 — in the very section
+  this map routes a fresh agent to. **[E-025](docs/plans/entropy-ledger.md) is paid**:
+  [validate-stage](.seed/checks/validate-stage.ts) now compares a **declared source set** rather than the
+  two places that existed when [E-011](docs/plans/entropy-ledger.md) was priced, and it went red on the
+  real repository on its first run; the list stays explicit because ~19 *correct* provenance mentions of
+  `Stage N` would make a prose scan fire nineteen false positives to catch one defect. Both stale
+  contents are fixed, and two entries are priced Open for the Gardener:
+  **[E-026](docs/plans/entropy-ledger.md)** (generate the front door's counts rather than detect their
+  staleness) and **[E-027](docs/plans/entropy-ledger.md)** (**this section is 71% of the map** — 198 of
+  279 lines, grown 9 → 198 in 23 days while every other section stayed flat — restating what the plan,
+  the ledger and the rings already record; four forks stated, the choice is taste and therefore the
+  Gardener's). [E-009](docs/plans/entropy-ledger.md)'s pre-registered prose-state trigger has **fired**.
+  Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose

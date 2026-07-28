@@ -765,6 +765,47 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   index-complete, so generalizing the membership rule waits on evidence (LAW-7) — the ring's Revisit
   trigger, not a new entry. **No dither mutation** — its graft carries none of these organs.
 
+- **2026-07-27** — **U15 / fifth sensing pass, turned on the mother: prose state rots exactly where the
+  work stopped touching it** (seed-side only;
+  [ring 0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md); dither byte-identical to
+  `b8d3823`, no owner commit since 2026-07-21, so there was no host entropy to sense). The four prior
+  passes swept the host; this one swept the seed, and the finding is a single shape in three artifacts:
+  **the docs every unit edits are current** (`.seed/README.md`'s 14 rows for 14 checks, `pollen/README.md`,
+  FITNESS.md, every organ index) **and the docs outside the unit's blast radius are stale in proportion to
+  how long they have been outside it** — [README.md](../../../README.md) (last touched 2026-07-15) and
+  [plan 0006](0006-pollination.md)'s `Next actions` (2026-07-19). Nothing reads either: `validate-map`
+  checks links, `doc-drift` checks backticked *paths*, and plan bodies are excluded from the drift surface
+  by design, so `drift_count` 0 was honest and blind. **[E-025](../entropy-ledger.md) paid in-pass** — the
+  README said *"currently at **Stage 2 — Growth**"* while the repo has been at Stage 4 since 2026-07-17,
+  **ten days wrong on the public front door**, because [validate-stage](../../../.seed/checks/validate-stage.ts)
+  proved agreement across the *two* places that existed when [E-011](../entropy-ledger.md) was priced. It
+  now compares a **declared source set** and went red on the real repository on its first run. The list
+  stays explicit on measured grounds: ~19 *correct* provenance mentions of `Stage N` across `skills/` and
+  the organ READMEs mean a prose scan would fire 19 false positives to catch one defect. **Two entries
+  priced Open, neither converted:** **[E-026](../entropy-ledger.md)** — the front door's other five false
+  claims (*21 rings* → 53, *seven skills* → 9 with `intake`/`judge` missing entirely, *7+2* plans, *no
+  principles stated*, *solo experiment*, *pollen … deliberately empty*), hand-fixed here so the debt is
+  the enforcement; conversion is **generate-don't-detect**, the ring-0020 manifest shape. And
+  **[E-027](../entropy-ledger.md)** — [AGENTS.md](../../../AGENTS.md) § Current state is **198 of 279
+  lines, 71% of the map**, grown 9 → 198 in 23 days while every other section stayed flat; it restates
+  what this progress log, the ledger's Paid notes and the rings already carry, every session reads it, and
+  the human briefing is generated from it. Its conversion is a **fork for the Gardener** (state-only /
+  capped / generated / deliberately as-is), held rather than chosen unilaterally — the
+  [E-012](../entropy-ledger.md) precedent. **[E-009](../entropy-ledger.md)'s pre-registered trigger
+  FIRED**: its second and third recurrences landed in one sweep (plan 0006's step 5 named four
+  refactors as *"Next"* that landed 2026-07-20, in the very section the map routes a fresh agent to; plus
+  the README claims), so the prose-state drift class is now owed an instrument — the pass also measured
+  what makes it hard and named the one computable half (a plan's `Next actions` naming work its own
+  progress log records as done). Content fixed: the README's facts, and plan 0006's step 5 rewritten as a
+  **pointer** to this plan so it cannot rot into instructions again. Verification: two new self-tests
+  (**261**, was 259) + the test-of-the-test (reverting the source set to the hardcoded pair turns exactly
+  the README case red). Checks (14), tests (261), garden (`drift_count` 0) green; a `minor`
+  [pollen intent](../../../pollen/pending.md) declared. Honesty filter — checked and **not** priced: every
+  `.seed/checks/*.ts` is wired to a script or CI (dither's E-013 class does not exist here);
+  `escalation_rate`'s null is already [E-017](../entropy-ledger.md)/[E-018](../entropy-ledger.md);
+  `skills/README.md`'s `plans/active/0004-intake.md` link resolves by ring 0013's designed resolver;
+  the ~19 `Stage N` provenance mentions are history, not drift; CI's action/Node pins are current.
+
 ## Next actions
 
 1. **E-001…E-013 (U1–U8) — landed, pushed, hosted-CI green.** The structural refactors, the three sensing
@@ -837,14 +878,24 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    [pollen intent](../../../pollen/pending.md) declared. One follow-on rides the record: the slugged
    organs were checked in-pass and are index-complete, so extending the membership rule to them is the
    ring's Revisit trigger rather than a priced entry.
-9. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+9. **U15 / fifth sensing pass — landed, committed** (ring
+   [0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md); no dither mutation — the
+   host is byte-identical to `b8d3823`). **[E-025](../entropy-ledger.md) PAID** (the stage's third place,
+   `validate-stage` now a declared source set). **Two entries are the live follow-ons, and both are the
+   Gardener's call:** **[E-026](../entropy-ledger.md)** — generate the front door's counts rather than
+   detect their staleness (agent-convertible once the shape is chosen; content is already correct); and
+   **[E-027](../entropy-ledger.md)** — the map is 71% current-state narrative, with four forks stated
+   (state-only / capped / generated / as-is). Also live: **[E-009](../entropy-ledger.md)'s trigger has
+   fired**, so the prose-state drift class is owed an instrument; its one computable half is *a plan's
+   `Next actions` naming work its own progress log records as done*.
+10. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-10. **On cadence:** re-measure after any dither commit and extend
+11. **On cadence:** re-measure after any dither commit and extend
     [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
     hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
     a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact

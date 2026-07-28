@@ -843,6 +843,14 @@ const CASES: ViolationCase[] = [
     seed: (r) => edit(r, '.seed/checks/fitness.ts', (c) => c.replace(/(const CURRENT_STAGE = )(\d+)/, (_m, p, n) => `${p}${Number(n) + 1}`)),
     expect: { check: STAGE, law: LAW2, contains: ['growth stage disagrees', 'AGENTS.md', '.seed/checks/fitness.ts'] },
   },
+  {
+    // The THIRD hand-bumped place (E-025, ring 0054): the public README states the stage too, and
+    // sat ten days at "Stage 2" while the repo ran at Stage 4 — outside a gate built for two. Same
+    // derive-from-current mutation, so it stays a genuine disagreement as the real stage advances.
+    name: 'stage: README.md states a different stage than the map',
+    seed: (r) => edit(r, 'README.md', (c) => c.replace(/(currently at \*\*Stage )(\d+)/, (_m, p, n) => `${p}${Number(n) + 1}`)),
+    expect: { check: STAGE, law: LAW2, contains: ['growth stage disagrees', 'AGENTS.md', 'README.md'] },
+  },
   // --- architecture-doc format (grill-the-gardener, ring 0015). These write an
   // --- unreachable doc into docs/architecture/, so validate-map also fires — the assertion
   // --- only requires the architecture marker + message present, so the extra noise is
@@ -1704,6 +1712,20 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'plans: a plan with well-formed work units passes all checks (ring 0036)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- the stage source set degrades rather than guessing (E-025, ring 0054): a declared source that
+// --- states NO stage is silent, so a descendant carrying this check but not the mother's README
+// --- prose is not bound by her lifecycle (the ring-0035 contract, now per-source). Rewording the
+// --- sentence out of its canonical form is the same case as a host that never had it.
+inTempCopy((root) => {
+  edit(root, 'README.md', (c) => c.replace(/currently at \*\*Stage \d+ — [^*]+\*\*/, 'in the **Pollination** stage'));
+  const { status, output } = runChecks(root);
+  report(
+    'stage: a source stating no stage is silent, not a violation (a descendant is not bound)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );
