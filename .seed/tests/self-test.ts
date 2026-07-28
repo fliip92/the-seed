@@ -33,6 +33,7 @@ const RELEASE = 'seed/validate-release';
 const JUDGMENTS = 'seed/validate-judgments';
 const GATE = 'seed/ring-append-only';
 const RELEASE_GATE = 'seed/release-append-only';
+const INTENT_GATE = 'seed/pollen-intent';
 const TRACE = 'seed/plan-traceability';
 const AUTOMERGE = 'seed/automerge-scope';
 
@@ -1390,6 +1391,18 @@ const CASES: ViolationCase[] = [
     expect: { check: RELEASE, law: LAW2, contains: ['references ring 9999', 'does not exist'] },
   },
   {
+    // The widened citation (ring 0052): an intent may name a PLAN as well as a ring, so the
+    // existence branch must resolve plans too — a plan number with no plan file is dangling exactly
+    // as a missing ring is. Same isolation trick: the link points at a real file, the NUMBER is the
+    // defect.
+    name: 'release: a pending intent naming a nonexistent plan is caught',
+    seed: (r) => {
+      append(r, 'pollen/pending.md', `\n- Impact: minor — [plan ${PLAN_GAP}](../docs/plans/completed/0001-germination.md) — fixture.\n`);
+      runNode(r, '.seed/checks/generate.ts');
+    },
+    expect: { check: RELEASE, law: LAW2, contains: [`references plan ${PLAN_GAP}`, 'does not exist'] },
+  },
+  {
     // The version line must track history: a released version ahead of POLLEN_VERSION fails. The mother
     // now sits at v0.1.0, so seed a HIGHER release (v0.2.0) to put the version line behind the history.
     name: 'release: POLLEN_VERSION not tracking the latest release is caught',
@@ -1441,14 +1454,14 @@ const CASES: ViolationCase[] = [
     expect: { check: RELEASE, law: LAW2, contains: ['composes ring 9999', 'does not exist'] },
   },
   {
-    // Release-file format: no composing rings at all — a release with no changelog.
-    name: 'release: a release file composing no rings is caught',
+    // Release-file format: no composing decision records at all — a release with no changelog.
+    name: 'release: a release file composing no decision records is caught',
     seed: (r) => {
       seedReleaseFile(r, '0.1.0', { composed: null });
       setPollenVersion(r, '0.1.0');
       runNode(r, '.seed/checks/generate.ts');
     },
-    expect: { check: RELEASE, law: LAW2, contains: ['composes no rings'] },
+    expect: { check: RELEASE, law: LAW2, contains: ['composes no decision records'] },
   },
 
   // --- judge / inferential control (ring 0030; E-013): the envelope's violation classes ---
@@ -1898,7 +1911,7 @@ inTempCopy((root) => {
       p?.dryRun === true &&
       p?.version === '0.1.0' &&
       p?.impact === 'minor' &&
-      JSON.stringify(p?.rings) === JSON.stringify(['0026', '0027', '0028']) &&
+      JSON.stringify(p?.composed) === JSON.stringify(['ring 0026', 'ring 0027', 'ring 0028']) &&
       noWrite,
     `expected v0.1.0 minor composing 0026+0027+0028, nothing written; got exit ${status}, noWrite ${noWrite}:\n${output}`,
   );
@@ -2043,6 +2056,90 @@ inTempCopy((root) => {
   const { status, output } = runReleaseGate(root, ['0000000000000000000000000000000000000000']);
   report(
     'release gate: unresolvable base skips with an explicit note',
+    status === 0 && output.includes('gate skipped'),
+    `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- the pollen-intent gate (E-023, ring 0052): no portable change since the last cut goes
+// --- undeclared. Unlike its siblings it takes NO base ref — it asserts a state over a window fixed by
+// --- the release history, so each fixture's BASE commit (which carries the real v0.1.0 release file)
+// --- is the boundary and only the commits after it are judged. The intent is appended to
+// --- pollen/pending.md, which makes the generated notes stale; these cases run the gate alone, never
+// --- run-all, so that is inert. Citations are chosen to be real-but-undeclared (plan 0009 / ring 0001)
+// --- so the case isolates the accounting, not the existence check validate-release owns.
+const runIntentGate = (root: string): RunResult => runNode(root, '.seed/checks/pollen-intent.ts');
+
+const RING_1_LINK = '../docs/rings/0001-founding-defaults.md';
+const PLAN_1_LINK = '../docs/plans/completed/0001-germination.md';
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base (carries the real v0.1.0 release file — the window boundary)');
+  append(root, '.seed/README.md', '\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a portable change nobody declared`);
+  const { status, output } = runIntentGate(root);
+  const wanted = [`[${INTENT_GATE}]`, `law: ${LAW2}`, '.seed/README.md', 'declares no intent', `plan ${PLAN_DUP}`];
+  const missing = wanted.filter((s) => !output.includes(s));
+  report(
+    'pollen-intent: a portable change with no declared intent fails, naming the commit, its files, and what it cites',
+    status === 1 && missing.length === 0,
+    `expected exit 1 with ${JSON.stringify(wanted)}, got exit ${status}; missing: ${JSON.stringify(missing)}\n${output}`,
+  );
+});
+
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, '.seed/README.md', '\n');
+  append(root, 'pollen/pending.md', `\n- Impact: patch — [ring 0001](${RING_1_LINK}) — fixture: the same portable change, declared.\n`);
+  gitCommitAll(root, 'Fixture: a portable change declared in the same commit (ring 0001)');
+  const { status, output } = runIntentGate(root);
+  report(
+    'pollen-intent: the same portable change WITH an intent citing its ring passes',
+    status === 0 && output.includes('are declared in pollen/pending.md'),
+    `expected exit 0 + "are declared in pollen/pending.md", got exit ${status}:\n${output}`,
+  );
+});
+
+// The widened citation (ring 0052). The seed's commit convention permits a commit to cite a PLAN
+// alone, and one real commit does (99ecc96) — under the ring-only grammar it could not be declared at
+// all. This is the case that would go red if the grammar were narrowed back.
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'skills/README.md', '\n');
+  append(root, 'pollen/pending.md', `\n- Impact: patch — [plan 0001](${PLAN_1_LINK}) — fixture: a plan-governed portable change.\n`);
+  gitCommitAll(root, 'Plan 0001 fixture: a portable change governed by a plan, not a ring');
+  const { status, output } = runIntentGate(root);
+  report(
+    'pollen-intent: a plan-cited intent accounts for a plan-cited portable commit (the widened grammar)',
+    status === 0 && output.includes('are declared in pollen/pending.md'),
+    `expected exit 0 + "are declared in pollen/pending.md", got exit ${status}:\n${output}`,
+  );
+});
+
+// Precision: the gate taxes PORTABLE work only. A local-history change (the map) needs no release
+// intent — without this guard the gate would demand one for every commit in the repository.
+inTempCopy((root) => {
+  git(root, 'init', '--quiet');
+  gitCommitAll(root, 'base');
+  append(root, 'AGENTS.md', '\n');
+  gitCommitAll(root, `Plan ${PLAN_DUP} fixture: a local-history change, undeclared by design`);
+  const { status, output } = runIntentGate(root);
+  report(
+    'pollen-intent: a non-portable change needs no intent',
+    status === 0 && output.includes('no portable-subtree commits since'),
+    `expected exit 0 + "no portable-subtree commits since", got exit ${status}:\n${output}`,
+  );
+});
+
+// A tree with no git history cannot be judged — the gate says so and exits 0, the sibling gates'
+// degradation discipline (a descendant may carry the machinery without this seed's history).
+inTempCopy((root) => {
+  const { status, output } = runIntentGate(root);
+  report(
+    'pollen-intent: a non-git tree skips with an explicit note',
     status === 0 && output.includes('gate skipped'),
     `expected exit 0 + "gate skipped", got exit ${status}:\n${output}`,
   );

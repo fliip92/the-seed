@@ -10,11 +10,21 @@ version lines — genome and pollen — are never conflated, ring 0026).
 - **Version:** v0.2.0 (minor) — bumped from v0.1.0 by the maximum declared impact.
 - **Migration required:** no — a minor release is a backward-compatible graft.
 - **Composing:**
+  - minor — ring 0030 — the inferential-control judge: a scored LLM-as-judge organ (`npm run judge`), its verdict envelope, and the `intake` / `judge` skills, so a descendant can put a probabilistic reading under structural control
+  - patch — ring 0032 — the Stage-4 transition's machinery residue: the stage constant the fitness snapshot reports, and a stale plan path in the pending-release notes generator
+  - patch — plan 0006 — the metrics engine counts the **committed** repository rather than the on-disk walk, so a descendant's fitness reading stops including untracked local state
+  - minor — plan 0007 — `map_reachability` resolves the target's map filename (`AGENTS.md`, `CONTEXT-MAP.md`, …) instead of assuming the seed's, so a host that names its map differently computes a real fraction instead of a false null
+  - minor — ring 0035 — `validate-stage`: a new `run-all` check proving the growth stage agrees across its two hand-bumped places, silent when the map states no stage so a grafted host is not bound by it
+  - minor — ring 0036 — `validate-plans` learns the optional context-scoped work-unit format, enforced only where a plan opts in, so it costs a descendant nothing until it wants the shape
+  - minor — ring 0043 — `map_reachability`'s denominator is scoped to knowledge artifacts (`.md` docs), so the metric tracks doc navigability instead of flooring on a repo whose files are mostly source; the reachability GATE is untouched
+  - patch — ring 0049 — `fitness --json` emits the two-space-indented shape its own history directory documents, so its output can be redirected straight into a dated snapshot
   - patch — ring 0050 — the working-tree gates take their file set from git, so a git-ignored file (an agent tool's local state, editor or build output) no longer fails every check and self-test on a working machine while CI stays green
   - minor — ring 0051 — `plan_traceability` resolves the target's decision-log shape (plans and rings, or numbered ADRs under `docs/adr/`) instead of assuming the seed's, so an ADR-governed host computes a real fraction instead of a false "no decision log" null
+  - minor — ring 0052 — the `pollen-intent` gate: no portable change since the last cut may go undeclared, proved from git against the manifest; an intent may now cite a plan as well as a ring, matching the decision-record vocabulary the commit convention already permits
 
-Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD` — the first real cut is
-the recursive self-upgrade test ([plan 0005](../plans/completed/0005-flowering.md) scope item 4).
+Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD`. This list is proved
+COMPLETE against git by the pollen-intent gate (ring 0052): every portable change since the last
+cut appears above, so what the release ships is what its notes say.
 
 ---
 

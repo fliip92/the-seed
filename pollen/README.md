@@ -45,8 +45,11 @@ recorded as **append-only history**, with the [ring 0020](../docs/rings/0020-onb
 determinism split:
 
 - **[pending.md](pending.md)** — the committed intents: the unreleased portable-subtree changes, each
-  declaring its impact (major/minor/patch), the ring behind it, and a one-line summary. The next
-  version is a pure function of the max declared impact (ring 0026).
+  declaring its impact (major/minor/patch), the decision record behind it — a ring or a plan (ring
+  [0052](../docs/rings/0052-portable-changes-declare-their-intent.md)) — and a one-line summary. The
+  next version is a pure function of the max declared impact (ring 0026). The list is proved
+  **complete** against git by [pollen-intent.ts](../.seed/checks/pollen-intent.ts): no portable change
+  since the last cut may go undeclared (E-023), so a release cannot ship behavior its notes omit.
 - **[releases/](releases/README.md)** — the append-only, dated release history: one file per cut
   release, enumerating the rings it composed (the decision log is the changelog). Enforced append-only
   by [release-append-only.ts](../.seed/checks/release-append-only.ts).
@@ -56,8 +59,11 @@ determinism split:
 The pollen line rests at **v0.1.0** — cut 2026-07-16 by the recursive self-upgrade test (scope item 4,
 ring [0029](../docs/rings/0029-recursive-self-upgrade-test.md)), composing the boundary (ring 0026), this
 release tool (ring 0027), and the installer (ring 0028) as its first release
-([releases/v0.1.0.md](releases/v0.1.0.md)); [pending.md](pending.md) is now empty. The pure invariants are
-[validate-release](../.seed/checks/validate-release.ts) (part of `npm run check`).
+([releases/v0.1.0.md](releases/v0.1.0.md)). [pending.md](pending.md) has since accumulated the
+unreleased delta — what the next cut would carry is always readable in the generated
+[pending-release notes](../docs/generated/pending-release.md). The pure invariants are
+[validate-release](../.seed/checks/validate-release.ts) (part of `npm run check`); the completeness of
+the intents is [pollen-intent](../.seed/checks/pollen-intent.ts) (a CI gate — it needs git history).
 
 ## The installer + the mandated uninstall path (scope item 3)
 

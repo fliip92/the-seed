@@ -2,10 +2,12 @@
 // versioned, and recorded. The model was fixed by founding ring 0026 (pollen is semver; the impact
 // class is DECLARED and checked, not parsed from commit keywords; the next version is a pure function
 // of the max declared impact; a major forces a migration; the decision log is the changelog); this
-// build is ring 0027. Three organs import this one module, so the organ that COMPUTES a release, the
-// one that VALIDATES it, and the one that CUTS it cannot drift on what a release IS:
+// build is ring 0027. Four organs import this one module, so the organ that COMPUTES a release, the
+// one that VALIDATES it, the one that PROVES the intents are complete, and the one that CUTS it
+// cannot drift on what a release IS:
 //   - .seed/lib/generated.ts           — computes the pending-release notes (pure, byte-exact-gated)
 //   - .seed/checks/validate-release.ts  — gates the pure release invariants in run-all
+//   - .seed/checks/pollen-intent.ts     — the git-aware gate: no portable change without an intent (E-023)
 //   - .seed/checks/release.ts           — the CLI (sense / cut-release)
 //
 // The two version lines are never conflated (ring 0026): POLLEN_VERSION (.seed/lib/pollen.ts) is the
@@ -29,12 +31,38 @@ export const PENDING_PATH = 'pollen/pending.md';
 export const RELEASES_DIR = 'pollen/releases';
 export const MIGRATIONS_DIR = 'pollen/migrations';
 
+// The decision record an intent (or a cut release) cites. A RING or a PLAN — the two shapes this
+// repository keeps, exactly as SEED.md §6 defines a decision record (amended by ring 0051: "a plan or
+// ring, or an ADR"; ADRs are a foreign host's shape, never this seed's own log). Ring 0026 wrote the
+// grammar as ring-only; building the pollen-intent gate (E-023) showed that assumption is narrower
+// than the seed's own commit convention, which permits a commit to cite a plan alone (AGENTS.md
+// § Protocols, enforced by plan-traceability.ts) — so a portable change governed by a plan could not
+// be declared at all. Widening the grammar to the full decision-record vocabulary closes that hole
+// without loosening anything: the citation must still resolve to an artifact that exists.
+export type IntentKind = 'plan' | 'ring';
+export interface Decision {
+  kind: IntentKind;
+  num: string; // the four-digit number
+}
+
+const DECISION_DIRS: Record<IntentKind, string[]> = {
+  ring: ['docs/rings'],
+  plan: ['docs/plans/active', 'docs/plans/completed'],
+};
+
+/** "ring 0051" / "plan 0009" — the one rendering of a decision reference, shared by every organ that
+ *  prints one (the notes, the release file, the CLI, the gate) so they cannot drift (LAW-3). */
+export function decisionLabel(d: Decision): string {
+  return `${d.kind} ${d.num}`;
+}
+
 // One committed intent: a portable-subtree change awaiting the next release, declaring its impact,
-// the ring that decided it, and a one-line summary (ring 0027). Parsed from a top-level bullet of
-// pollen/pending.md: `- Impact: <impact> — [ring NNNN](path) — <summary>`.
+// the decision record behind it, and a one-line summary (ring 0027). Parsed from a top-level bullet of
+// pollen/pending.md: `- Impact: <impact> — [<plan|ring> NNNN](path) — <summary>`.
 export interface Intent {
   impact: Impact;
-  ring: string; // the four-digit ring number
+  kind: IntentKind;
+  num: string; // the four-digit decision-record number
   summary: string;
   raw: string; // the source bullet, for legible error messages
 }
@@ -45,14 +73,14 @@ export interface Release {
   file: string; // repo-relative path
   date: string | null; // YYYY-MM-DD (a recorded fact)
   impact: Impact | null;
-  rings: string[]; // the ring numbers this release composed
+  composed: Decision[]; // the decision records this release composed
   migration: string | null; // repo-relative path of the migration doc, or null (minor/patch)
 }
 
 // A line starting `- Impact:` IS an intent declaration; it must then match the full grammar, so a
 // malformed intent is caught (teeth) rather than silently treated as prose.
 const INTENT_MARKER = /^- Impact:/;
-const INTENT_RE = /^- Impact:\s+([A-Za-z]+)\s+—\s+\[ring (\d{4})\]\(([^)]+)\)\s+—\s+(.+?)\s*$/;
+const INTENT_RE = /^- Impact:\s+([A-Za-z]+)\s+—\s+\[(plan|ring) (\d{4})\]\(([^)]+)\)\s+—\s+(.+?)\s*$/;
 
 export interface PendingParse {
   intents: Intent[];
@@ -79,7 +107,7 @@ export function parseIntents(content: string): PendingParse {
     if (!INTENT_MARKER.test(raw)) continue; // prose, headings, the empty-state note
     const m = raw.match(INTENT_RE);
     if (!m) {
-      errors.push(`malformed intent bullet (expected "- Impact: <${IMPACTS.join('|')}> — [ring NNNN](path) — <summary>"): ${raw.trim()}`);
+      errors.push(`malformed intent bullet (expected "- Impact: <${IMPACTS.join('|')}> — [<plan|ring> NNNN](path) — <summary>"): ${raw.trim()}`);
       continue;
     }
     const impact = m[1].toLowerCase();
@@ -87,7 +115,7 @@ export function parseIntents(content: string): PendingParse {
       errors.push(`intent declares impact "${m[1]}", not one of ${IMPACTS.join(', ')} (ring 0026): ${raw.trim()}`);
       continue;
     }
-    intents.push({ impact: impact as Impact, ring: m[2], summary: m[4].trim(), raw: raw.trim() });
+    intents.push({ impact: impact as Impact, kind: m[2] as IntentKind, num: m[3], summary: m[5].trim(), raw: raw.trim() });
   }
   return { intents, errors };
 }
@@ -100,14 +128,17 @@ export function readPending(root: string = REPO_ROOT): PendingParse {
   return parseIntents(readFileSync(path, 'utf8'));
 }
 
-/** The repo-relative path of the ring file for a four-digit number, or null if no such ring exists.
- *  Keyed on the number, not the link slug, so it agrees with validate-map's own dead-link check by
- *  a different route (belt and suspenders). */
-export function ringFileFor(num: string, root: string = REPO_ROOT): string | null {
-  const dir = join(root, 'docs/rings');
-  if (!existsSync(dir)) return null;
-  const f = readdirSync(dir).find((name) => name.startsWith(`${num}-`) && name.endsWith('.md'));
-  return f ? `docs/rings/${f}` : null;
+/** The repo-relative path of the file recording a cited decision (ring NNNN / plan NNNN), or null if
+ *  no such record exists. Keyed on the number, not the link slug, so it agrees with validate-map's own
+ *  dead-link check by a different route (belt and suspenders). */
+export function decisionFileFor(d: Decision, root: string = REPO_ROOT): string | null {
+  for (const dir of DECISION_DIRS[d.kind]) {
+    const abs = join(root, dir);
+    if (!existsSync(abs)) continue;
+    const f = readdirSync(abs).find((name) => name.startsWith(`${d.num}-`) && name.endsWith('.md'));
+    if (f) return `${dir}/${f}`;
+  }
+  return null;
 }
 
 const VERSION_FILE_RE = /^v(\d+\.\d+\.\d+)\.md$/;
@@ -122,13 +153,16 @@ export function parseReleaseFile(file: string, version: string, content: string)
   const impact = (IMPACTS as readonly string[]).includes(impactRaw) ? (impactRaw as Impact) : null;
   const dateRaw = field('Date');
   const date = dateRaw && /^\d{4}-\d{2}-\d{2}$/.test(dateRaw) ? dateRaw : null;
-  const composed = field('Composed') ?? '';
-  const rings = [...composed.matchAll(/ring (\d{4})/g)].map((m) => m[1]);
+  const composedRaw = field('Composed') ?? '';
+  const composed: Decision[] = [...composedRaw.matchAll(/\b(plan|ring) (\d{4})\b/g)].map((m) => ({
+    kind: m[1] as IntentKind,
+    num: m[2],
+  }));
   // Migration: "none" (minor/patch) or a markdown link to the migration doc (major).
   const migRaw = field('Migration') ?? '';
   const migLink = migRaw.match(/\[[^\]]*\]\(([^)]+)\)/);
   const migration = migLink ? posix.normalize(posix.join(RELEASES_DIR, migLink[1])) : null;
-  return { version, file: `${RELEASES_DIR}/v${version}.md`, date, impact, rings, migration };
+  return { version, file: `${RELEASES_DIR}/v${version}.md`, date, impact, composed, migration };
 }
 
 /** Every cut release under `root`, sorted ascending by semver. */
@@ -231,7 +265,7 @@ export function renderPendingNotes(root: string = REPO_ROOT): string {
   if (pending === null) {
     lines.push(
       '- **No pending intents.** Declare a portable-subtree change in' +
-        ' [`pollen/pending.md`](../../pollen/pending.md) — `- Impact: <major|minor|patch> — [ring NNNN](…) — <summary>` —',
+        ' [`pollen/pending.md`](../../pollen/pending.md) — `- Impact: <major|minor|patch> — [<plan|ring> NNNN](…) — <summary>` —',
       '  to compose the next release.',
     );
   } else {
@@ -239,10 +273,11 @@ export function renderPendingNotes(root: string = REPO_ROOT): string {
       `- **Version:** v${pending.next} (${pending.impact}) — bumped from v${pending.baseline} by the maximum declared impact.`,
       `- **Migration required:** ${pending.migrationRequired ? 'YES — a major release cannot be adopted as a pure additive graft; it must carry a migration (ring 0026).' : 'no — a ' + pending.impact + ' release is a backward-compatible graft.'}`,
       '- **Composing:**',
-      ...pending.intents.map((i) => `  - ${i.impact} — ring ${i.ring} — ${i.summary}`),
+      ...pending.intents.map((i) => `  - ${i.impact} — ${decisionLabel(i)} — ${i.summary}`),
       '',
-      `Cut it with \`node .seed/checks/release.ts cut-release --date YYYY-MM-DD\` — the first real cut is`,
-      'the recursive self-upgrade test ([plan 0005](../plans/completed/0005-flowering.md) scope item 4).',
+      `Cut it with \`node .seed/checks/release.ts cut-release --date YYYY-MM-DD\`. This list is proved`,
+      'COMPLETE against git by the pollen-intent gate (ring 0052): every portable change since the last',
+      'cut appears above, so what the release ships is what its notes say.',
     );
   }
   lines.push(
@@ -268,8 +303,8 @@ export function renderReleaseFile(
 ): string {
   const composed = intents
     .map((i) => {
-      const path = ringFileFor(i.ring, root);
-      return path ? `[ring ${i.ring}](../../${path})` : `ring ${i.ring}`;
+      const path = decisionFileFor(i, root);
+      return path ? `[${decisionLabel(i)}](../../${path})` : decisionLabel(i);
     })
     .join(', ');
   // The migration link is relative to the release file's own directory (RELEASES_DIR): posix.relative
@@ -287,7 +322,7 @@ export function renderReleaseFile(
       '',
       '## Notes',
       '',
-      ...intents.map((i) => `- ${i.impact} — ring ${i.ring} — ${i.summary}`),
+      ...intents.map((i) => `- ${i.impact} — ${decisionLabel(i)} — ${i.summary}`),
     ].join('\n') + '\n'
   );
 }
@@ -302,8 +337,12 @@ export function renderEmptyPending(): string {
       'bullet:',
       '',
       '```',
-      '- Impact: <major|minor|patch> — [ring NNNN](../docs/rings/NNNN-slug.md) — <one-line summary>',
+      '- Impact: <major|minor|patch> — [<plan|ring> NNNN](../docs/rings/NNNN-slug.md) — <one-line summary>',
       '```',
+      '',
+      'Every portable-subtree change declares one, in the same commit that makes it — the',
+      '[pollen-intent gate](../.seed/checks/pollen-intent.ts) proves it (E-023, ring 0052). The',
+      'citation is the decision record governing the change, a ring or a plan (SEED.md §6).',
       '',
       'The impact is DECLARED, not parsed from commits (ring 0026): major = breaking (forces a',
       'migration), minor = feature, patch = fix. `node .seed/checks/release.ts cut-release --date',

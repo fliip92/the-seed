@@ -692,6 +692,45 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   [pollen intent](../../../pollen/pending.md) (next release would be v0.2.0). No dither mutation — the
   defect was the mother's instrument, not the host.
 
+- **2026-07-27** — **U13 / E-023 paid: a portable change declares its intent, or CI fails — and the
+  gate found the debt was more than twice what the eye priced** (seed-side only;
+  [ring 0052](../../rings/0052-portable-changes-declare-their-intent.md)). On the Gardener's ruling
+  (*"fix E-023"*), converted the entry U12 sensed. The new
+  [pollen-intent gate](../../../.seed/checks/pollen-intent.ts) proves the pending intents are
+  **complete**: every commit since the last cut that touched the portable subtree — the
+  [manifest](../../../.seed/lib/pollen.ts)'s definition, never a second list — must be declared in
+  [pending.md](../../../pollen/pending.md) by a decision record its message cites. It is a **CI gate**
+  (the window and the commit messages are history; `run-all` stays pure), and unlike its four siblings it
+  takes **no base ref**: it asserts a *state* over a window fixed by the commit that added the newest
+  release file, re-judged every run — so **a green run is the precondition for a cut**, and the omission
+  the entry feared cannot be frozen into append-only history. **Building it changed the entry twice.**
+  The intent grammar had to widen to `[plan NNNN]` as well as `[ring NNNN]`: the seed's own commit
+  convention permits a plan-only citation and one real commit uses it (`99ecc96`), so a plan-governed
+  portable change was undeclarable — the release model was narrower than the decision-record vocabulary
+  SEED.md §6 defines (ring [0051](../../rings/0051-decision-log-shape-resolved-not-assumed.md)'s
+  amendment, one unit old). And the count: the entry priced **three** undeclared changes; git found
+  **eight** of ten portable-touching commits — the judge organ (ring 0030), the Stage-4 machinery residue
+  (ring 0032), `validate-stage` (ring 0035), the work-unit format (ring 0036) and the fitness JSON shape
+  (ring 0049) had all gone unnoticed. Pricing by eye under-read by five of eight; the instrument found
+  the rest, the same lesson as E-016/E-019/E-020 turned on the seed's own release history. **The backfill
+  fork resolved to declare-now** (the entry's fork A) — the alternative needs a grandfather boundary
+  inside portable machinery, shipped to every descendant forever, to remember one mother's one-time
+  omission — so all eight are now intents and **v0.2.0 will credit eleven decisions instead of two**; the
+  version itself is unchanged (ring 0051's `minor` already set it). Sensed in-pass and priced
+  **[E-024](../entropy-ledger.md)**: nothing enforces that a ring appears in the
+  [rings index](../../rings/README.md), and rings **0049–0051 were missing from it** — the same
+  invariant the seed grafted into dither as `maps-are-complete`
+  ([ring 0046](../../rings/0046-dither-map-completeness-gate.md)), absent at home; the four missing lines
+  were written by hand in this pass, so the debt is the enforcement. Verification: six new self-tests
+  (**252**, was 246) — undeclared portable change fails, ring-cited and plan-cited intents pass, a
+  non-portable change needs none, a non-git tree skips, plus a dangling plan citation caught in the pure
+  half — plus the test-of-the-test (neutering the accounting reddens exactly the fail case; narrowing the
+  grammar reddens the plan case and 27 more, because this repo's own pending.md then holds two malformed
+  intents). `npm run check` (14) + `npm test` (252) + `npm run garden` (`drift_count` 0) green, and the
+  gate green on real history (10 portable-subtree commits since `c514a6ce929b`, 11 intents). Declared a
+  `minor` [pollen intent](../../../pollen/pending.md) for itself. **No dither mutation** — its graft
+  carries a scoped engine and no release model at all.
+
 ## Next actions
 
 1. **E-001…E-013 (U1–U8) — landed, pushed, hosted-CI green.** The structural refactors, the three sensing
@@ -719,18 +758,18 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    therefore **one feature shipped through the agent workflow** (E-003 / E-004 / E-005 / E-008 at their
    build-order steps) — owner-paced, and the trigger to re-measure and judge **step 6 — Independence**
    (its own carried seed, lineage recorded, feedback channel live).
-5. **U12 / [E-020](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+5. **U12 / [E-020](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `b0e7559`, run
+   [30320883214](https://github.com/fliip92/the-seed/actions/runs/30320883214);
    [ring 0051](../../rings/0051-decision-log-shape-resolved-not-assumed.md); no dither mutation).
    `plan_traceability` resolves the host's decision-log shape, **SEED.md §6 is amended**, and dither reads
    **39.5%** where it read null. Two entries were opened by the pass and are the live follow-ons:
    **[E-022](../entropy-ledger.md)** — the seed's decisions about dither live only in the seed's rings, so
    its commits there trace to nothing locally and a dither maintainer finds no host-side record of why six
    CI gates appeared; **owner-gated**, and it rides the next commit the seed lands on dither (which is the
-   feature-track work item 4 is waiting on — pay it *in* that commit, not after). **[E-023](../entropy-ledger.md)**
-   — `pollen/pending.md` under-declares the unreleased portable delta (E-012, E-016, E-019 landed with no
-   intent); agent-convertible, and it must be paid **before the next release is cut**, since a cut freezes
-   the omission into append-only history.
-6. **U11 / [E-021](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+   feature-track work item 4 is waiting on — pay it *in* that commit, not after). **[E-023](../entropy-ledger.md)** —
+   `pollen/pending.md` under-declares the unreleased portable delta — **PAID by U13 below**.
+6. **U11 / [E-021](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `b44b325`, run
+   [30319516789](https://github.com/fliip92/the-seed/actions/runs/30319516789);
    [ring 0050](../../rings/0050-gates-honor-git-ignore-rules.md); no dither mutation — dither's runners
    already list via `git ls-files -z`, so it is unaffected). The gates now take their file set from git;
    check, tests (244), and garden are green **with the ignored file present**. Two follow-ons ride the
@@ -738,15 +777,28 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    [pollen intent](../../../pollen/pending.md) awaiting the next release, and dither's copied
    `.seed/lib/repo.ts` now **lags** the mother's by this fix — the first divergence since the graft,
    and the designed propagation model (descendants upgrade through versioned releases, not continuous
-   mirroring). **Remaining: the Gardener pushes** the seed record, after which one seed-ci run confirms.
-7. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+   mirroring).
+7. **U13 / [E-023](../entropy-ledger.md) — PAID, held for the Gardener's push** (seed
+   [ring 0052](../../rings/0052-portable-changes-declare-their-intent.md); no dither mutation — its graft
+   carries no release model). The [pollen-intent gate](../../../.seed/checks/pollen-intent.ts) proves no
+   portable change since the last cut goes undeclared; the intent grammar accepts a plan as well as a
+   ring; the eight undeclared changes git found (the entry priced three) are backfilled, so the pending
+   notes now describe **v0.2.0 as eleven decisions**. Checks (14), tests (252), and garden are green, and
+   the gate is green on real history. Two follow-ons: **the first cut after this** is the ring's Revisit
+   trigger — confirm the window re-anchors on the new release file and the backfilled intents are consumed
+   exactly once; and **[E-024](../entropy-ledger.md)** was priced in-pass (nothing enforces that a ring
+   appears in the [rings index](../../rings/README.md); 0049–0051 were missing, content fixed by hand) —
+   agent-convertible, fold into the next change touching `validate-rings`. **Remaining: the Gardener
+   pushes** the seed record, after which one seed-ci run confirms — that run is also the gate's first
+   hosted execution.
+8. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-8. **On cadence:** re-measure after any dither commit and extend
+9. **On cadence:** re-measure after any dither commit and extend
    [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
    hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
    a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact

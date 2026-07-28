@@ -45,7 +45,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | [checks/validate-generated.ts](checks/validate-generated.ts) | The `docs/generated/` discipline (onboard-human): every generated artifact matches its regeneration from source, none is unregistered, no generator is broken (converts E-001) | LAW-2 |
 | [checks/validate-references.ts](checks/validate-references.ts) | The distilled-reference format (intake): a **Source** with a retrieval date + commit pin (for a pinnable repo), every claim cited, the `**Seed reading:**` grounded/inference split present — with quote-match + completeness teeth where the cited corpus is saved in-repo (plan 0004, ring 0024's pin-not-mirror) | LAW-2 |
 | [checks/validate-pollen.ts](checks/validate-pollen.ts) | The pollen boundary (ring 0026): the [manifest](lib/pollen.ts) classifies every top-level entry (portable / sovereign / local) so the Stage 3 boundary stays total, the two version lines (genome vs pollen) are well-formed, and the seed's [lineage](../pollen/lineage.json) (SEED.md §7) is present and well-formed | LAW-3, LAW-2 |
-| [checks/validate-release.ts](checks/validate-release.ts) | The pure release invariants (ring 0027): the [pending intents](../pollen/pending.md) are well-formed and name existing rings, every [release](../pollen/releases/README.md) is semver + dated + strictly increasing, `POLLEN_VERSION` tracks the latest release, and every major carries an existing migration | LAW-3, LAW-2 |
+| [checks/validate-release.ts](checks/validate-release.ts) | The pure release invariants (ring 0027): the [pending intents](../pollen/pending.md) are well-formed and name existing decision records (a ring or a plan, ring 0052), every [release](../pollen/releases/README.md) is semver + dated + strictly increasing, `POLLEN_VERSION` tracks the latest release, and every major carries an existing migration. That the intents are COMPLETE is the git-aware [pollen-intent](checks/pollen-intent.ts) gate | LAW-3, LAW-2 |
 | [checks/validate-judgments.ts](checks/validate-judgments.ts) | The inferential-control **envelope** (ring 0030; E-013): every [verdict](../docs/judgments/README.md) is well-formed, its input pins resolve, and it is **fresh** (a verdict whose judged artifact changed since it was scored fails `run-all`); the probabilistic score is trended, never gated (ring 0011); coverage is advisory | LAW-2, LAW-6 |
 
 Shared helpers (repo walking, markdown link extraction, violation formatting):
@@ -57,7 +57,10 @@ Gates are not part of `run-all.ts` because they need git history (the content ch
 deliberately see only the working tree). CI passes each gate the event's base ref (PR
 base branch, or the push's previous tip); the scripts fall back to `origin/main`, then
 `HEAD~1`, skipping with an explicit note only when nothing resolves or the base shares
-no history with HEAD (orphan branch).
+no history with HEAD (orphan branch). The one exception is
+[checks/pollen-intent.ts](checks/pollen-intent.ts), which takes no base ref: it asserts a
+state over a window fixed by the release history, not a diff (ring
+[0052](../docs/rings/0052-portable-changes-declare-their-intent.md)).
 
 [checks/ring-append-only.ts](checks/ring-append-only.ts) enforces the append-only rule
 of [docs/rings/README.md](../docs/rings/README.md) (converted from ledger E-005): any
@@ -92,6 +95,19 @@ commits are the Gardener-review path and are not constrained here. It makes the 
 claim trustworthy; the residual (nothing forces a constitution edit to carry — or omit —
 the marker while solo) is recorded with E-008 and hardens at Flowering with branch
 protection. The `Automerge:` convention lives in [AGENTS.md](../AGENTS.md) § Protocols.
+
+[checks/pollen-intent.ts](checks/pollen-intent.ts) proves the pending release intents are
+**complete** (converted from ledger E-023; ring
+[0052](../docs/rings/0052-portable-changes-declare-their-intent.md)): every commit since the last
+cut that touched the portable subtree — the [manifest](lib/pollen.ts)'s definition, never a second
+list — must be declared in [`pollen/pending.md`](../pollen/pending.md) by a decision record its
+message cites, else CI fails naming LAW-2. Ring [0026](../docs/rings/0026-pollen-boundary-versioning-lineage.md)
+composes a release from declared intent; without this, an undeclared portable change ships inside a
+version whose notes never mention it, and the cut freezes that into append-only history. It takes
+**no base ref** — it re-judges the whole window every run, so a green run is the precondition for a
+cut — and skips with a note when the window cannot be resolved (not a git repository, or a shallow
+clone whose history omits the cut). Declare the intent in the same commit that makes the change; an
+intent cites a ring **or** a plan, the same decision-record vocabulary the commit convention permits.
 
 ## Drift detection
 
@@ -320,12 +336,14 @@ versioned artifacts under [../skills/judge/rubrics/](../skills/judge/SKILL.md); 
 from ledger E-007; LAW-6): it copies the repository to a temp directory, seeds one
 violation class per case — every class the checks above claim to catch —
 runs the copy's own `run-all.ts`, and asserts the right check fires with a law-naming
-message and exit 1. A pristine copy must pass. The three gates are tested the same way against
+message and exit 1. A pristine copy must pass. The git-aware gates are tested the same way against
 scratch git repos (append-only: modify, delete, append, unresolvable base, no shared
 history; traceability: plan and ring references pass, missing and phantom references
 fail, merge commits exempt, unresolvable base skips; automerge-scope: marked-vs-protected
 fails, unknown class fails, unmarked passes, both README indices exempt, a non-ASCII-named
-protected add still fails, merge commit exempt, unresolvable base skips). The
+protected add still fails, merge commit exempt, unresolvable base skips; pollen-intent: an
+undeclared portable change fails, the same change with a ring- or plan-cited intent passes, a
+non-portable change needs none, a non-git tree skips). The
 gardening-report composer is covered too (pristine → no findings + a valid date; a seeded
 stale reference flips has_findings and renders). repo-fitness (ring
 [0016](../docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)) is pinned by three
@@ -408,9 +426,9 @@ working session opens — E-008's exact risk. Least privilege: `contents: read`,
 ## CI
 
 [.github/workflows/seed-ci.yml](../.github/workflows/seed-ci.yml) is a deliberately thin
-shim: checkout (full history) → Node → the invariant checks, the self-tests, the three
-git-aware gates (append-only, traceability, automerge-scope), and the fitness snapshot, in
-that order. All logic lives here in `.seed/` so the CI provider is swappable in one file
+shim: checkout (full history) → Node → the invariant checks, the self-tests, the five
+git-aware gates (ring- and release-append-only, traceability, automerge-scope,
+pollen-intent), and the fitness snapshot, in that order. All logic lives here in `.seed/` so the CI provider is swappable in one file
 (ring 0002). Both workflows pin `actions/checkout@v5` and `actions/setup-node@v5`, which
 declare the Node 24 runtime (E-010). Hosted since
 [E-002](../docs/plans/entropy-ledger.md) was paid.

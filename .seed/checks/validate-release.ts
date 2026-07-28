@@ -3,11 +3,14 @@
 // validate-generated shape). Four fronts:
 //
 //   1. PENDING INTENTS (LAW-2) — every intent in pollen/pending.md is well-formed (the declared
-//      grammar, ring 0026) and names an EXISTING ring. A malformed or dangling intent cannot compose a
-//      release, so it is caught here rather than surfacing as a bad version bump later.
+//      grammar, ring 0026, widened to plan-or-ring citations by ring 0052) and names an EXISTING
+//      decision record. A malformed or dangling intent cannot compose a release, so it is caught here
+//      rather than surfacing as a bad version bump later. That the intents are COMPLETE — no portable
+//      change since the last cut goes undeclared — needs git history, so it is the sibling gate
+//      pollen-intent.ts (E-023), not this pure check.
 //   2. RELEASE FILES (LAW-2) — every pollen/releases/vX.Y.Z.md records a valid impact class, a
-//      YYYY-MM-DD date (a recorded fact, ring 0020), at least one composing ring, and each composing
-//      ring exists. The release history is the changelog; a malformed entry poisons it.
+//      YYYY-MM-DD date (a recorded fact, ring 0020), at least one composing decision record, and each
+//      one exists. The release history is the changelog; a malformed entry poisons it.
 //   3. THE VERSION LINE TRACKS HISTORY (LAW-3) — POLLEN_VERSION (.seed/lib/pollen.ts) equals the
 //      latest released version, or 0.0.0 when nothing is released. The manifest's pollen version is the
 //      single source (ring 0026); it cannot silently diverge from the history it summarizes. The
@@ -27,10 +30,11 @@ import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 import { POLLEN_VERSION } from '../lib/pollen.ts';
 import {
   PENDING_PATH,
+  decisionFileFor,
+  decisionLabel,
   latestReleased,
   readPending,
   readReleases,
-  ringFileFor,
 } from '../lib/release.ts';
 
 const LAW2 = "LAW-2 — legible and enforceable, or it doesn't exist";
@@ -49,15 +53,15 @@ export const check: Check = {
       bad(
         LAW2,
         `${PENDING_PATH}: ${err}`,
-        `write the intent as "- Impact: <major|minor|patch> — [ring NNNN](../docs/rings/NNNN-slug.md) — <summary>" — the impact is declared and checked, not free text (ring 0026).`,
+        `write the intent as "- Impact: <major|minor|patch> — [<plan|ring> NNNN](../docs/rings/NNNN-slug.md) — <summary>" — the impact is declared and checked, not free text (ring 0026).`,
       );
     }
     for (const intent of pending.intents) {
-      if (ringFileFor(intent.ring, REPO_ROOT) === null) {
+      if (decisionFileFor(intent, REPO_ROOT) === null) {
         bad(
           LAW2,
-          `${PENDING_PATH}: intent references ring ${intent.ring}, which does not exist`,
-          `a release's notes enumerate the rings that composed it (ring 0026: the decision log is the changelog) — point the intent at an existing ring in docs/rings/, or cut that ring first.`,
+          `${PENDING_PATH}: intent references ${decisionLabel(intent)}, which does not exist`,
+          `a release's notes enumerate the decision records that composed it (ring 0026: the decision log is the changelog) — point the intent at an existing ring in docs/rings/ or plan in docs/plans/, or cut that ring first.`,
         );
       }
     }
@@ -67,10 +71,10 @@ export const check: Check = {
     for (const r of releases) {
       if (r.impact === null) bad(LAW2, `${r.file} declares no valid impact class`, `record "- Impact: major|minor|patch" — a release's impact is its semver bump driver (ring 0026).`);
       if (r.date === null) bad(LAW2, `${r.file} has no valid YYYY-MM-DD Date`, `record "- Date: YYYY-MM-DD" — the release date is a recorded fact (ring 0020).`);
-      if (r.rings.length === 0) bad(LAW2, `${r.file} composes no rings`, `record "- Composed: [ring NNNN](…)" — a release enumerates the rings behind it (ring 0026: the decision log is the changelog).`);
-      for (const ring of r.rings) {
-        if (ringFileFor(ring, REPO_ROOT) === null) {
-          bad(LAW2, `${r.file} composes ring ${ring}, which does not exist`, `point it at an existing ring in docs/rings/, or restore the ring — a release's changelog cannot dangle (ring 0026).`);
+      if (r.composed.length === 0) bad(LAW2, `${r.file} composes no decision records`, `record "- Composed: [ring NNNN](…)" — a release enumerates the rings (or plans) behind it (ring 0026: the decision log is the changelog).`);
+      for (const d of r.composed) {
+        if (decisionFileFor(d, REPO_ROOT) === null) {
+          bad(LAW2, `${r.file} composes ${decisionLabel(d)}, which does not exist`, `point it at an existing ring in docs/rings/ or plan in docs/plans/, or restore the record — a release's changelog cannot dangle (ring 0026).`);
         }
       }
       // 4. the migration tooth — a major must carry an existing migration; minor/patch carries none.

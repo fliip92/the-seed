@@ -144,7 +144,19 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   carried the same defect and were the larger half — `copyRepo` now assembles from the same listing (244
   self-tests, was 241). **dither was already immune** (its grafted runners list via `git ls-files -z`), so
   the mother converged on the practice her own host was following, and the fix reaches descendants as a
-  `patch` [pollen intent](pollen/pending.md) rather than a hand-copy. Every step's instrument was built across
+  `patch` [pollen intent](pollen/pending.md) rather than a hand-copy. **[E-023](docs/plans/entropy-ledger.md)
+  is paid next** (ring [0052](docs/rings/0052-portable-changes-declare-their-intent.md), the Gardener's
+  ruling *"fix E-023"*): the release model composed from *declared* intent had no teeth, so the new
+  [pollen-intent gate](.seed/checks/pollen-intent.ts) proves every portable-subtree commit since the last
+  cut is declared in [pending.md](pollen/pending.md) — a **state** assertion with no base ref (its window
+  is the release history), which makes a green CI run the precondition for a cut. Two things fell out of
+  building it: the intent grammar widened to **plan-or-ring** citations (the seed's commit convention
+  permits a plan-only citation, so a plan-governed portable change was undeclarable), and the entry's
+  *three* undeclared changes turned out to be **eight** of ten — all now backfilled, so v0.2.0 will credit
+  eleven decisions instead of two. Pricing by eye under-read the debt by five; the instrument found the
+  rest. Sensed in the same pass and priced: **[E-024](docs/plans/entropy-ledger.md)** — nothing enforces
+  that a ring appears in the [rings index](docs/rings/README.md), and rings 0049–0051 were missing from it
+  (content fixed in-pass; the enforcement is the debt). Every step's instrument was built across
   Stages 2–3 (Scout / Propose proven read-only in
   [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
   the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose
@@ -232,6 +244,13 @@ You are an agent working in the Seed. This file is your entry point, every sessi
   aside) — those need Gardener review. Omit the trailer for Gardener-gated work; an unmarked
   commit is unconstrained by this gate. Mechanism: ring
   [0012](docs/rings/0012-cadence-automation-mechanism.md).
+- **Changing portable machinery (`.seed/`, `skills/`)?** Declare the release intent in
+  [pollen/pending.md](pollen/pending.md) **in the same commit** — one bullet in that file's declared
+  grammar, citing a decision record your commit message names. A release is
+  composed from declared intent (ring [0026](docs/rings/0026-pollen-boundary-versioning-lineage.md)),
+  and the [pollen-intent gate](.seed/checks/pollen-intent.ts) fails CI on any portable-touching commit
+  since the last cut that no intent covers ([E-023](docs/plans/entropy-ledger.md), ring
+  [0052](docs/rings/0052-portable-changes-declare-their-intent.md)).
 - **Make a decision durable:** cut a ring — format and procedure in
   [docs/rings/README.md](docs/rings/README.md). Never ask the Gardener a question a ring
   already answers (LAW-10): search `docs/rings/` first.

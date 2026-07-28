@@ -20,4 +20,7 @@ jobs:
       - run: node .seed/checks/release-append-only.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       - run: node .seed/checks/plan-traceability.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
       - run: node .seed/checks/automerge-scope.ts ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
+      # No base ref: pollen-intent asserts a STATE (pending.md accounts for every portable change since
+      # the last cut), not a diff, so its window comes from the release history (ring 0052).
+      - run: node .seed/checks/pollen-intent.ts
       - run: node .seed/checks/fitness.ts

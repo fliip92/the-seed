@@ -35,8 +35,10 @@ import { isAbsolute, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { REPO_ROOT } from '../lib/repo.ts';
 import {
+  type Decision,
   type Impact,
   type Intent,
+  decisionLabel,
   PENDING_PATH,
   RELEASES_DIR,
   bump,
@@ -104,12 +106,12 @@ function targetRoot(args: string[]): string {
 interface SenseReport {
   target: string;
   version: string; // latest released (0.0.0 before the first release)
-  releases: Array<{ version: string; date: string | null; impact: Impact | null; rings: string[] }>;
+  releases: Array<{ version: string; date: string | null; impact: Impact | null; composed: Decision[] }>;
   pending: { next: string; impact: Impact; migrationRequired: boolean; intents: Intent[] } | null;
 }
 
 function sense(root: string): SenseReport {
-  const releases = readReleases(root).map((r) => ({ version: r.version, date: r.date, impact: r.impact, rings: r.rings }));
+  const releases = readReleases(root).map((r) => ({ version: r.version, date: r.date, impact: r.impact, composed: r.composed }));
   const pr = nextRelease(root);
   return {
     target: root,
@@ -124,13 +126,13 @@ function senseReport(r: SenseReport): void {
   console.log(`Target: ${r.target}`);
   console.log(`Current pollen version: v${r.version}\n`);
   console.log(r.releases.length === 0 ? 'Released history: none yet.' : 'Released history:');
-  for (const rel of r.releases) console.log(`  - v${rel.version} (${rel.impact ?? '?'}) — ${rel.date ?? 'undated'} — composed ${rel.rings.map((n) => `ring ${n}`).join(', ') || 'nothing'}`);
+  for (const rel of r.releases) console.log(`  - v${rel.version} (${rel.impact ?? '?'}) — ${rel.date ?? 'undated'} — composed ${rel.composed.map(decisionLabel).join(', ') || 'nothing'}`);
   console.log('');
   if (r.pending === null) {
     console.log('Pending release: none — no committed intents. The pollen line rests.');
   } else {
     console.log(`Pending release: v${r.pending.next} (${r.pending.impact})${r.pending.migrationRequired ? ' — MIGRATION REQUIRED' : ''}, composing:`);
-    for (const i of r.pending.intents) console.log(`  - ${i.impact} — ring ${i.ring} — ${i.summary}`);
+    for (const i of r.pending.intents) console.log(`  - ${i.impact} — ${decisionLabel(i)} — ${i.summary}`);
     console.log('\nAdopting a release is re-metabolization (ring 0026): the change becomes YOUR ring, never a forced merge.');
   }
 }
@@ -170,7 +172,7 @@ function computeCutPlan(date: string, migrationArg: string | undefined): CutPlan
     throw new Error(`v${pr.next} is a ${pr.impact} release and needs no migration — drop --migration (only a major carries one, ring 0026).`);
   }
   const version = pr.next;
-  const indexEntry = `- [v${version}](v${version}.md) — ${date} — ${pr.impact}: composed ${pr.intents.map((i) => `ring ${i.ring}`).join(', ')}.`;
+  const indexEntry = `- [v${version}](v${version}.md) — ${date} — ${pr.impact}: composed ${pr.intents.map(decisionLabel).join(', ')}.`;
   return {
     version,
     date,
@@ -217,7 +219,7 @@ function applyCut(plan: CutPlan): void {
 function cutReport(plan: CutPlan, dryRun: boolean): void {
   console.log(`release — cut-release${dryRun ? ' (dry-run — writes nothing; LAW-6: every capability ships verification)' : ''}\n`);
   console.log(`Next release: v${plan.version} (${plan.impact}), dated ${plan.date}`);
-  console.log(`Composing: ${plan.intents.map((i) => `ring ${i.ring}`).join(', ')}`);
+  console.log(`Composing: ${plan.intents.map(decisionLabel).join(', ')}`);
   console.log(`Migration: ${plan.migration ?? 'none (a ' + plan.impact + ' release is a backward-compatible graft)'}\n`);
   console.log(`Would write ${plan.releaseFile}:\n`);
   console.log(plan.releaseContent);
@@ -370,7 +372,7 @@ function main(): void {
       }
       if (!dryRun) applyCut(plan);
       if (json) {
-        console.log(JSON.stringify({ verb: 'cut-release', ok: true, dryRun, version: plan.version, impact: plan.impact, date: plan.date, migration: plan.migration, rings: plan.intents.map((i) => i.ring), releaseFile: plan.releaseFile }));
+        console.log(JSON.stringify({ verb: 'cut-release', ok: true, dryRun, version: plan.version, impact: plan.impact, date: plan.date, migration: plan.migration, composed: plan.intents.map(decisionLabel), releaseFile: plan.releaseFile }));
       } else {
         cutReport(plan, dryRun);
       }

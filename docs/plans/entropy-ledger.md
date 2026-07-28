@@ -139,42 +139,34 @@ ledger is also a record of digestion.
   [pollination-dither.md](../fitness/pollination-dither.md) gets its next row — the check that the
   conversion actually worked
 
-## E-023 — portable machinery has changed three times since the v0.1.0 cut with no declared release intent
+## E-024 — the rings index is not enforced complete, and three rings were missing from it
 
-- First observed: 2026-07-27, declaring this pass's own pollen intent ([E-020](entropy-ledger.md), ring
-  [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md)) — reading
-  [pollen/pending.md](../../pollen/pending.md) to add a line showed it holding exactly one, for ring 0050
-- Where: the release model composes a release from **committed intent** (ring
-  [0026](../rings/0026-pollen-boundary-versioning-lineage.md)): every change to the portable subtree
-  declares its impact in `pending.md`, and the next version is a pure function of the maximum declared.
-  But three portable-machinery changes have landed since the v0.1.0 cut (2026-07-16) without touching
-  that file — `99ecc96` (E-012: the metrics engine counts the committed repository), `89c6b9e`
-  ([E-016](entropy-ledger.md): `map_reachability` resolves the host's map filename), and `a9779fa`
-  ([E-019](entropy-ledger.md): the fraction counts knowledge artifacts). All three change
-  [`.seed/`](../../.seed/README.md), all three are portable by the manifest, and all three move a metric a
-  descendant computes. Only ring 0050 and this pass declared. So `pending.md` — the artifact whose whole
-  job is to be the truthful unreleased delta — currently **under-declares it**, and the generated
-  [pending-release notes](../generated/pending-release.md), which are byte-exact-gated and therefore look
-  authoritative, inherit the omission
-- Interest rate: medium and compounding by construction — the gap is invisible until a release is cut,
-  and then it is baked into append-only history: v0.2.0's notes would credit two rings while shipping
-  five changes' worth of behavior, so a descendant reading the release to decide whether to upgrade is
-  told less than it is getting. It is the LAW-2 shape exactly — a rule that is legible (the format is
-  documented) and *not* enforceable (nothing fails when a portable change declares nothing) — and every
-  future portable change inherits it. The counterweight: the decision log is the real changelog (rings
-  are complete), so the information exists, just not where the release model reads it
-- Price: small for the gate, a judgment call for the backfill. The gate: `pending.md` (or the release
-  history) must account for every ring whose commit touched a portable path since the last cut —
-  computable from git + the pollen manifest, which the seed already owns, and it fails in CI rather than
-  at cut time. The backfill is the part that needs a decision, not code: whether to declare the three
-  retroactively now (making v0.2.0 honest), or record them in the release as "composed before the intent
-  discipline was enforced"
-- Conversion path: invariant — a check in `npm run check` (or a clause in
-  [validate-pollen](../../.seed/checks/validate-pollen.ts), which already owns the manifest) asserting
-  that every portable-touching ring since the last cut appears in `pending.md`, self-tested with the pair
-  that matters: a portable change with no intent fails, the same change with one passes. Do it **before
-  the next release is cut**, since a cut freezes the omission into append-only history; the backfill
-  question rides with it and is a Gardener call
+- First observed: 2026-07-27, adding ring 0052's index line during the [E-023](entropy-ledger.md)
+  conversion — the [rings README](../rings/README.md) listed 48 of the 51 rings that existed: **0049,
+  0050 and 0051 had never been added**, three consecutive rings, all landed within the previous two days
+- Where: [docs/rings/README.md](../rings/README.md) carries the ring index, and its own Procedure step 1
+  says *"take the next free number (check the list above — and add your ring to it)"*.
+  [validate-rings](../../.seed/checks/validate-rings.ts) enforces filenames, sequence and the field
+  format; nothing checks that a ring **appears in the index**. `validate-map` does not catch it either —
+  a ring stays reachable through the plan that cites it, so the map metric reads 100% while the index it
+  is nominally built from is stale. The same hole exists for the other numbered organs with README
+  indices (plans, postmortems, assessments, judgments); rings is where it has actually bitten
+- Interest rate: medium. Each miss is invisible (nothing fails) and permanent unless someone notices, so
+  the index degrades monotonically — and it is the artifact an agent is told to read to find the next
+  free number and to see what has already been decided (LAW-10: never ask what a ring already answers).
+  An index silently omitting the three most recent rings sends exactly the reader who needs them to the
+  wrong answer. Bounded today only because the ring *files* are the source of truth and the index is a
+  convenience
+- Price: small — the mother already owns the shape she grafted into her host: dither's
+  [map-completeness gate](../rings/0046-dither-map-completeness-gate.md) asserts every workspace appears
+  in each of three layout maps, with the eighth principle `maps-are-complete`. This is the same invariant
+  over `docs/rings/*.md` → `docs/rings/README.md`, and it generalizes to the other numbered organs for
+  little extra
+- Conversion path: invariant — a clause in `validate-rings` (or a small shared helper the numbered-organ
+  validators call) asserting every `NNNN-*.md` in the organ's directory is linked from that organ's
+  README, self-tested with the pair: an unindexed ring fails, the same ring indexed passes. Fold into the
+  next change touching the ring validator. The three missing entries were written by hand in the E-023
+  pass, so the debt is the *enforcement*, not the current content
 
 ## Paid
 
@@ -772,3 +764,71 @@ ledger is also a record of digestion.
   Test-of-the-test: removing the `adr` shape turns exactly those two red. `npm run check` (18) +
   `npm test` (246) + `npm run garden` (`drift_count` 0) green; no dither mutation (the defect was the
   mother's instrument, not the host)
+
+## E-023 — portable machinery has changed three times since the v0.1.0 cut with no declared release intent
+
+- First observed: 2026-07-27, declaring this pass's own pollen intent ([E-020](entropy-ledger.md), ring
+  [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md)) — reading
+  [pollen/pending.md](../../pollen/pending.md) to add a line showed it holding exactly one, for ring 0050
+- Where: the release model composes a release from **committed intent** (ring
+  [0026](../rings/0026-pollen-boundary-versioning-lineage.md)): every change to the portable subtree
+  declares its impact in `pending.md`, and the next version is a pure function of the maximum declared.
+  But three portable-machinery changes have landed since the v0.1.0 cut (2026-07-16) without touching
+  that file — `99ecc96` (E-012: the metrics engine counts the committed repository), `89c6b9e`
+  ([E-016](entropy-ledger.md): `map_reachability` resolves the host's map filename), and `a9779fa`
+  ([E-019](entropy-ledger.md): the fraction counts knowledge artifacts). All three change
+  [`.seed/`](../../.seed/README.md), all three are portable by the manifest, and all three move a metric a
+  descendant computes. Only ring 0050 and this pass declared. So `pending.md` — the artifact whose whole
+  job is to be the truthful unreleased delta — currently **under-declares it**, and the generated
+  [pending-release notes](../generated/pending-release.md), which are byte-exact-gated and therefore look
+  authoritative, inherit the omission
+- Interest rate: medium and compounding by construction — the gap is invisible until a release is cut,
+  and then it is baked into append-only history: v0.2.0's notes would credit two rings while shipping
+  five changes' worth of behavior, so a descendant reading the release to decide whether to upgrade is
+  told less than it is getting. It is the LAW-2 shape exactly — a rule that is legible (the format is
+  documented) and *not* enforceable (nothing fails when a portable change declares nothing) — and every
+  future portable change inherits it. The counterweight: the decision log is the real changelog (rings
+  are complete), so the information exists, just not where the release model reads it
+- Price: small for the gate, a judgment call for the backfill. The gate: `pending.md` (or the release
+  history) must account for every ring whose commit touched a portable path since the last cut —
+  computable from git + the pollen manifest, which the seed already owns, and it fails in CI rather than
+  at cut time. The backfill is the part that needs a decision, not code: whether to declare the three
+  retroactively now (making v0.2.0 honest), or record them in the release as "composed before the intent
+  discipline was enforced"
+- Conversion path: invariant — a check in `npm run check` (or a clause in
+  [validate-pollen](../../.seed/checks/validate-pollen.ts), which already owns the manifest) asserting
+  that every portable-touching ring since the last cut appears in `pending.md`, self-tested with the pair
+  that matters: a portable change with no intent fails, the same change with one passes. Do it **before
+  the next release is cut**, since a cut freezes the omission into append-only history; the backfill
+  question rides with it and is a Gardener call
+- Paid: 2026-07-27 (plan [0009](active/0009-dither-metabolize.md) U13; ring
+  [0052](../rings/0052-portable-changes-declare-their-intent.md), on the Gardener's ruling *"fix
+  E-023"*). The invariant is [pollen-intent.ts](../../.seed/checks/pollen-intent.ts), a **CI gate**
+  rather than a `run-all` check — the window and the commit messages are git history, and `run-all`
+  stays a pure function of the working tree. It asserts a **state**, not a diff: no base ref, a window
+  fixed by the commit that added the newest release file, re-judged every run — so a green run is the
+  precondition for a cut and an omission cannot slip through between pushes. What is portable comes from
+  the [manifest](../../.seed/lib/pollen.ts), never a second list (LAW-3); what accounts for a commit is a
+  decision record its message cites, which composes with the traceability gate already guaranteeing every
+  commit names one. **Two findings changed the entry as written.** First, the intent grammar had to widen
+  to `[plan NNNN]` as well as `[ring NNNN]`: the seed's commit convention permits a plan-only citation and
+  one real commit uses it (`99ecc96`), so a plan-governed portable change could not be declared at all —
+  the release model was narrower than the decision-record vocabulary SEED.md §6 defines (as amended by
+  ring [0051](../rings/0051-decision-log-shape-resolved-not-assumed.md)). Second, **this entry priced
+  three; git found eight**: of ten portable-touching commits since the cut, eight were undeclared — the
+  judge organ (ring 0030), the Stage-4 machinery residue (ring 0032), `validate-stage` (ring 0035), the
+  work-unit format (ring 0036) and the fitness JSON shape (ring 0049) had gone unnoticed by the reading
+  pass that priced this. Pricing by eye under-read the debt by five of eight; the instrument found what
+  the eye did not, one more time. **The backfill fork resolved to "declare now"** (fork A): all eight are
+  now intents, so v0.2.0 will credit eleven decisions instead of two — the alternative required a
+  grandfather boundary inside portable machinery, shipped to every descendant forever, to remember one
+  mother's one-time omission. The version outcome is unchanged (ring 0051's `minor` already set v0.2.0);
+  what changed is that the release now describes what it ships. **dither needs no mutation** — its graft
+  carries a scoped engine and no release model at all. Verification (LAW-6): six self-tests (**252**
+  total, was 246) — undeclared portable change fails, ring-cited intent passes, plan-cited intent passes,
+  non-portable change needs none, non-git tree skips, plus a dangling plan citation caught in the pure
+  half; neutering the accounting turns exactly the fail case red, and narrowing the grammar back to
+  ring-only turns the plan case red plus 27 more (this repo's own pending.md becomes malformed — the
+  widening is load-bearing). `npm run check` (14 checks) + `npm test` (252) + `npm run garden`
+  (`drift_count` 0) green, and the gate green on real history: 10 portable-subtree commits since
+  `c514a6ce929b`, 11 intents.
