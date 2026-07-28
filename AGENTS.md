@@ -16,220 +16,40 @@ You are an agent working in the Seed. This file is your entry point, every sessi
 
 ## Current state
 
+**This section states state, not history.** What stage the seed is in, what the live work is, and
+what a fresh agent does first — nothing else. How it got here is recorded three times over already:
+the active plan's `Progress log`, the [entropy ledger](docs/plans/entropy-ledger.md)'s Paid notes,
+and [docs/rings/](docs/rings/README.md). Append there, not here — a line budget enforces it
+([validate-map-budget](.seed/checks/validate-map-budget.ts), ring
+[0055](docs/rings/0055-the-map-states-state-not-history.md), paying
+[E-027](docs/plans/entropy-ledger.md)).
+
 - **Stage:** 4 — Pollination, entered 2026-07-17 (ring
-  [0032](docs/rings/0032-stage-4-transition-first-host-dither.md)). Stage 3 (Flowering) completed
-  with its exit criterion evidenced in [plan 0005](docs/plans/completed/0005-flowering.md) — the
-  portable subset packaged as versioned [`pollen/`](pollen/README.md) (v0.1.0) and the recursive
-  self-upgrade test passed (the seed is its own first host; proof
-  [docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). Stage 2 (Growth) in
-  [plan 0003](docs/plans/completed/0003-growth.md) — the skill garden grown and a foreign repo
-  assessed read-only on evidence (assessment 0001); Stage 1 (Rooting) in
-  [plan 0002](docs/plans/completed/0002-rooting.md), Stage 0 in
-  [plan 0001](docs/plans/completed/0001-germination.md). The repository is public:
+  [0032](docs/rings/0032-stage-4-transition-first-host-dither.md)). It is **terminal and ongoing**
+  (SEED.md §0: a repository is never "done") and judged per host. Stages 0–3 are complete, each with
+  its exit criterion evidenced in its own plan — [0001](docs/plans/completed/0001-germination.md),
+  [0002](docs/plans/completed/0002-rooting.md), [0003](docs/plans/completed/0003-growth.md),
+  [0005](docs/plans/completed/0005-flowering.md). The repository is public:
   [github.com/fliip92/the-seed](https://github.com/fliip92/the-seed).
-- **Correct first action for a fresh agent right now:** Stage 4 (Pollination) is underway
-  (transition approved 2026-07-17, ring
-  [0032](docs/rings/0032-stage-4-transition-first-host-dither.md)). The governing plan is
-  [plan 0006](docs/plans/active/0006-pollination.md) — continue from its `Next actions`. The seed
-  enters its **first external host, dither** (named by the Gardener at Stage 4 entry, ring 0032 —
-  which resolves [ring 0006](docs/rings/0006-solo-until-flowering.md): the seed is no longer solo),
-  and runs the genome's six-step per-host protocol (SEED.md §4): **Scout → Grill → Propose → Graft →
-  Metabolize → Independence.** **Scout, Grill, Propose, and Graft are done:** Scout
-  ([assessment 0002](docs/assessments/0002-dither.md)), Grill
-  ([ring 0033](docs/rings/0033-dither-grill-outcomes.md)), Propose
-  ([plan 0007](docs/plans/completed/0007-dither-graft.md), approved
-  [ring 0034](docs/rings/0034-dither-graft-approved.md)), and the Graft — **all four graft organs have
-  landed on dither's `main`, hosted CI green**: the map reachability + dead-link gate
-  ([ring 0037](docs/rings/0037-dither-map-gate-graft.md): the first mutation of a real external host),
-  the commit→ADR traceability gate ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), the
-  principles + `enforcement_ratio` organ ([ring 0039](docs/rings/0039-dither-principles-gate-graft.md)),
-  and the seeded entropy ledger ([ring 0040](docs/rings/0040-dither-ledger-graft.md): `ledger_trend`
-  null → +8), each a host-owned runner over the seed's verbatim engine, confirmed by run
-  [29707599339](https://github.com/fliip92/dither/actions/runs/29707599339)
-  ([plan 0007](docs/plans/completed/0007-dither-graft.md) completed). **The live work is step 5 —
-  Metabolize** ([plan 0009](docs/plans/active/0009-dither-metabolize.md)): two agent-driven tracks in
-  parallel, indefinitely — refactor-toward-[architecture](docs/architecture/dither.md) + feature work,
-  fitness arbitrating pace — until dither's per-host exit criterion is met. The refactor queue digests
-  dither's seeded ledger by interest; its first refactor, **E-001** (the app→package import boundary,
-  dither.md Rule 5), is **done** ([ring 0041](docs/rings/0041-dither-import-boundary-gate.md); dither
-  `607bc64`, pushed to `main`): its read-only pre-flight found the elicited package graph
-  itself drifted (`traits`/`matrix` were written as building on `droid-file`; the code is the reverse),
-  the Gardener chose *fix docs to code*, and the corrected graph is now enforced by an owned R1/R2/R3
-  import-boundary gate over the verbatim engine — green + teeth 9/9, `enforcement_ratio` 7/7, E-001
-  Open→Paid (`ledger_trend` +8 → +7, dither's first digested debt). Its second refactor, **E-002** (the
-  gates' own self-test, [ring 0042](docs/rings/0042-dither-gates-self-test.md)), is **done** (dither
-  `9f41427`, pushed; its hosted CI caught a real `.git`-copy race in the self-test, fixed in `edec7fd`,
-  now green): a scoped port of the seed's self-test.ts binds each of the five
-  gates' violation classes into a committed CI harness (green + 15/15; the test-of-the-test by neutering
-  map-gate turns its tooth red) — **no eighth principle**, the self-test is the gates' LAW-6 verification,
-  not a product norm (`enforcement_ratio` held 7/7, `ledger_trend` +7 → +6, `map_reachability` 11.9%). Its
-  third refactor, **E-007** (the map-reachability sweep,
-  [ring 0043](docs/rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)), is **done** (dither
-  `c058fbc`, pushed, hosted CI green): the pre-flight found `map_reachability` structurally source-floored
-  on a product repo (283 of dither's 386 files are source) and the plan's named targets already reachable,
-  so the Gardener had the metric rescoped to knowledge artifacts (docs) — the GATE untouched, the seed
-  still enforcing total reachability — then dither's own stranded docs linked; the seed reads 100% (94/94
-  docs) unchanged, dither 11.9% → 48.2%. Its fourth refactor, **E-006** (the two stale spike refs,
-  [ring 0044](docs/rings/0044-dither-e006-stale-spike-refs-gardened.md)), is **done** (dither `0f078ef`,
-  pushed, hosted CI green) — the first refactor that adds **no instrument**: a gardening content-fix whose
-  LAW-6 verification is the standing drift scan (`drift_count` 2 → 0, `ledger_trend` +5 → +4, no new
-  principle). With all four priced structural entries (E-001/E-002/E-007/E-006) digested, the structural
-  refactor queue is **drained** — the feature track is owner-paced, and sensing new entropy is the
-  refactor track's default (AGENTS.md §"Nothing active?"). The **first sensing pass**
-  ([ring 0045](docs/rings/0045-dither-sensing-pass-theme-layout.md); dither `eeb5fdd`, pushed, CI green)
-  found dither substantially clean and converted one genuine finding — **E-009**, `@dither/theme` absent
-  from architecture.md's Repo layout (a residual of the E-001 correction), added so the layout matches the
-  committed package set; branch protection and graphify were checked and deliberately **not** priced (the
-  seed's own main is likewise unprotected — inherited posture, not a defect). A **second sensing pass**
-  ([ring 0046](docs/rings/0046-dither-map-completeness-gate.md); dither `1274d48`, local) found E-009 was
-  one instance of a class — `theme`/`matrix-playground` were also missing from README.md and
-  CONTEXT-MAP.md — which tripped E-009's pre-registered Revisit trigger; the Gardener built the invariant:
-  a **sixth dither gate**, `map-completeness.ts`, asserting every `packages/*`/`apps/*` workspace is listed
-  in each of three layout maps, with the eighth principle `maps-are-complete` (`enforcement_ratio` 8/8) and
-  self-test teeth (18/18 + a neuter test-of-the-test). Six gates + eight principles now stand on dither.
-  A **third sensing pass** ([ring 0047](docs/rings/0047-dither-third-sensing-pass-stack-drift.md); dither
-  `8959b3e`, local) swept the surfaces the first two did not reach (ADR bodies vs code, dependency hygiene,
-  map claims vs code, the gate tooling — and confirmed the copied engine byte-identical to the seed's): it
-  converted **E-013** (the map-completeness gate lacked a `check:*` script, the sole gate of seven without
-  one — added `check:mapcomplete`) and priced **E-012** — architecture.md's stack rows named libraries the
-  built code does not use (`Zustand`, `react-native-unistyles`, `react-three-fiber`) plus the pre-rename
-  `react-native-wgpu`, the E-001 fix-docs-vs-fix-code fork recurring on the stack rows; the Gardener chose
-  **fork A** and it was reconciled to the code (E-012 Paid, `ledger_trend` back to +4). The honesty filter
-  declined to price three ADR-body discrepancies (append-only decision records), framework-managed version
-  skews, and POC logging hygiene. A **fourth sensing pass**
-  ([ring 0048](docs/rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md)) found dither clean and
-  unchanged and fixed one seed-side residual — the seed's own elicited dither.md still called the workshop
-  "Vite + R3F" (the E-012 drift, which had been dither-scoped) → "Vite + React" — and recorded that
-  `ledger_trend` has matured from a level to its true 7-day rate (now -2, a healthy weekly digestion, not a
-  regression). With the refactor track drained, the plan's standing **fitness-cadence** item was executed
-  ([ring 0049](docs/rings/0049-dither-pollination-proof-exit-criterion-half-met.md)): the before/after-graft
-  delta — SEED.md §6's second job for fitness — is landed as the **pollination proof**
-  ([docs/fitness/pollination-dither.md](docs/fitness/pollination-dither.md), the Stage-4 counterpart to
-  Stage 3's [recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). It is **instrument-controlled** —
-  dither's pre-graft tree re-measured with *today's* engine, since [E-016](docs/plans/entropy-ledger.md)
-  and [E-019](docs/plans/entropy-ledger.md) both move `map_reachability` — and, after the same-day
-  amendment below, **five of six metrics moved: four improved, one declined**: `map_reachability` **6.8% →
-  48.8%**, `enforcement_ratio` **null → 8/8**, `drift_count` **2 → 0** (attributably E-006's two refs),
-  `ledger_trend` **null → -2**, `plan_traceability` **45.2% → 39.5%**. The
-  per-host **exit criterion is half-met**: the trend half is met, but the *owner-ships-features* half is
-  **untested** — dither's last owner-authored commit is the pre-graft `2b2b3d5` — so **Independence (step 6)
-  waits on the feature track, not on more sensing**. One metric read *wrong* on a host —
-  `plan_traceability` reported "no decision log" about a repo with nine ADRs whose commit→ADR gate the seed
-  itself grafted ([ring 0038](docs/rings/0038-dither-adr-gate-graft.md)), leaving one graft organ invisible
-  in its own proof — priced [E-020](docs/plans/entropy-ledger.md), held for the Gardener (it edits SEED.md
-  §6), and **paid the same day on their ruling** (ring
-  [0051](docs/rings/0051-decision-log-shape-resolved-not-assumed.md)): the metric now **resolves the
-  target's decision-log shape** — plans and rings, or numbered ADRs under `docs/adr/` — instead of assuming
-  the seed's ([E-016](docs/plans/entropy-ledger.md)'s `resolveMapFilename` move one level up), **SEED.md §6
-  is amended** to match (and its stale *"merged PRs"* wording retired), the metric's name is kept so the
-  append-only snapshot series survives, and the seed's own plan-traceability *gate* stays plan/ring-strict —
-  a gate enforces this repo's law, a metric measures whatever a host is. Fixing the instrument changed the
-  finding: dither reads **45.2% pre-graft → 39.5% today**, the proof's one decline, and **the seed caused
-  it** — twelve of the fourteen commits the seed landed on dither cite *"Seed plan 0009"*, a decision log
-  dither does not carry, while dither's own 62 commits trace exactly as before. Priced
-  **[E-022](docs/plans/entropy-ledger.md)** (every decision *about* dither lives only in the seed's rings,
-  so the host has no record of why six CI gates appeared — owner-gated, rides the next commit there), with
-  **[E-023](docs/plans/entropy-ledger.md)** sensed alongside (three portable changes since the v0.1.0 cut
-  declared no pollen intent — pay before the next release is cut). That pass also sensed **[E-021](docs/plans/entropy-ledger.md)** by tripping over it, and the
-  Gardener had it converted next (**paid**, ring
-  [0050](docs/rings/0050-gates-honor-git-ignore-rules.md)): the working-tree gates were answering *"what is
-  in this repository"* from a hardcoded skip list, so one git-ignored file an agent tool wrote turned a
-  clean `git status` into 3 failing checks and 26 of 241 broken self-tests — on a working machine only,
-  invisible to CI, which clones and carries no ignored state. [`listRepoFiles`](.seed/lib/repo.ts) now
-  filters the walk through `git ls-files --cached --others --exclude-standard`, so **git's ignore rules are
-  the one definition of repository membership** (LAW-3) — repo `.gitignore`, global `core.excludesFile`,
-  and `.git/info/exclude` alike — with the old set kept only as the non-git fallback. The gates' set stays
-  deliberately broader than the *metrics'* ([E-012](docs/plans/entropy-ledger.md) scoped those to the
-  committed repository; a pre-commit gate blind to uncommitted work is pointless). The self-test fixtures
-  carried the same defect and were the larger half — `copyRepo` now assembles from the same listing (244
-  self-tests, was 241). **dither was already immune** (its grafted runners list via `git ls-files -z`), so
-  the mother converged on the practice her own host was following, and the fix reaches descendants as a
-  `patch` [pollen intent](pollen/pending.md) rather than a hand-copy. **[E-023](docs/plans/entropy-ledger.md)
-  is paid next** (ring [0052](docs/rings/0052-portable-changes-declare-their-intent.md), the Gardener's
-  ruling *"fix E-023"*): the release model composed from *declared* intent had no teeth, so the new
-  [pollen-intent gate](.seed/checks/pollen-intent.ts) proves every portable-subtree commit since the last
-  cut is declared in [pending.md](pollen/pending.md) — a **state** assertion with no base ref (its window
-  is the release history), which makes a green CI run the precondition for a cut. Two things fell out of
-  building it: the intent grammar widened to **plan-or-ring** citations (the seed's commit convention
-  permits a plan-only citation, so a plan-governed portable change was undeclarable), and the entry's
-  *three* undeclared changes turned out to be **eight** of ten — all now backfilled, so v0.2.0 will credit
-  eleven decisions instead of two. Pricing by eye under-read the debt by five; the instrument found the
-  rest. Sensed in the same pass and priced: **[E-024](docs/plans/entropy-ledger.md)** — nothing enforced
-  that a ring appears in the [rings index](docs/rings/README.md), and rings 0049–0051 were missing from it
-  — **paid the same day** (ring [0053](docs/rings/0053-numbered-organs-index-every-entry.md)): a
-  [shared clause](.seed/lib/repo.ts) now asserts that every `NNNN-slug.md` in the **five** numbered
-  organs (rings, plans per directory, postmortems, assessments, judgments) is listed in its own organ
-  README. The hole was a reachability illusion — an unindexed entry stays reachable through whatever
-  cites it, so `map_reachability` read 100% while the index listed 48 of 51 rings, and a self-test now
-  pins exactly that contrast (`validate-map` green, `validate-rings` red). It is dither's
-  `maps-are-complete` ([ring 0046](docs/rings/0046-dither-map-completeness-gate.md)) turned on the
-  mother's own organs — the second time in three units the **host** held the practice first. The **fifth
-  sensing pass** ([ring 0054](docs/rings/0054-prose-state-rots-where-work-stops-touching-it.md)) then
-  turned the sweep on the mother, dither being unchanged since `b8d3823`, and found one shape in three
-  artifacts: **prose state rots exactly where the work stopped touching it.** The docs every unit edits
-  are current; the ones outside its blast radius are stale in proportion — the public
-  [README](README.md), untouched since 2026-07-15, said *"currently at **Stage 2**"* ten days into
-  Stage 4, alongside five other false claims, and [plan 0006](docs/plans/active/0006-pollination.md)'s
-  `Next actions` still named four refactors as *"Next"* that landed on 2026-07-20 — in the very section
-  this map routes a fresh agent to. **[E-025](docs/plans/entropy-ledger.md) is paid**:
-  [validate-stage](.seed/checks/validate-stage.ts) now compares a **declared source set** rather than the
-  two places that existed when [E-011](docs/plans/entropy-ledger.md) was priced, and it went red on the
-  real repository on its first run; the list stays explicit because ~19 *correct* provenance mentions of
-  `Stage N` would make a prose scan fire nineteen false positives to catch one defect. Both stale
-  contents are fixed, and two entries are priced Open for the Gardener:
-  **[E-026](docs/plans/entropy-ledger.md)** (generate the front door's counts rather than detect their
-  staleness) and **[E-027](docs/plans/entropy-ledger.md)** (**this section is 71% of the map** — 198 of
-  279 lines, grown 9 → 198 in 23 days while every other section stayed flat — restating what the plan,
-  the ledger and the rings already record; four forks stated, the choice is taste and therefore the
-  Gardener's). [E-009](docs/plans/entropy-ledger.md)'s pre-registered prose-state trigger has **fired**.
-  Every step's instrument was built across
-  Stages 2–3 (Scout / Propose proven read-only in
-  [assessment 0001](docs/assessments/0001-mottainapp.md), Graft hermetically in the recursive test);
-  the **mutating** steps (Graft onward) gate on the host owners' review + approval of the Propose
-  step, and the per-host exit criterion governs — a positive fitness trend over a sustained window
-  with owners shipping through the agent workflow without the seed being special. Pollination is
-  terminal and ongoing (SEED.md §0: a repository is never "done").
-- **Stage 3 (Flowering), completed 2026-07-17** — packaged the portable subset as versioned
-  [`pollen/`](pollen/README.md) and proved the transplant on itself. The boundary + two version lines
-  + lineage (founding [ring 0026](docs/rings/0026-pollen-boundary-versioning-lineage.md)), the owned
-  `.seed/` release / graft CLI ([ring 0027](docs/rings/0027-release-graft-cli.md), paying off
-  [E-015](docs/plans/entropy-ledger.md); [.seed/checks/release.ts](.seed/checks/release.ts), `npm run
-  release`), and the installer + mandated uninstall path
-  ([ring 0028](docs/rings/0028-installer-uninstall.md); [.seed/lib/graft.ts](.seed/lib/graft.ts))
-  composed the first pollen release **v0.1.0**
-  ([pollen/releases/v0.1.0.md](pollen/releases/v0.1.0.md)); the recursive self-upgrade test
-  ([ring 0029](docs/rings/0029-recursive-self-upgrade-test.md)) grafted it into a sacrificial repo
-  with fitness measured before/after and uninstalled byte-identical — the exit proof
-  ([docs/fitness/recursive-upgrade.md](docs/fitness/recursive-upgrade.md)). Both Stage 3 → 4 gating
-  prerequisites paid: the seed's first inferential control, the [judge](skills/judge/SKILL.md)
-  ([ring 0030](docs/rings/0030-inferential-control-judge.md), [E-013](docs/plans/entropy-ledger.md)),
-  and the "Seed" name retained as a non-exclusive descriptive codename
-  ([ring 0031](docs/rings/0031-name-cleared-codename-retained.md),
-  [E-004](docs/plans/entropy-ledger.md)).
-- **Live organs (Stages 1–2), each shipping its own verification (LAW-6):** Stage 2's skill garden —
-  **grill-the-gardener** (ring [0015](docs/rings/0015-grill-the-gardener-architecture-doc.md)),
-  **repo-fitness** (ring [0016](docs/rings/0016-repo-fitness-generalizes-the-metric-engine.md)),
-  **postmortem** (ring [0017](docs/rings/0017-postmortem-three-artifacts-linked.md)),
-  **parallel-worktrees** (ring [0019](docs/rings/0019-parallel-worktrees-host-agnostic-lifecycle.md)),
-  **onboard-human** (a briefing generated from the map —
-  [docs/generated/onboarding.md](docs/generated/onboarding.md) — ring
-  [0020](docs/rings/0020-onboard-human-generated-briefing.md)), **feedback** (ring
-  [0021](docs/rings/0021-feedback-composes-upstream-issue.md)) — evidenced by
-  [assessment 0001 — mottainapp](docs/assessments/0001-mottainapp.md) (ring
-  [0022](docs/rings/0022-assessment-organ-exit-criterion.md), the
-  [docs/assessments/](docs/assessments/README.md) organ), plus **intake** and the seed's first
-  principle [grounded-or-ask](docs/principles/grounded-or-ask.md)
-  ([plan 0004](docs/plans/completed/0004-intake.md), rings
-  [0023](docs/rings/0023-grounded-or-ask-first-principle.md)/[0024](docs/rings/0024-intake-network-free-metabolizer.md);
-  [validate-references](.seed/checks/validate-references.ts) binding
-  [docs/references/harness-engineering.md](docs/references/harness-engineering.md)). Stage 1's
-  self-maintenance organs — all in [plan 0002](docs/plans/completed/0002-rooting.md) — remain live:
-  the self-tests (`npm test`), the traceability gate, the
-  [doc-gardener](skills/doc-gardener/SKILL.md) drift detector (`npm run garden`, advisory per ring
-  [0011](docs/rings/0011-drift-advisory.md)), fitness v0 (`npm run fitness`) with snapshots in
-  [docs/fitness/history/](docs/fitness/history/README.md), and the weekly
-  [gardening-cadence](.github/workflows/gardening-cadence.yml) workflow (ring
-  [0012](docs/rings/0012-cadence-automation-mechanism.md)).
+- **Correct first action for a fresh agent right now:** open
+  [plan 0009 — dither Metabolize](docs/plans/active/0009-dither-metabolize.md) and continue from its
+  `Next actions`. It runs **step 5 (Metabolize)** of the genome's six-step per-host protocol (SEED.md
+  §4 — Scout → Grill → Propose → Graft → Metabolize → Independence) on the seed's first external
+  host, **dither**; the Stage-4 plan above it is
+  [plan 0006](docs/plans/active/0006-pollination.md). With nothing active, § Start here point 3
+  governs.
+- **Where the host stands.** Steps 1–4 are done — dither's `main` carries all four graft organs,
+  hosted CI green ([plan 0007](docs/plans/completed/0007-dither-graft.md)). The structural refactor
+  queue is **drained**, so sensing new entropy is that track's default; the per-host **exit criterion
+  is half-met** — the fitness-trend half holds, the *owner-ships-features* half is untested — so
+  **step 6 (Independence) waits on the feature track, not on more sensing**. The measured evidence is
+  the pollination proof [docs/fitness/pollination-dither.md](docs/fitness/pollination-dither.md);
+  the elicited target is [docs/architecture/dither.md](docs/architecture/dither.md).
+- **What is owed, and what enforces it.** Priced debt lives in the
+  [entropy ledger](docs/plans/entropy-ledger.md) — its Open section is the queue § Start here point 3
+  works from, and an entry whose conversion path names the Gardener waits for a ruling. Every gate,
+  instrument, and organ that must stay green is listed with what it enforces in
+  [.seed/README.md](.seed/README.md); the protocols a change must satisfy are § Protocols below.
 
 ## Territory
 

@@ -23,6 +23,7 @@ version lines — genome and pollen — are never conflated, ring 0026).
   - minor — ring 0052 — the `pollen-intent` gate: no portable change since the last cut may go undeclared, proved from git against the manifest; an intent may now cite a plan as well as a ring, matching the decision-record vocabulary the commit convention already permits
   - minor — ring 0053 — index completeness for the numbered organs: every `NNNN-slug.md` under rings, plans, postmortems, assessments and judgments must be linked from its own organ README, so a descendant's index cannot silently omit an entry that stays reachable by some other path
   - minor — ring 0054 — `validate-stage` compares a declared source SET rather than a hardcoded pair, so every place a descendant states its growth stage is held in agreement, and a source that states none stays silent
+  - minor — ring 0055 — `validate-map-budget`: the map's `## Current state` is capped at 60 non-blank lines / 650 words, so a descendant's entry point cannot grow into a second progress log the way the mother's did (9 → 214 lines in 23 days); silent when the map carries no such section
 
 Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD`. This list is proved
 COMPLETE against git by the pollen-intent gate (ring 0052): every portable change since the last

@@ -190,41 +190,6 @@ ledger is also a record of digestion.
   correct as of 2026-07-27 — hand-fixed in the sensing pass — so the debt is the **enforcement**, not the
   current text
 
-## E-027 — the map is 71% current-state narrative, restating what four other artifacts already record
-
-- First observed: 2026-07-27, the fifth sensing pass (ring
-  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)), measuring the map's sections:
-  **§ Current state is 198 of [AGENTS.md](../../AGENTS.md)'s 279 lines.** Its growth is the finding — 9
-  lines on 2026-07-04, 35 on 07-05, 93 on 07-17, 135 on 07-27 morning, **198 by evening** — while every
-  other section stayed flat across the same 23 days (Start here 10, Territory 19, Protocols 36, Laws 6)
-- Where: [AGENTS.md](../../AGENTS.md) § Current state. The navigational half of the map does its LAW-4 job
-  in ~80 stable lines; the narrative half is a **second progress log**, restating what
-  [plan 0009](active/0009-dither-metabolize.md)'s progress log, this ledger's Paid notes, and the ring
-  bodies each already record in full. Three costs, all real: every session (and every fresh agent, by
-  instruction) reads it before doing anything; the human briefing
-  [docs/generated/onboarding.md](../generated/onboarding.md) is generated *from* it, so bloat propagates
-  to the artifact meant to be short; and it is the most drift-prone prose in the repository — the one
-  place with its own [postmortem](../postmortems/0001-agents-current-state-drift.md) and a ring
-  ([0018](../rings/0018-map-current-state-drift-doc-only.md)) that consciously left it doc-only, taken
-  when the section was 35 lines and now 5.6× that
-- Interest rate: medium and compounding by construction — each unit appends a paragraph and none removes
-  one, so the entry point grows without bound while the thing it is *for* (orienting a fresh agent in
-  three hops) degrades. It is also the substrate every prose-state defect this pass found grows in
-- Price: small to execute, but the decision is not the agent's. The mechanical part is trivial (move the
-  per-unit narrative behind the links that already carry it, leave a short state + pointer). What needs
-  taste is the **fork**: (A) the map states *state* only — stage, live plan, correct first action,
-  standing gates — and history lives one hop away in the plan; (B) the section is capped (a line budget,
-  enforced like the architecture doc's one-page rule, ring
-  [0015](../rings/0015-grill-the-gardener-architecture-doc.md)); (C) it is *generated* from the active
-  plan's latest progress entries, which makes it unable to drift but also unable to be written well; or
-  (D) it stays as-is, deliberately, because a self-describing repository would rather pay context than
-  lose the narrative that makes it legible
-- Conversion path: ring — the Gardener picks a fork, then the mechanical edit follows in the same unit.
-  Held rather than converted because it edits the seed's own entry point on a matter of taste (the
-  [E-012](entropy-ledger.md) precedent: sense it, price it, present the fork, do not choose unilaterally).
-  Natural trigger: the next unit that would append another paragraph to § Current state — which is every
-  unit, so the first one after a ruling
-
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
@@ -980,3 +945,65 @@ ledger is also a record of digestion.
   `npm test` (261) + `npm run garden` (`drift_count` 0) green. Declared a `minor`
   [pollen intent](../../pollen/pending.md). The end state is single-sourcing the stage (generated from one
   constant), recorded as the ring's Revisit rather than built now
+
+## E-027 — the map is 71% current-state narrative, restating what four other artifacts already record
+
+- First observed: 2026-07-27, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)), measuring the map's sections:
+  **§ Current state is 198 of [AGENTS.md](../../AGENTS.md)'s 279 lines.** Its growth is the finding — 9
+  lines on 2026-07-04, 35 on 07-05, 93 on 07-17, 135 on 07-27 morning, **198 by evening** — while every
+  other section stayed flat across the same 23 days (Start here 10, Territory 19, Protocols 36, Laws 6)
+- Where: [AGENTS.md](../../AGENTS.md) § Current state. The navigational half of the map does its LAW-4 job
+  in ~80 stable lines; the narrative half is a **second progress log**, restating what
+  [plan 0009](active/0009-dither-metabolize.md)'s progress log, this ledger's Paid notes, and the ring
+  bodies each already record in full. Three costs, all real: every session (and every fresh agent, by
+  instruction) reads it before doing anything; the human briefing
+  [docs/generated/onboarding.md](../generated/onboarding.md) is generated *from* it, so bloat propagates
+  to the artifact meant to be short; and it is the most drift-prone prose in the repository — the one
+  place with its own [postmortem](../postmortems/0001-agents-current-state-drift.md) and a ring
+  ([0018](../rings/0018-map-current-state-drift-doc-only.md)) that consciously left it doc-only, taken
+  when the section was 35 lines and now 5.6× that
+- Interest rate: medium and compounding by construction — each unit appends a paragraph and none removes
+  one, so the entry point grows without bound while the thing it is *for* (orienting a fresh agent in
+  three hops) degrades. It is also the substrate every prose-state defect this pass found grows in
+- Price: small to execute, but the decision is not the agent's. The mechanical part is trivial (move the
+  per-unit narrative behind the links that already carry it, leave a short state + pointer). What needs
+  taste is the **fork**: (A) the map states *state* only — stage, live plan, correct first action,
+  standing gates — and history lives one hop away in the plan; (B) the section is capped (a line budget,
+  enforced like the architecture doc's one-page rule, ring
+  [0015](../rings/0015-grill-the-gardener-architecture-doc.md)); (C) it is *generated* from the active
+  plan's latest progress entries, which makes it unable to drift but also unable to be written well; or
+  (D) it stays as-is, deliberately, because a self-describing repository would rather pay context than
+  lose the narrative that makes it legible
+- Conversion path: ring — the Gardener picks a fork, then the mechanical edit follows in the same unit.
+  Held rather than converted because it edits the seed's own entry point on a matter of taste (the
+  [E-012](entropy-ledger.md) precedent: sense it, price it, present the fork, do not choose unilaterally).
+  Natural trigger: the next unit that would append another paragraph to § Current state — which is every
+  unit, so the first one after a ruling
+- Paid: 2026-07-27 (plan [0009](active/0009-dither-metabolize.md) U16; ring
+  [0055](../rings/0055-the-map-states-state-not-history.md)), on the Gardener's ruling *"fix E-027"* —
+  **fork A + B together**: the map states state, and a budget keeps it that way. Re-measured at the
+  ruling, the section had grown again since pricing, to **214 non-blank lines of the file's 298 (72%)**
+  and 2352 words — 3.5× the whole rest of the map. It is now **33 lines / 332 words**: stage, the
+  correct first action naming the live plan, where the host stands and what the exit criterion needs
+  next, and what is owed — pointing at this ledger and at [.seed/README.md](../../.seed/README.md) — with
+  an opening line stating the rule to the next agent about to append. The cap is a `run-all` check,
+  [validate-map-budget](../../.seed/checks/validate-map-budget.ts): **60 non-blank lines and 650 words**,
+  the two-proxy shape [validate-architecture](../../.seed/checks/validate-architecture.ts) uses for the
+  one-page rule, calibrated so the state statement may be as large as the navigation that carries it (the
+  rest of the map: 64 lines / 667 words, flat for 23 days) and no larger. It was **red on the real
+  repository before the rewrite** and prints its numbers on every run, so the trend is visible before it
+  is a violation; the failure message names the three places the narrative already lives, because the
+  wrong fix ("trim adjectives until it passes") is the one a bare size gate invites. **What made the
+  deletion safe was [E-024](entropy-ledger.md), one unit earlier**: with every organ README complete
+  (ring [0053](../rings/0053-numbered-organs-index-every-entry.md)), the ~40 rings and plans this section
+  linked directly are still reachable at 2 hops through their indices — `map_reachability` holds at
+  **100%** with zero dead links. **One of the three stated costs did not survive contact**: the generated
+  briefing does *not* inherit the bloat — its generator reads only the `- **Stage:**` line and the map's
+  active-plan links, and [onboarding.md](../generated/onboarding.md) regenerates **byte-identical** across
+  this rewrite. Verification (LAW-6): four self-tests (**265**, was 261) — each proxy isolated (103/60
+  lines at 542/650 words; 2132/650 words at 38/60 lines), a renamed heading silent, and 100 lines appended
+  outside the section green (the budget is section-scoped) — plus the test-of-the-test (raising both
+  budgets turns exactly the two firing cases red). `npm run check` (15) + `npm test` (265) + `npm run
+  garden` (`drift_count` 0) green. Declared a `minor` [pollen intent](../../pollen/pending.md). Fork C
+  (generate the section) is kept as the ring's Revisit if it rots again despite being small

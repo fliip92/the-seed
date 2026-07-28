@@ -19,6 +19,7 @@ import { pin } from '../lib/judge.ts';
 
 const ANATOMY = 'seed/validate-anatomy';
 const MAP = 'seed/validate-map';
+const MAP_BUDGET = 'seed/validate-map-budget';
 const STAGE = 'seed/validate-stage';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
@@ -850,6 +851,30 @@ const CASES: ViolationCase[] = [
     name: 'stage: README.md states a different stage than the map',
     seed: (r) => edit(r, 'README.md', (c) => c.replace(/(currently at \*\*Stage )(\d+)/, (_m, p, n) => `${p}${Number(n) + 1}`)),
     expect: { check: STAGE, law: LAW2, contains: ['growth stage disagrees', 'AGENTS.md', 'README.md'] },
+  },
+  {
+    // The map's § Current state budget (E-027, ring 0055): each unit appended a paragraph and none
+    // removed one, so the entry point every session reads grew 9 → 214 non-blank lines in 23 days.
+    // Two proxies, isolated by these two cases — this filler is many SHORT lines (well under the
+    // word budget), so only the line cap can fire. The filler is bare prose: no links, no headings,
+    // nothing another check reads, so the case pins this gate alone.
+    name: 'map budget: § Current state over the line budget',
+    seed: (r) =>
+      edit(r, 'AGENTS.md', (c) =>
+        c.replace('## Current state\n', '## Current state\n\n' + 'and one more.\n'.repeat(70)),
+      ),
+    expect: { check: MAP_BUDGET, law: LAW4, contains: ['non-blank lines, over the budget of'] },
+  },
+  {
+    // The other proxy: a handful of very long wrapped paragraphs stays far under the line cap while
+    // burying the state statement in prose — which is the shape a size gate measured in lines alone
+    // would wave through (the validate-architecture two-proxy reasoning, ring 0015).
+    name: 'map budget: § Current state over the word budget',
+    seed: (r) =>
+      edit(r, 'AGENTS.md', (c) =>
+        c.replace('## Current state\n', '## Current state\n\n' + ('and then one more thing happened. '.repeat(60) + '\n').repeat(5)),
+      ),
+    expect: { check: MAP_BUDGET, law: LAW4, contains: ['words, over the budget of'] },
   },
   // --- architecture-doc format (grill-the-gardener, ring 0015). These write an
   // --- unreachable doc into docs/architecture/, so validate-map also fires — the assertion
@@ -1726,6 +1751,37 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'stage: a source stating no stage is silent, not a violation (a descendant is not bound)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- the map budget is scoped to ONE section, and only where that section exists (E-027, ring
+// --- 0055). Both halves are exit-0 contracts the firing cases cannot state.
+
+// A host that names its own sections is not bound by the mother's shape (the ring-0035 contract):
+// the same content under a different heading is silent, not a violation. Renaming rather than
+// deleting keeps a `- **Stage:**` line in the map, so this case isolates the budget's applicability
+// from the stage check and the briefing generator, which read that line wherever it sits.
+inTempCopy((root) => {
+  edit(root, 'AGENTS.md', (c) => c.replace('## Current state\n', '## Where things stand\n'));
+  const { status, output } = runChecks(root);
+  report(
+    'map budget: a map with no `## Current state` section is silent, not a violation (a host is not bound)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// The budget caps the STATE STATEMENT, not the map: a growing Territory table or Protocols list must
+// not be priced against it (the rejected "cap total map size" alternative). 100 lines appended
+// outside the section leave it green — which is also what keeps the many fixtures above, all of
+// which append to AGENTS.md, from silently depending on the map's total size.
+inTempCopy((root) => {
+  append(root, 'AGENTS.md', '\n' + 'a line of map that is not current state.\n'.repeat(100));
+  const { status, output } = runChecks(root);
+  report(
+    'map budget: 100 lines appended OUTSIDE § Current state stay green (the budget is section-scoped)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );
