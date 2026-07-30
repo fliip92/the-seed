@@ -926,7 +926,10 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    **[E-009](../entropy-ledger.md)'s trigger has fired**, so the prose-state drift class is owed an
    instrument; its one computable half is *a plan's `Next actions` naming work its own progress log
    records as done*.
-10. **U16 / [E-027](../entropy-ledger.md) — PAID, local, awaiting the Gardener's push** (ring
+10. **U16 / [E-027](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `110ceea`, run
+   [30503364550](https://github.com/fliip92/the-seed/actions/runs/30503364550) — the budget check's first
+   hosted execution, reading *"## Current state within budget (33/60 lines, 332/650 words)"* alongside
+   `map_reachability` **100.0% (108/108 docs)**, self-test **265**, and all five git-aware gates; ring
    [0055](../../rings/0055-the-map-states-state-not-history.md); no dither mutation). The Gardener ruled
    *"fix E-027"* on **fork A + B**: [AGENTS.md](../../../AGENTS.md) § Current state is rewritten to
    **33 lines / 332 words** of state + pointers (from 214 / 2352, re-measured at the ruling) and capped
