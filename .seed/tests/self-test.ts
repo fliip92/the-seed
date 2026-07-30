@@ -155,6 +155,11 @@ const runAutomergeGate = (root: string, args: string[]): RunResult =>
 const runReport = (root: string, args: string[] = []): RunResult =>
   runNode(root, '.seed/checks/gardening-report.ts', args);
 const runWorktrees = (root: string, args: string[]): RunResult => runNode(root, '.seed/checks/worktrees.ts', args);
+// What a real commit does after changing a generator's source. Since ring 0056 the state block
+// COUNTS the organs (E-026), so a fixture that lands a ring, a plan or a principle and then expects
+// a green tree must regenerate first — otherwise it is asserting that the regeneration gate does not
+// work. The violation cases deliberately skip it: that staleness IS their evidence.
+const regenerate = (root: string): RunResult => runNode(root, '.seed/checks/generate.ts');
 
 function git(root: string, ...args: string[]): void {
   const res = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
@@ -1266,6 +1271,48 @@ const CASES: ViolationCase[] = [
     expect: { check: GENERATED, law: LAW2, contains: ['could not regenerate', 'docs/generated/onboarding.md'] },
   },
   {
+    // The state block's teeth (E-026, ring 0056): a count is a function of the ORGAN, so landing a
+    // ring without regenerating leaves the front door's number one behind — the exact defect the
+    // entry priced (the README said 21 rings against 53, seven skills against 9). The ring itself is
+    // indexed so validate-rings stays out of it; the assertion names the state artifact, so it
+    // cannot pass on the onboarding briefing's evidence.
+    name: 'generated: a landed ring makes the generated state counts stale (the front door cannot rot)',
+    seed: (r) => {
+      write(r, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
+      append(r, 'docs/rings/README.md', `\n- [${RING_NEXT} — Self-test fixture](${RING_NEXT}-fixture.md)\n`);
+    },
+    expect: { check: GENERATED, law: LAW2, contains: ['does not match its regeneration', 'docs/generated/state.md'] },
+  },
+  {
+    // The other half of the state block: its fitness readings come from the NEWEST committed
+    // snapshot, so landing one without regenerating is caught too. Dated far enough ahead that a
+    // real snapshot landing later never makes the fixture stop being the newest — the
+    // derive-from-maxima discipline the numbered fixtures use, applied to a date.
+    name: 'generated: a newer fitness snapshot makes the generated state fitness line stale',
+    seed: (r) =>
+      write(
+        r,
+        'docs/fitness/history/2099-01-01.json',
+        JSON.stringify(
+          {
+            date: '2099-01-01',
+            stage: 4,
+            metrics: {
+              map_reachability: 0.5,
+              enforcement_ratio: 1,
+              drift_count: 3,
+              plan_traceability: 1,
+              escalation_rate: null,
+              ledger_trend: -2,
+            },
+          },
+          null,
+          2,
+        ) + '\n',
+      ),
+    expect: { check: GENERATED, law: LAW2, contains: ['does not match its regeneration', 'docs/generated/state.md'] },
+  },
+  {
     name: 'generated: an unregistered file in docs/generated/ is caught',
     seed: (r) => write(r, 'docs/generated/stray.md', '# Stray\n\nHand-authored where only generators may write.\n'),
     expect: { check: GENERATED, law: LAW2, contains: ['is not a registered generated artifact', 'docs/generated/stray.md'] },
@@ -1692,6 +1739,7 @@ inTempCopy((root) => {
     'docs/plans/completed/README.md',
     `\n- [${PLAN_NEXT} fixture](../active/${PLAN_NEXT}-fixture.md) — self-test fixture: a completed plan linked by its active/ path.\n`,
   );
+  regenerate(root);
   const { status, output } = runChecks(root);
   report(
     'map: a completed plan linked by its active/ path resolves — no dead link (ring 0013)',
@@ -1711,6 +1759,7 @@ inTempCopy((root) => {
     'docs/plans/active/README.md',
     `\n- [${PLAN_NEXT} fixture](../completed/${PLAN_NEXT}-fixture.md) — self-test fixture: an active plan linked by its completed/ path.\n`,
   );
+  regenerate(root);
   const { status, output } = runChecks(root);
   report(
     'map: an active plan linked by its completed/ path resolves — no dead link (ring 0013)',
@@ -1734,6 +1783,7 @@ inTempCopy((root) => {
     'docs/plans/active/README.md',
     `\n- [${PLAN_NEXT} fixture](${PLAN_NEXT}-fixture.md) — self-test fixture: a plan with well-formed work units.\n`,
   );
+  regenerate(root);
   const { status, output } = runChecks(root);
   report(
     'plans: a plan with well-formed work units passes all checks (ring 0036)',
@@ -1805,6 +1855,7 @@ inTempCopy((root) => {
 inTempCopy((root) => {
   write(root, `docs/rings/${RING_NEXT}-fixture.md`, validRing(RING_NEXT));
   append(root, 'docs/rings/README.md', `\n- [${RING_NEXT} — Self-test fixture](${RING_NEXT}-fixture.md)\n`);
+  regenerate(root); // the ring count is generated (E-026) — a real commit regenerates too
   const { status, output } = runChecks(root);
   report(
     'rings: the same ring, listed in the index, passes all checks',
@@ -1932,6 +1983,7 @@ for (const product of ['invariant', 'ring', 'priced debt', 'priced-debt', 'delet
 inTempCopy((root) => {
   write(root, 'docs/principles/fixture.md', validPrinciple('Fixture principle'));
   append(root, 'docs/principles/README.md', '\n- [fixture](fixture.md) — self-test fixture principle.\n');
+  regenerate(root); // the stated-principles count is generated (E-026)
   const { status, output } = runChecks(root);
   report(
     'principle: a valid, linked principle passes all checks',

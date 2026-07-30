@@ -840,6 +840,35 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   pass one unit earlier was built on: `.seed/README.md`'s `validate-stage` row still described the
   **two** hand-bumped places E-025 had already widened into a declared source set.
 
+- **2026-07-29** — **U17 / [E-026](../entropy-ledger.md) PAID on the Gardener's ruling *"fix E-026"* — the
+  front door's numbers are generated, not typed** (ring
+  [0056](../../rings/0056-the-front-doors-numbers-are-generated.md); no dither mutation — its graft carries
+  no generation manifest). The entry's declared path was taken as written: a **third generation-manifest
+  entry**, [docs/generated/state.md](../../generated/state.md), counting rings, plans, skills, principles
+  and the ledger's open/paid split from the organs themselves, plus the latest committed fitness snapshot;
+  [README.md](../../../README.md) **links** it rather than restating it, so
+  [validate-generated](../../../.seed/checks/validate-generated.ts) turns a stale count from *detectable*
+  into *impossible* (the ring-[0020](../../rings/0020-onboard-human-generated-briefing.md) shape, not a
+  `stale-count` prose regex — the same false-positive surface E-025 measured and rejected). **The evidence
+  that content was never the debt: the hand-fix of two days earlier had already decayed** — the README's
+  *53 rings* was 55 and its *twelve declared intents* fourteen when this unit opened; the generated page
+  read 55 on its first run. **Deliberately not generated, and named:** the fitness readings are *read* from
+  the newest snapshot rather than recomputed, because a generator must be a pure function of repo files —
+  `plan_traceability` and `ledger_trend` are functions of git history and a trailing window, and
+  `map_reachability` counts the link graph the page itself is a node in, so computing it there would make
+  the artifact a function of its own output; and the genome-fixed counts (*eleven laws*, *six metrics*)
+  stay hand-typed, moving only by Gardener-approved amendment. `ledgerCounts` moved into
+  [repo.ts](../../../.seed/lib/repo.ts) so the metric and the public number share one definition (LAW-3).
+  **Ring [0055](../../rings/0055-the-map-states-state-not-history.md)'s Revisit fired and closed with
+  nothing to do**: the map's § Current state was examined and states no counts at all after that rewrite.
+  Verification: two self-tests (**267**, was 265) pinning both sources — a landed ring, and a newer fitness
+  snapshot — each asserting on `docs/generated/state.md` by name so neither can pass on the onboarding
+  briefing's evidence; plus the test-of-the-test (freezing the counts to literals turns exactly those two
+  green). Five exit-0 fixtures that add a ring, a plan or a principle now regenerate first, which is the
+  accepted recurring cost stated in the harness: **landing a ring means running `npm run generate`**.
+  Checks (15), tests (**267**), garden (`drift_count` 0) green; a `minor`
+  [pollen intent](../../../pollen/pending.md) declared.
+
 ## Next actions
 
 1. **E-001…E-013 (U1–U8) — landed, pushed, hosted-CI green.** The structural refactors, the three sensing
@@ -941,14 +970,25 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    record:** the first unit that *wants* to append to § Current state is the test of whether the shape
    holds under real pressure, and a second host would be the first legitimate pressure on the budget
    (ring 0055's Revisit).
-11. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+11. **U17 / [E-026](../entropy-ledger.md) — PAID** (ring
+   [0056](../../rings/0056-the-front-doors-numbers-are-generated.md); no dither mutation). The public
+   README's counts are generated into [docs/generated/state.md](../../generated/state.md) and linked, not
+   restated — the hand-fix from two days earlier had already decayed (53 rings → 55, twelve intents → 14),
+   which is why the enforcement was the debt. Checks (15), tests (**267**), garden green; a `minor`
+   [pollen intent](../../../pollen/pending.md) declared. **The one live follow-on left on this track is
+   [E-009](../entropy-ledger.md)'s prose-state class**, whose trigger fired at U15: its computable half is
+   *a plan's `Next actions` naming work its own progress log records as done*, and generation has now taken
+   the countable half out of its scope. Two triggers ride this record: the README's skill *list* (the count
+   is generated, the enumeration is prose) is the shape to watch, and the first cut after this consumes the
+   ring-0056 intent.
+12. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-12. **On cadence:** re-measure after any dither commit and extend
+13. **On cadence:** re-measure after any dither commit and extend
     [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
     hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
     a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact

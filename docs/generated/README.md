@@ -22,6 +22,7 @@ artifact regenerate byte-identically.
 |---|---|---|
 | [onboarding.md](onboarding.md) | the map (AGENTS.md) + the active plans it links | `npm run generate` |
 | [pending-release.md](pending-release.md) | [`pollen/pending.md`](../../pollen/pending.md) + the pollen version + the release history | `npm run generate` |
+| [state.md](state.md) | the organs themselves (rings, plans, skills, principles), the entropy ledger, and the latest fitness snapshot | `npm run generate` |
 
 [onboarding.md](onboarding.md) is the [onboard-human](../../skills/onboard-human/SKILL.md)
 briefing — current state → goal, derived from the map's stage line and the active plan it
@@ -33,6 +34,17 @@ bumped by the maximum declared impact, and the rings it composes — computed pu
 [pending intents](../../pollen/pending.md). It is the ring-0020 determinism split's "pure pending
 notes, byte-exact-gated" half; the release tool that consumes those intents is
 [.seed/checks/release.ts](../../.seed/checks/release.ts).
+
+[state.md](state.md) is the **state block** (ring
+[0056](../rings/0056-the-front-doors-numbers-are-generated.md), converting
+[E-026](../plans/entropy-ledger.md)): the counts the public [README](../../README.md) used to restate
+by hand — rings, plans, skills, principles, the ledger — plus the latest committed fitness snapshot.
+Six of those hand-typed claims were false, some for weeks, with every check green: the drift scan
+reads backticked *paths* and `validate-map` reads links, so a number that stops being true was
+invisible. The README links this page instead of restating it, which turns a stale count from
+*detectable* into *impossible*. The fitness readings are **read from the newest snapshot in
+[docs/fitness/history/](../fitness/history/README.md)**, never recomputed — two of the six metrics
+are functions of git history, which a pure generator may not consult.
 
 Every artifact added here must be registered in the manifest with its source and regeneration
 command.

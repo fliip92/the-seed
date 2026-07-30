@@ -355,6 +355,38 @@ export function indexCompletenessViolations(
     }));
 }
 
+export interface LedgerCounts {
+  open: number;
+  paid: number;
+}
+
+/**
+ * `## E-NNN` entries under `## Open` vs `## Paid` in entropy-ledger content (mirrors the
+ * heading-block parsing validate-plans.ts does for format validation).
+ *
+ * Lives here because two organs now ask: `ledger_trend` (fitness-metrics.ts) diffs the open count
+ * against history, and the generated state block (generated.ts) states it to the front door. One
+ * definition of what an open entry IS, so the metric and the public number cannot disagree (LAW-3).
+ */
+export function ledgerCounts(content: string): LedgerCounts {
+  const blocks = content.split(/^## /m).slice(1);
+  let section: 'open' | 'paid' | null = null;
+  const counts: LedgerCounts = { open: 0, paid: 0 };
+  for (const block of blocks) {
+    const heading = block.split('\n')[0].trim();
+    if (heading === 'Open') {
+      section = 'open';
+      continue;
+    }
+    if (heading === 'Paid') {
+      section = 'paid';
+      continue;
+    }
+    if (section !== null && /^E-\d{3} — /.test(heading)) counts[section]++;
+  }
+  return counts;
+}
+
 export interface PlanRingRef {
   kind: 'plan' | 'ring';
   num: string;

@@ -16,17 +16,18 @@
 // is stated structurally ("generated from repo state — do not hand-edit"), never temporally.
 //
 // Ring 0020.
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { REPO_ROOT, readRepoFile, extractLocalLinks } from './repo.ts';
+import { REPO_ROOT, readRepoFile, extractLocalLinks, ledgerCounts, numberedFilenames } from './repo.ts';
 import { renderPendingNotes } from './release.ts';
 
 export interface GeneratedArtifact {
   /** Repo-relative path under docs/generated/ the generator writes. */
   artifact: string;
-  /** Repo-relative source files whose existence the check verifies. The anchor(s) the
-   *  generator reads directly; secondary sources it discovers through them (the active plans
-   *  the map links) are guarded in the generator, so they need not be listed here. */
+  /** Repo-relative sources the artifact derives from, named in the check's failure message: the
+   *  anchor(s) the generator reads directly — a file, or a directory whose CONTENTS are the source
+   *  (a count is a function of what an organ holds, not of any one file). Secondary sources
+   *  discovered through them (the active plans the map links) are guarded in the generator. */
   sources: string[];
   /** How a human (or agent) regenerates it. */
   command: string;
@@ -146,6 +147,143 @@ export function generateOnboarding(root: string = REPO_ROOT): string {
   return lines.join('\n') + '\n';
 }
 
+// ---------------------------------------------------------------------------------------------
+// The state block (E-026, ring 0056): the counts the public README used to restate by hand.
+//
+// Six of its claims were false when the fifth sensing pass read it — 21 rings against 53, seven
+// skills against 9, "no principles stated yet" a week after the first one was. Every count drifts
+// monotonically from the moment it is typed, and nothing read them: the drift scan checks backticked
+// PATHS, validate-map checks links, so `drift_count 0` was correct and blind at the same time. The
+// conversion is generate-don't-detect (the ring-0020 shape, not a `stale-count` prose regex): each
+// number is a pure function of the tree, the README links this page instead of restating it, and the
+// regeneration gate makes a stale count impossible rather than merely detectable.
+
+/** Directories directly inside `dir` that carry `marker` — the `skills/<name>/SKILL.md` convention,
+ *  so a stray file or a half-planted directory is not counted. 0 when the organ is absent (a
+ *  descendant carrying this manifest need not have one — the numberedFilenames contract). */
+function dirsCarrying(dir: string, marker: string, root: string): number {
+  const abs = join(root, dir);
+  if (!existsSync(abs)) return 0;
+  return readdirSync(abs, { withFileTypes: true }).filter(
+    (e) => e.isDirectory() && existsSync(join(abs, e.name, marker)),
+  ).length;
+}
+
+/** Slugged (non-numbered) `.md` entries in an organ, excluding its index README — how
+ *  docs/principles/ is shaped. 0 when the organ is absent. */
+function sluggedCount(dir: string, root: string): number {
+  const abs = join(root, dir);
+  if (!existsSync(abs)) return 0;
+  return readdirSync(abs).filter((f) => f.endsWith('.md') && f !== 'README.md').length;
+}
+
+interface Snapshot {
+  date: string;
+  stage: number | null;
+  metrics: Record<string, number | null>;
+}
+
+const HISTORY_DIR = 'docs/fitness/history';
+
+/** The newest dated snapshot in docs/fitness/history/ (`YYYY-MM-DD.json` — lexicographic max is
+ *  chronological max for ISO dates), or null when the organ carries none. A malformed snapshot
+ *  throws, which validate-generated reports as "could not regenerate": a legible violation naming
+ *  the artifact, not a crash. */
+function latestSnapshot(root: string): { file: string; snap: Snapshot } | null {
+  const abs = join(root, HISTORY_DIR);
+  if (!existsSync(abs)) return null;
+  const dated = readdirSync(abs)
+    .filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f))
+    .sort();
+  if (dated.length === 0) return null;
+  const file = dated[dated.length - 1];
+  return { file, snap: JSON.parse(readRepoFile(`${HISTORY_DIR}/${file}`, root)) as Snapshot };
+}
+
+/** One metric's reading, rendered the way `npm run fitness` prints it. The values are READ from the
+ *  committed snapshot, never recomputed: `plan_traceability` is a function of git history and
+ *  `ledger_trend` of history plus a trailing 7-day window (SEED.md §6), so a generator that computed
+ *  them would change when nothing in the tree did — exactly what the byte-exact gate forbids. The
+ *  three file-pure metrics are read from the same snapshot rather than recomputed for a second
+ *  reason: `map_reachability` counts the link graph THIS page is part of, so computing it here would
+ *  make the artifact a function of its own output. What a metric MEANS still has one definition
+ *  (.seed/lib/fitness-metrics.ts); this is presentation over a landed number. */
+function renderReading(key: string, value: number | null): string {
+  if (key === 'escalation_rate' && value === null) return 'null — no run-log instrument yet';
+  if (value === null) return 'null';
+  if (key === 'drift_count') return String(value);
+  if (key === 'ledger_trend') return `${value >= 0 ? '+' : ''}${value} open entries (trailing 7 days)`;
+  return `${(value * 100).toFixed(1)}%`;
+}
+
+/** The generated state block: what the repository has grown, counted from the tree, plus the latest
+ *  committed fitness snapshot. The public README links this instead of restating it (E-026). */
+export function generateState(root: string = REPO_ROOT): string {
+  const rings = numberedFilenames('docs/rings', root).length;
+  const completed = numberedFilenames('docs/plans/completed', root).length;
+  const active = numberedFilenames('docs/plans/active', root).length;
+  const skills = dirsCarrying('skills', 'SKILL.md', root);
+  const principles = sluggedCount('docs/principles', root);
+  const ledgerPath = 'docs/plans/entropy-ledger.md';
+  const ledger = existsSync(join(root, ledgerPath))
+    ? ledgerCounts(readRepoFile(ledgerPath, root))
+    : { open: 0, paid: 0 };
+  const latest = latestSnapshot(root);
+
+  const fitnessBlock = latest
+    ? [
+        `Snapshot [${latest.snap.date}](../fitness/history/${latest.file})` +
+          `${latest.snap.stage === null ? '' : `, stage ${latest.snap.stage}`} — the newest in`,
+        '[history/](../fitness/history/README.md). Fitness is a **trend, not a grade**: the method, the',
+        'definitions, and the dated comparison live in [FITNESS.md](../fitness/FITNESS.md). These are the',
+        'landed numbers, not a live recomputation: two of the six read git history, which a generated',
+        'artifact may not (it must be a pure function of the tree, or it cannot be gated byte-exact).',
+        '',
+        '| Metric | Reading |',
+        '|---|---|',
+        ...Object.entries(latest.snap.metrics).map(([k, v]) => `| \`${k}\` | ${renderReading(k, v)} |`),
+      ]
+    : ['_No fitness snapshot committed yet — run `npm run fitness -- --json` and land one in_ `docs/fitness/history/`.'];
+
+  const lines = [
+    '# State — counted from the tree',
+    '',
+    '> This page is **generated from repo state** by' +
+      ' [`.seed/checks/generate.ts`](../../.seed/checks/generate.ts) — do not hand-edit it (see' +
+      ' [docs/generated/README.md](README.md)). To change a number here, change the repository and' +
+      ' run `npm run generate`.',
+    '',
+    'Every count below is derived from the tree it is committed in, so a stale one is not merely',
+    'detectable — it is impossible: [validate-generated](../../.seed/checks/validate-generated.ts)',
+    'fails `npm run check` the moment a number stops matching what the generator produces. The public',
+    '[README](../../README.md) links here rather than restating these, because a hand-typed count is',
+    'wrong the moment the next ring lands (ring 0056, paying E-026).',
+    '',
+    '## Grown so far',
+    '',
+    '| What | Count |',
+    '|---|---|',
+    `| Decisions recorded — [rings](../rings/README.md) | ${rings} |`,
+    `| [Plans](../plans/README.md) | ${completed} completed, ${active} active |`,
+    `| [Skills](../../skills/README.md) planted | ${skills} |`,
+    `| [Principles](../principles/README.md) stated | ${principles} |`,
+    `| [Entropy ledger](../plans/entropy-ledger.md) | ${ledger.open} open, ${ledger.paid} paid |`,
+    '',
+    '## Fitness — the latest committed snapshot',
+    '',
+    ...fitnessBlock,
+    '',
+    'The portable distribution has its own generated page: what the next pollen release would be, and',
+    'the version the line rests at, are in [pending-release.md](pending-release.md).',
+    '',
+    '---',
+    '',
+    'Generated by `npm run generate` from the organs themselves and the latest fitness snapshot;',
+    'regenerates deterministically from repo state (the docs/generated/ discipline).',
+  ];
+  return lines.join('\n') + '\n';
+}
+
 export const MANIFEST: GeneratedArtifact[] = [
   {
     artifact: 'docs/generated/onboarding.md',
@@ -164,5 +302,21 @@ export const MANIFEST: GeneratedArtifact[] = [
     sources: ['pollen/pending.md'],
     command: 'npm run generate',
     generate: (root) => renderPendingNotes(root),
+  },
+  {
+    // The state block (ring 0056, converting E-026): the counts the public front door restated by
+    // hand and nothing read. Its sources are the ORGANS — a count is a function of what the
+    // directory holds, not of any one file — plus the ledger and the latest committed snapshot.
+    artifact: 'docs/generated/state.md',
+    sources: [
+      'docs/rings/',
+      'docs/plans/',
+      'skills/',
+      'docs/principles/',
+      'docs/plans/entropy-ledger.md',
+      'docs/fitness/history/',
+    ],
+    command: 'npm run generate',
+    generate: (root) => generateState(root),
   },
 ];

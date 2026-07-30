@@ -24,6 +24,7 @@ version lines — genome and pollen — are never conflated, ring 0026).
   - minor — ring 0053 — index completeness for the numbered organs: every `NNNN-slug.md` under rings, plans, postmortems, assessments and judgments must be linked from its own organ README, so a descendant's index cannot silently omit an entry that stays reachable by some other path
   - minor — ring 0054 — `validate-stage` compares a declared source SET rather than a hardcoded pair, so every place a descendant states its growth stage is held in agreement, and a source that states none stays silent
   - minor — ring 0055 — `validate-map-budget`: the map's `## Current state` is capped at 60 non-blank lines / 650 words, so a descendant's entry point cannot grow into a second progress log the way the mother's did (9 → 214 lines in 23 days); silent when the map carries no such section
+  - minor — ring 0056 — the generation manifest gains a **state block** generator (`docs/generated/state.md`: rings, plans, skills, principles, the ledger's open/paid split, and the latest committed fitness snapshot), so a descendant's front door can link its numbers instead of typing them and the regeneration gate makes a stale count impossible; it degrades to 0 / "no snapshot yet" on an organ the host does not carry
 
 Cut it with `node .seed/checks/release.ts cut-release --date YYYY-MM-DD`. This list is proved
 COMPLETE against git by the pollen-intent gate (ring 0052): every portable change since the last

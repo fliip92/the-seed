@@ -25,7 +25,16 @@
 // tree is byte-identical before and after (LAW-6).
 import { lstatSync } from 'node:fs';
 import { join } from 'node:path';
-import { git, gitRootStatus, listRepoFiles, readRepoFile, resolveDecisionLog, tracesToDecisionLog } from './repo.ts';
+import {
+  git,
+  gitRootStatus,
+  ledgerCounts,
+  listRepoFiles,
+  readRepoFile,
+  resolveDecisionLog,
+  tracesToDecisionLog,
+} from './repo.ts';
+import type { LedgerCounts } from './repo.ts';
 import { analyzeReachability, resolveMapFilename } from '../checks/validate-map.ts';
 import { scanDrift } from '../checks/doc-drift.ts';
 
@@ -154,32 +163,6 @@ function planTraceability(root: string): { value: number | null; note?: string }
     tracesToDecisionLog(git(root, ['show', '-s', '--format=%B', sha]) ?? '', log),
   ).length;
   return { value: traced / shas.length, note: `traced against ${log.label}` };
-}
-
-interface LedgerCounts {
-  open: number;
-  paid: number;
-}
-
-/** Counts `## E-NNN` entries under `## Open` vs `## Paid` in ledger content (mirrors the
- * heading-block parsing validate-plans.ts does for format validation). */
-function ledgerCounts(content: string): LedgerCounts {
-  const blocks = content.split(/^## /m).slice(1);
-  let section: 'open' | 'paid' | null = null;
-  const counts: LedgerCounts = { open: 0, paid: 0 };
-  for (const block of blocks) {
-    const heading = block.split('\n')[0].trim();
-    if (heading === 'Open') {
-      section = 'open';
-      continue;
-    }
-    if (heading === 'Paid') {
-      section = 'paid';
-      continue;
-    }
-    if (section !== null && /^E-\d{3} — /.test(heading)) counts[section]++;
-  }
-  return counts;
 }
 
 // Net change in open ledger entries over a trailing 7-day window — SEED.md §6's "entropy

@@ -150,46 +150,6 @@ ledger is also a record of digestion.
   [pollination-dither.md](../fitness/pollination-dither.md) gets its next row — the check that the
   conversion actually worked
 
-## E-026 — the public front door's state claims are hand-maintained and unread by any instrument
-
-- First observed: 2026-07-27, the fifth sensing pass (ring
-  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — reading [README.md](../../README.md)
-  against the tree it describes. Six claims were false, some for weeks: *21 rings* (53), *seven planted
-  skills* (9 — `intake` and `judge` were missing from the list entirely), *two completed plans plus one
-  active* (7 + 2), *principles … none stated yet* (grounded-or-ask, ring
-  [0023](../rings/0023-grounded-or-ask-first-principle.md), stated a week before the README was last
-  touched), *a **solo experiment*** (ring [0032](../rings/0032-stage-4-transition-first-host-dither.md)
-  retired that), and *pollen … does not exist until Stage 3 … deliberately empty* (v0.1.0 cut 2026-07-16).
-  The stage claim in the same file is [E-025](entropy-ledger.md), paid in the same pass because a gate
-  already existed for it
-- Where: [README.md](../../README.md) — the repository's public face (public by ring
-  [0004](../rings/0004-name-hosting-visibility.md)) — plus, in principle, any hand-written count in a
-  current-state doc. It **is** inside the [drift scan](../../.seed/checks/doc-drift.ts) surface, and the
-  scan is honest about what it reads: `stale-path-reference` is the only class, so a path that stops
-  resolving fires and a *number* that stops being true does not. `validate-map` reads links, not claims.
-  `drift_count 0` was correct and blind at the same time
-- Interest rate: medium, and it is the **only** entropy here with an audience outside the repository.
-  Every count drifts monotonically the moment it is written; the file is edited only when someone
-  remembers it exists (last touched 2026-07-15, twelve days and 32 rings before this pass). The specific
-  cost is credibility: the document's own pitch is *"don't take it on faith — clone it and watch it verify
-  itself"*, and the first numbers a visitor could check were the ones nothing checked. Bounded only by the
-  project's obscurity
-- Price: small–medium, and the shape is already owned. The seed generates artifacts from repo state and
-  gates them byte-exact ([validate-generated](../../.seed/checks/validate-generated.ts), the generation
-  manifest [generated.ts](../../.seed/lib/generated.ts), ring
-  [0020](../rings/0020-onboard-human-generated-briefing.md), paying E-001). The counts are all pure
-  functions of the tree — rings, plans, skills, principles, metrics — so the work is one generator plus
-  the decision of how a *hand-written, voiced* README consumes it
-- Conversion path: invariant — **generate, don't detect.** Add a `docs/generated/` state block (counts +
-  the live fitness line) to the manifest, and have README link it rather than restate it; the
-  regeneration gate then makes a stale count impossible instead of merely detectable. The alternative — a
-  `stale-count` drift class — is second choice: it needs a regex over prose that distinguishes *"53
-  rings"* (a live claim) from *"the four graft organs"* (permanent history), which is the same
-  false-positive surface that keeps [E-009](entropy-ledger.md)'s prose class deferred. Do it when the next
-  reader-facing change touches README, or immediately if the seed goes looking for readers. The content is
-  correct as of 2026-07-27 — hand-fixed in the sensing pass — so the debt is the **enforcement**, not the
-  current text
-
 ## Paid
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
@@ -945,6 +905,68 @@ ledger is also a record of digestion.
   `npm test` (261) + `npm run garden` (`drift_count` 0) green. Declared a `minor`
   [pollen intent](../../pollen/pending.md). The end state is single-sourcing the stage (generated from one
   constant), recorded as the ring's Revisit rather than built now
+
+## E-026 — the public front door's state claims are hand-maintained and unread by any instrument
+
+- First observed: 2026-07-27, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — reading [README.md](../../README.md)
+  against the tree it describes. Six claims were false, some for weeks: *21 rings* (53), *seven planted
+  skills* (9 — `intake` and `judge` were missing from the list entirely), *two completed plans plus one
+  active* (7 + 2), *principles … none stated yet* (grounded-or-ask, ring
+  [0023](../rings/0023-grounded-or-ask-first-principle.md), stated a week before the README was last
+  touched), *a **solo experiment*** (ring [0032](../rings/0032-stage-4-transition-first-host-dither.md)
+  retired that), and *pollen … does not exist until Stage 3 … deliberately empty* (v0.1.0 cut 2026-07-16).
+  The stage claim in the same file is [E-025](entropy-ledger.md), paid in the same pass because a gate
+  already existed for it
+- Where: [README.md](../../README.md) — the repository's public face (public by ring
+  [0004](../rings/0004-name-hosting-visibility.md)) — plus, in principle, any hand-written count in a
+  current-state doc. It **is** inside the [drift scan](../../.seed/checks/doc-drift.ts) surface, and the
+  scan is honest about what it reads: `stale-path-reference` is the only class, so a path that stops
+  resolving fires and a *number* that stops being true does not. `validate-map` reads links, not claims.
+  `drift_count 0` was correct and blind at the same time
+- Interest rate: medium, and it is the **only** entropy here with an audience outside the repository.
+  Every count drifts monotonically the moment it is written; the file is edited only when someone
+  remembers it exists (last touched 2026-07-15, twelve days and 32 rings before this pass). The specific
+  cost is credibility: the document's own pitch is *"don't take it on faith — clone it and watch it verify
+  itself"*, and the first numbers a visitor could check were the ones nothing checked. Bounded only by the
+  project's obscurity
+- Price: small–medium, and the shape is already owned. The seed generates artifacts from repo state and
+  gates them byte-exact ([validate-generated](../../.seed/checks/validate-generated.ts), the generation
+  manifest [generated.ts](../../.seed/lib/generated.ts), ring
+  [0020](../rings/0020-onboard-human-generated-briefing.md), paying E-001). The counts are all pure
+  functions of the tree — rings, plans, skills, principles, metrics — so the work is one generator plus
+  the decision of how a *hand-written, voiced* README consumes it
+- Conversion path: invariant — **generate, don't detect.** Add a `docs/generated/` state block (counts +
+  the live fitness line) to the manifest, and have README link it rather than restate it; the
+  regeneration gate then makes a stale count impossible instead of merely detectable. The alternative — a
+  `stale-count` drift class — is second choice: it needs a regex over prose that distinguishes *"53
+  rings"* (a live claim) from *"the four graft organs"* (permanent history), which is the same
+  false-positive surface that keeps [E-009](entropy-ledger.md)'s prose class deferred. Do it when the next
+  reader-facing change touches README, or immediately if the seed goes looking for readers. The content is
+  correct as of 2026-07-27 — hand-fixed in the sensing pass — so the debt is the **enforcement**, not the
+  current text
+- Paid: 2026-07-29 (plan [0009](active/0009-dither-metabolize.md) U17, on the Gardener's ruling *"fix
+  E-026"*; ring [0056](../rings/0056-the-front-doors-numbers-are-generated.md)). The declared path was taken
+  as written: [docs/generated/state.md](../generated/state.md) is a **third generation-manifest entry** —
+  rings, plans, skills, principles and the ledger's open/paid split, each counted from the organ itself,
+  plus the latest committed fitness snapshot — and the README **links** it instead of restating it, so
+  [validate-generated](../../.seed/checks/validate-generated.ts) turns a stale count from *detectable* into
+  *impossible*. **The two-day-old hand-fix had already decayed, which is the proof the enforcement was the
+  debt**: on the day of conversion the README's *53 rings* was 55 and its *twelve declared intents*
+  fourteen. What is deliberately NOT generated: the fitness readings are **read** from the newest snapshot
+  rather than recomputed (a generator must be pure — `plan_traceability` and `ledger_trend` read git
+  history, and `map_reachability` would make the page a function of its own link graph), and the
+  genome-fixed counts (*eleven laws*, *six metrics*) stay hand-typed because they move only by
+  Gardener-approved amendment. The residual is the README's skill *list* — the count is generated, the
+  enumeration and its one-line pitches are prose (ring 0056's Revisit; the slugged organs' index
+  completeness is ring [0053](../rings/0053-numbered-organs-index-every-entry.md)'s). `ledgerCounts` moved
+  into [repo.ts](../../.seed/lib/repo.ts) so the metric and the public number cannot disagree (LAW-3).
+  Verification (LAW-6): two self-tests (**267**, was 265) — a landed ring and a newer fitness snapshot each
+  leave the page stale — plus the test-of-the-test (freezing the counts to literals turns exactly those two
+  green; reverting the five exit-0 fixtures' regeneration turns exactly those five red). `npm run check`
+  (15) + `npm test` (267) + `npm run garden` (`drift_count` 0) green. Declared a `minor`
+  [pollen intent](../../pollen/pending.md). The recurring cost is accepted and named: landing a ring now
+  means running `npm run generate`, which is the mechanism rather than a side effect
 
 ## E-027 — the map is 71% current-state narrative, restating what four other artifacts already record
 

@@ -211,6 +211,15 @@ command, and a **pure** `generate(root)` function — the single definition of w
 (LAW-3), shared by the generator and its check. Generators take no wall-clock and no environment,
 so an artifact regenerates byte-identically.
 
+Three artifacts are registered: the [onboarding briefing](../docs/generated/onboarding.md), the
+[pending-release notes](../docs/generated/pending-release.md), and — since ring
+[0056](../docs/rings/0056-the-front-doors-numbers-are-generated.md), converting
+[E-026](../docs/plans/entropy-ledger.md) — the [state block](../docs/generated/state.md): the counts
+the public README used to restate by hand (rings, plans, skills, principles, the ledger) plus the
+latest committed fitness snapshot. Its fitness readings are *read* from that snapshot rather than
+recomputed, because a generator may not consult git history or the clock and still regenerate
+byte-identically.
+
 [checks/generate.ts](checks/generate.ts) (`npm run generate`) rewrites every manifest artifact
 from its sources. [checks/validate-generated.ts](checks/validate-generated.ts) is the gate that
 makes the discipline real: part of `run-all.ts`, it re-runs each generator and fails when a
