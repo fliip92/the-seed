@@ -7,65 +7,6 @@ ledger is also a record of digestion.
 
 ## Open
 
-## E-009 — Drift detection is v0: only the stale-path-reference class
-
-- First observed: 2026-07-04, building the doc-gardener (plan 0002 scope item 3)
-- Where: `.seed/checks/doc-drift.ts` detects one drift class (a current-state doc naming a
-  repo path that no longer exists). Other doc↔code divergences — inventory drift (a list
-  that no longer mirrors its directory), stale counts baked into prose, and broader prose
-  drift — are still sensed by the agent on the gardening pass, not by the instrument, so
-  `drift_count` under-reports true drift. Two structural blind spots narrow it further:
-  the scan reads only *inline* backtick spans, so a path referenced solely inside a fenced
-  code block is not checked (in practice such paths are usually markdown-linked too and so
-  caught by the hard dead-link gate, `validate-map`); and the zero-dependency line parser
-  tracks only top-level (0–3-space-indented) fences, so a rare list-nested fenced block can
-  leak its inline paths — a limit shared with `visibleMarkdownLines`
-- Interest rate: low-medium (a fitness signal that under-counts can mask real drift; the
-  gap compounds only as the doc surface grows and new divergence shapes appear)
-- Price: small per class — each is a new entry in the `DRIFT_CLASSES` registry plus its
-  self-test cases; the runner and scan-surface logic are already shared
-- Conversion path: invariant — add a drift class to the registry when a divergence shape
-  proves to recur (the registry exists precisely so this needs no rework); the
-  advisory/gate split is settled by ring
-  [0011](../rings/0011-drift-advisory.md). First recurrence observed 2026-07-05 — the map's
-  "Current state" named an already-landed scope item as next work, written up as
-  [postmortem 0001](../postmortems/0001-agents-current-state-drift.md) (ring
-  [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
-  prose-state shape is the trigger to build the class
-- **Trigger FIRED: 2026-07-27**, the fifth sensing pass (ring
-  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — two further recurrences in one
-  sweep. [plan 0006](active/0006-pollination.md)'s step 5 named E-002/E-007/E-006 as *"Next"* (all landed
-  2026-07-20) and called a pushed commit *"local, push Gardener-gated"* — and it is the section the map
-  routes a fresh agent to; and the front door's six false state claims ([E-026](entropy-ledger.md)). Both
-  contents are fixed; **the class is now owed an instrument**. What the pass also measured is why it was
-  deferred and what it will cost: distinguishing a live claim from permanent history is the whole problem
-  — ~19 correct provenance mentions of `Stage N` alone — so the class most likely lands as
-  *generate-don't-detect* (E-026's path) for the countable half, plus a narrow detector for the shape that
-  actually bit twice: a **plan's `Next actions` naming work its own progress log records as done**. That
-  one is computable — both halves are in the same file, in formats the plan validator already parses
-- **CORRECTION, 2026-07-29 (ring [0057](../rings/0057-the-dead-link-gate-learns-anchors.md), measured while
-  converting the adjacent E-006): the detector shape priced directly above is FALSIFIED — do not build it
-  as written.** Two findings, both from re-reading the artifacts rather than the memory of them. **(1) The
-  two halves are not in the same file.** Plan 0006's `Progress log` never mentions E-002 or E-007 — that
-  work was logged in **plan 0009** — so within plan 0006 there was no contradiction to compute. What its
-  step 5 actually did was **restate a *different* plan's internal state**: it delegated step 5 to plan 0009
-  and then summarized 0009's queue, which rotted the moment 0009 moved on. That is not a
-  self-contradiction class; it is the same *restatement* shape as [E-026](entropy-ledger.md) (the README
-  restating counts the organs own) and [E-027](entropy-ledger.md) (the map restating what the plan, ledger
-  and rings own). **(2) The discriminator is pure prose grammar, demonstrated in one section before and
-  after.** The corrected step 5 **still names all four tokens** — *"E-001/E-002/E-007/E-006 all landed and
-  pushed by 2026-07-20"* — because naming landed work as history is correct. Only the grammar separates
-  that from the bug (*"Next: E-002 … then E-007, E-006"*), which is exactly the ~19-provenance-mention trap
-  ring [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md) measured and rejected for the
-  stage scan. **A token-mention detector therefore fires on the fix.** **What this reframes, for the ruling
-  ring 0054 reserved to the Gardener:** the fork is no longer *"build the narrow detector"* vs *"defer"*, it
-  is **detection vs prevention** — and prevention has now paid this shape three times (E-026 generate,
-  E-027 state-don't-restate under a budget cap, and ring 0054's own by-hand fix making step 5 a pointer that
-  *"cannot rot into instructions"*). The candidate invariant is structural and needs no prose reading: **a
-  plan that delegates live work to another plan points at it and does not restate its state.** That still
-  needs the Gardener's taste — it constrains how plans may be written (LAW-5) — but it is a different
-  question from the one priced above, and a cheaper one to answer
-
 ## E-017 — the seed asserts LLM/context efficiency but never measures it
 
 - First observed: 2026-07-18, Gardener question comparing the seed's map/reference graph to
@@ -1076,3 +1017,94 @@ ledger is also a record of digestion.
   budgets turns exactly the two firing cases red). `npm run check` (15) + `npm test` (265) + `npm run
   garden` (`drift_count` 0) green. Declared a `minor` [pollen intent](../../pollen/pending.md). Fork C
   (generate the section) is kept as the ring's Revisit if it rots again despite being small
+
+## E-009 — Drift detection is v0: only the stale-path-reference class
+
+- First observed: 2026-07-04, building the doc-gardener (plan 0002 scope item 3)
+- Where: `.seed/checks/doc-drift.ts` detects one drift class (a current-state doc naming a
+  repo path that no longer exists). Other doc↔code divergences — inventory drift (a list
+  that no longer mirrors its directory), stale counts baked into prose, and broader prose
+  drift — are still sensed by the agent on the gardening pass, not by the instrument, so
+  `drift_count` under-reports true drift. Two structural blind spots narrow it further:
+  the scan reads only *inline* backtick spans, so a path referenced solely inside a fenced
+  code block is not checked (in practice such paths are usually markdown-linked too and so
+  caught by the hard dead-link gate, `validate-map`); and the zero-dependency line parser
+  tracks only top-level (0–3-space-indented) fences, so a rare list-nested fenced block can
+  leak its inline paths — a limit shared with `visibleMarkdownLines`
+- Interest rate: low-medium (a fitness signal that under-counts can mask real drift; the
+  gap compounds only as the doc surface grows and new divergence shapes appear)
+- Price: small per class — each is a new entry in the `DRIFT_CLASSES` registry plus its
+  self-test cases; the runner and scan-surface logic are already shared
+- Conversion path: invariant — add a drift class to the registry when a divergence shape
+  proves to recur (the registry exists precisely so this needs no rework); the
+  advisory/gate split is settled by ring
+  [0011](../rings/0011-drift-advisory.md). First recurrence observed 2026-07-05 — the map's
+  "Current state" named an already-landed scope item as next work, written up as
+  [postmortem 0001](../postmortems/0001-agents-current-state-drift.md) (ring
+  [0018](../rings/0018-map-current-state-drift-doc-only.md)); a *second* recurrence of this
+  prose-state shape is the trigger to build the class
+- **Trigger FIRED: 2026-07-27**, the fifth sensing pass (ring
+  [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) — two further recurrences in one
+  sweep. [plan 0006](active/0006-pollination.md)'s step 5 named E-002/E-007/E-006 as *"Next"* (all landed
+  2026-07-20) and called a pushed commit *"local, push Gardener-gated"* — and it is the section the map
+  routes a fresh agent to; and the front door's six false state claims ([E-026](entropy-ledger.md)). Both
+  contents are fixed; **the class is now owed an instrument**. What the pass also measured is why it was
+  deferred and what it will cost: distinguishing a live claim from permanent history is the whole problem
+  — ~19 correct provenance mentions of `Stage N` alone — so the class most likely lands as
+  *generate-don't-detect* (E-026's path) for the countable half, plus a narrow detector for the shape that
+  actually bit twice: a **plan's `Next actions` naming work its own progress log records as done**. That
+  one is computable — both halves are in the same file, in formats the plan validator already parses
+- **CORRECTION, 2026-07-29 (ring [0057](../rings/0057-the-dead-link-gate-learns-anchors.md), measured while
+  converting the adjacent E-006): the detector shape priced directly above is FALSIFIED — do not build it
+  as written.** Two findings, both from re-reading the artifacts rather than the memory of them. **(1) The
+  two halves are not in the same file.** Plan 0006's `Progress log` never mentions E-002 or E-007 — that
+  work was logged in **plan 0009** — so within plan 0006 there was no contradiction to compute. What its
+  step 5 actually did was **restate a *different* plan's internal state**: it delegated step 5 to plan 0009
+  and then summarized 0009's queue, which rotted the moment 0009 moved on. That is not a
+  self-contradiction class; it is the same *restatement* shape as [E-026](entropy-ledger.md) (the README
+  restating counts the organs own) and [E-027](entropy-ledger.md) (the map restating what the plan, ledger
+  and rings own). **(2) The discriminator is pure prose grammar, demonstrated in one section before and
+  after.** The corrected step 5 **still names all four tokens** — *"E-001/E-002/E-007/E-006 all landed and
+  pushed by 2026-07-20"* — because naming landed work as history is correct. Only the grammar separates
+  that from the bug (*"Next: E-002 … then E-007, E-006"*), which is exactly the ~19-provenance-mention trap
+  ring [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md) measured and rejected for the
+  stage scan. **A token-mention detector therefore fires on the fix.** **What this reframes, for the ruling
+  ring 0054 reserved to the Gardener:** the fork is no longer *"build the narrow detector"* vs *"defer"*, it
+  is **detection vs prevention** — and prevention has now paid this shape three times (E-026 generate,
+  E-027 state-don't-restate under a budget cap, and ring 0054's own by-hand fix making step 5 a pointer that
+  *"cannot rot into instructions"*). The candidate invariant is structural and needs no prose reading: **a
+  plan that delegates live work to another plan points at it and does not restate its state.** That still
+  needs the Gardener's taste — it constrains how plans may be written (LAW-5) — but it is a different
+  question from the one priced above, and a cheaper one to answer
+- Paid: 2026-07-29 (plan [0009](active/0009-dither-metabolize.md) U19, on the Gardener's ruling
+  **prevention — build the structural invariant**; ring
+  [0058](../rings/0058-a-plan-points-not-restates.md)). The candidate invariant directly above was
+  taken as written: [validate-plan-delegation](../../.seed/checks/validate-plan-delegation.ts) caps a
+  block in an **active** plan's `## Next actions` that links **another active** plan at 10 non-blank
+  lines / 100 words, so a plan can point at the plan that owns the work but cannot restate its state.
+  Nothing reads prose grammar, which is what the correction above established it must not do.
+  **Measurement rejected the first design.** A section-scoped cap — the shape the fork was priced with
+  — fails on the live corpus: most plan→plan links live in `## Progress log` (96, 448 and 184 non-blank
+  lines in the three plans that have them), which is dated history whose size is its job. Running that
+  variant reddens the pristine tree, with five violations across both active plans. Hence three
+  measured exemptions: the progress log, completed plans, and links **to** completed plans (frozen
+  state cannot go stale). The budget is calibrated on plan 0006, where the six blocks about its own
+  steps run 3–10 lines / 42–98 words while the delegating block was the section's **largest** at
+  11/137. **It went red on the real repository before the fix**, on both proxies, at the very entry
+  ring [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md) had already fixed by hand
+  — which is the evidence that the doc-only bet of ring
+  [0018](../rings/0018-map-current-state-drift-doc-only.md) has now lost twice on this shape.
+  Verification (LAW-6): five self-tests (**278**, was 273) — each proxy isolated, an active target
+  written through the `../completed/` spelling, the three exemptions together, and a block exactly at
+  both budgets — plus the test-of-the-test both ways. `npm run check` (16) + `npm test` (278) +
+  `npm run garden` (`drift_count` 0) green. Declared a `minor` [pollen intent](../../pollen/pending.md)
+- **What this does NOT pay, stated so it is not lost:** only the prose-state class whose trigger fired.
+  The entry's other named classes — inventory drift, stale counts baked into prose (largely displaced
+  by [E-026](entropy-ledger.md)'s generate-don't-detect), and
+  [doc-drift](../../.seed/checks/doc-drift.ts)'s two structural blind spots (fenced code blocks, and
+  list-nested fences leaking inline paths) — are unconverted and have **not** recurred. They are not
+  re-priced as a new entry, because pricing debt with no fired trigger is the manufacture ring
+  [0045](../rings/0045-dither-sensing-pass-theme-layout.md)'s honesty filter exists to prevent; they
+  are carried instead as ring 0058's `Revisit-when`, the way ring
+  [0043](../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md) carries the vendored-doc
+  reachability floor

@@ -23,6 +23,7 @@ const MAP_BUDGET = 'seed/validate-map-budget';
 const STAGE = 'seed/validate-stage';
 const RINGS = 'seed/validate-rings';
 const PLANS = 'seed/validate-plans';
+const DELEGATION = 'seed/validate-plan-delegation';
 const ARCH = 'seed/validate-architecture';
 const POSTMORTEM = 'seed/validate-postmortems';
 const ASSESS = 'seed/validate-assessments';
@@ -910,6 +911,54 @@ const CASES: ViolationCase[] = [
         c.replace('## Current state\n', '## Current state\n\n' + ('and then one more thing happened. '.repeat(60) + '\n').repeat(5)),
       ),
     expect: { check: MAP_BUDGET, law: LAW4, contains: ['words, over the budget of'] },
+  },
+  // --- plan delegation (E-009, ring 0058). `## Next actions` is the last section of plan 0006, so
+  // --- appending to the file appends to that section. Plan 0006 is the plan that really delegates
+  // --- (to the active plan 0009), which is why the fixtures extend it rather than invent a plan:
+  // --- a fixture plan would also have to be numbered and indexed, and the shape under test is the
+  // --- real one. The exemptions and the boundary run as exit-0 blocks below.
+  {
+    // Twelve short lines, ~85 words: over the line cap while well under the word cap, so this
+    // isolates the line proxy the way the map-budget pair does.
+    name: 'plan delegation: a block restating another active plan, over the line budget',
+    seed: (r) =>
+      append(
+        r,
+        'docs/plans/active/0006-pollination.md',
+        '\n- A delegating item that restates [plan 0009](0009-dither-metabolize.md):\n' +
+          '  and one more line of its state.\n'.repeat(11),
+      ),
+    expect: { check: DELEGATION, law: LAW5, contains: ['non-blank lines, over the budget of', 'delegates to docs/plans/active/0009-dither-metabolize.md'] },
+  },
+  {
+    // The other proxy: one very long wrapped line stays far under the line cap while carrying the
+    // other plan's whole state — the shape a size gate measured in lines alone would wave through.
+    name: 'plan delegation: a block restating another active plan, over the word budget',
+    seed: (r) =>
+      append(
+        r,
+        'docs/plans/active/0006-pollination.md',
+        '\n- Restating [plan 0009](0009-dither-metabolize.md): ' +
+          'and then one more thing happened. '.repeat(20) +
+          '\n',
+      ),
+    expect: { check: DELEGATION, law: LAW5, contains: ['words, over the budget of'] },
+  },
+  {
+    // The link written the OTHER way round — `../completed/…` for a plan that is actually active.
+    // Ring 0013's resolver makes both spellings legal (plan 0007 really does link plan 0009 this
+    // way), so a plan must not be able to fall out of budget by choosing the spelling. The
+    // assertion is on the RESOLVED target, which is what proves the flex was applied.
+    name: 'plan delegation: a delegation written through the completed/ path still counts',
+    seed: (r) =>
+      append(
+        r,
+        'docs/plans/active/0006-pollination.md',
+        '\n- Restating [plan 0009](../completed/0009-dither-metabolize.md): ' +
+          'and then one more thing happened. '.repeat(20) +
+          '\n',
+      ),
+    expect: { check: DELEGATION, law: LAW5, contains: ['delegates to docs/plans/active/0009-dither-metabolize.md', 'words, over the budget of'] },
   },
   // --- architecture-doc format (grill-the-gardener, ring 0015). These write an
   // --- unreachable doc into docs/architecture/, so validate-map also fires — the assertion
@@ -1864,6 +1913,63 @@ inTempCopy((root) => {
     'map budget: 100 lines appended OUTSIDE § Current state stay green (the budget is section-scoped)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- plan delegation, the exit-0 side (E-009, ring 0058). The firing cases prove an oversized
+// --- restatement is caught; these two prove the check is not simply "any large block near a plan
+// --- link fails", which is the half that decides whether the gate is usable at all.
+
+// The three exemptions at once, each forced by measuring the real corpus. If any were dropped this
+// copy goes red, and each fixture is deliberately far over both budgets so the failure would be
+// unambiguous. (1) `## Progress log` is dated history whose size is its job — and it is where most
+// plan→plan links actually live, which is why a section-scoped cap was rejected. (2) A COMPLETED
+// plan is not bound: its `Next actions` records what was next when it closed. (3) A link TO a
+// completed plan is not a delegation, because frozen state cannot go stale.
+inTempCopy((root) => {
+  const restatement = 'and then one more thing happened. '.repeat(20);
+  edit(root, 'docs/plans/active/0006-pollination.md', (c) =>
+    c.replace(
+      '## Next actions',
+      '- A long progress note about [plan 0009](0009-dither-metabolize.md):\n' +
+        '  restating its state at length.\n'.repeat(30) +
+        '\n## Next actions',
+    ),
+  );
+  append(
+    root,
+    'docs/plans/completed/0007-dither-graft.md',
+    `\n- Restating [plan 0009](../active/0009-dither-metabolize.md): ${restatement}\n`,
+  );
+  append(
+    root,
+    'docs/plans/active/0006-pollination.md',
+    `\n- Restating [plan 0005](../completed/0005-flowering.md): ${restatement}\n`,
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'plan delegation: the progress log, a completed plan, and a link to a completed plan are all exempt',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// The boundary is inclusive: a delegating block of exactly 10 non-blank lines and exactly 100 words
+// passes. Asserted through the summary line rather than just the exit code, so the fixture cannot
+// drift into proving something weaker — it must still be the largest delegating block in the tree.
+inTempCopy((root) => {
+  append(
+    root,
+    'docs/plans/active/0006-pollination.md',
+    '\n- See [plan 0009](0009-dither-metabolize.md).\n' +
+      '  alpha beta gamma delta epsilon zeta eta theta iota kappa\n'.repeat(8) +
+      '  alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu nu xi omicron pi\n',
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'plan delegation: a delegating block exactly at both budgets passes (the boundary is inclusive)',
+    status === 0 && output.includes('max 10/10 lines, 100/100 words'),
+    `expected exit 0 + a 10/10-lines, 100/100-words summary, got exit ${status}:\n${output}`,
   );
 });
 

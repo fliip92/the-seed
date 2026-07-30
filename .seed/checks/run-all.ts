@@ -8,6 +8,7 @@ import { check as mapBudget } from './validate-map-budget.ts';
 import { check as stage } from './validate-stage.ts';
 import { check as rings } from './validate-rings.ts';
 import { check as plans } from './validate-plans.ts';
+import { check as planDelegation } from './validate-plan-delegation.ts';
 import { check as architecture } from './validate-architecture.ts';
 import { check as postmortems } from './validate-postmortems.ts';
 import { check as assessments } from './validate-assessments.ts';
@@ -18,7 +19,7 @@ import { check as pollen } from './validate-pollen.ts';
 import { check as release } from './validate-release.ts';
 import { check as judgments } from './validate-judgments.ts';
 
-const CHECKS: Check[] = [anatomy, map, mapBudget, stage, rings, plans, architecture, postmortems, assessments, principles, generated, references, pollen, release, judgments];
+const CHECKS: Check[] = [anatomy, map, mapBudget, stage, rings, plans, planDelegation, architecture, postmortems, assessments, principles, generated, references, pollen, release, judgments];
 
 const files = listRepoFiles();
 let failed = 0;

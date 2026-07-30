@@ -286,14 +286,10 @@ The steps:
 5. **Metabolize** (step 5) — **live, and the whole of the live work: continue from
    [plan 0009](0009-dither-metabolize.md)'s `Next actions`, not from this list.** Two agent-driven tracks in
    parallel, indefinitely — refactor-toward-[architecture](../../architecture/dither.md) + feature work — fitness
-   arbitrating pace, until dither's per-host exit criterion is met. **The structural refactor queue is drained**
-   (E-001/E-002/E-007/E-006 all landed and pushed by 2026-07-20, hosted CI green; four sensing passes since have
-   found dither substantially clean), and the **exit criterion is half-met**: the trend half holds, the
-   owner-ships-features half is untested because every commit on dither's `main` since the graft is seed-driven
-   ([ring 0049](../../rings/0049-dither-pollination-proof-exit-criterion-half-met.md), the pollination proof). The
-   next move is therefore **one feature shipped through the agent workflow**, owner-paced. Per-unit state lives in
-   plan 0009; this step's entry is deliberately a pointer, so it cannot rot into stale instructions again
-   ([ring 0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md)).
+   arbitrating pace, until dither's per-host exit criterion is met. Plan 0009 owns this step's state: what is
+   drained, what the exit criterion still lacks, what moves next. Restating it here rotted this entry once
+   ([ring 0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md)) and is now out of budget
+   ([ring 0058](../../rings/0058-a-plan-points-not-restates.md)).
 6. **Independence** (step 6) — not yet. When the fitness trend is positive over a sustained window and the owner ships
    through the agent workflow without the seed being special, dither carries its own seed, its lineage recorded, and
    its [feedback](../../../skills/feedback/SKILL.md) channel to the mother live (LAW-11).

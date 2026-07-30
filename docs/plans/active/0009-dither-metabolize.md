@@ -399,6 +399,33 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Depends-on: none — E-006's trigger is self-contained, which is why it was reachable while the dither
   track waits on the owner and E-009/E-017/E-022 wait on the Gardener or the host.
 
+### U19 — E-009: a plan points at another plan, it does not restate it (prevention, on the Gardener's ruling)
+- Status: done
+- Landed: seed-side only (dither carries no plans — its decision log is ADRs)
+  — [ring 0058](../../rings/0058-a-plan-points-not-restates.md)
+- Scope: convert [E-009](../entropy-ledger.md)'s prose-state class as **prevention**, the fork the
+  Gardener ruled on after U18 falsified the priced detector. Build
+  [validate-plan-delegation](../../../.seed/checks/validate-plan-delegation.ts): a block in an **active**
+  plan's `## Next actions` that links **another active** plan is capped at 10 non-blank lines / 100
+  words, so a plan may point at the plan that owns the work but not restate its state. Nothing reads
+  prose grammar. Pay the one live instance — plan 0006's step 5, the entry ring 0054 had already fixed
+  by hand. Out of scope: a detector of any kind; E-009's other named classes (inventory drift, the
+  fenced-block blind spots), which have no fired trigger and are carried as ring 0058's `Revisit-when`
+  rather than re-priced; any dither mutation.
+- Entry-context: [ring 0058](../../rings/0058-a-plan-points-not-restates.md);
+  [E-009](../entropy-ledger.md)'s CORRECTION bullet (why the detector was falsified) and its Paid note
+  (what was and was not paid); [ring 0055](../../rings/0055-the-map-states-state-not-history.md) for the
+  two-proxy budget shape this reuses; [ring 0013](../../rings/0013-plan-links-resolve-across-active-completed.md)
+  for the active/⇄completed link flex the gate must honor.
+- Done-when: `npm run check` (16), `npm test` (278), and `npm run garden` (`drift_count` 0) are green;
+  five new self-tests — three firing (each proxy isolated, plus an active target written through the
+  `../completed/` spelling) and two exit-0 (the three exemptions together; a block exactly at both
+  budgets) — with the test-of-the-test run **both ways**; a ring records the decision; E-009 Open→Paid
+  with its unpaid residual named; the portable change is declared as a pollen intent.
+- Owner: agent
+- Depends-on: U18, which falsified the priced detector and so produced the evidence the Gardener ruled
+  on. Nothing else — the dither track still waits on the owner.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -933,6 +960,31 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   firing cases; dropping duplicate suffixing reddens exactly the green one). Checks (15), tests
   (**273**), garden (`drift_count` 0) green; a `minor` [pollen intent](../../../pollen/pending.md)
   declared. Local; push and hosted-CI confirmation are the Gardener's.
+- **2026-07-29** — **U19: [E-009](../entropy-ledger.md) Paid as PREVENTION, on the Gardener's ruling**
+  ([ring 0058](../../rings/0058-a-plan-points-not-restates.md)). Presented with the fork U18's
+  falsification had reframed — *detection vs prevention* — the Gardener chose **prevention: build the
+  structural invariant**. New check 16,
+  [validate-plan-delegation](../../../.seed/checks/validate-plan-delegation.ts): a block in an **active**
+  plan's `## Next actions` that links **another active** plan is capped at 10 non-blank lines / 100
+  words. It reads structure only, never prose grammar — precisely what U18 established it must not do.
+  **Measurement rejected the first design, which was the one the fork was priced with.** A
+  *section*-scoped cap fails on the live corpus: most plan→plan links live in `## Progress log` (96, 448
+  and 184 non-blank lines in the three plans that have them), dated history whose size is its job — and
+  running that variant reddens the pristine tree with five violations across both active plans. Hence
+  three measured exemptions: the progress log, completed plans, and links **to** completed plans. The
+  budget is calibrated on plan 0006, where the six blocks about its own steps run 3–10 lines / 42–98
+  words while the delegating block was the section's **largest** at 11/137. **The gate went red on the
+  real repository before the fix**, on both proxies, at the very entry
+  [ring 0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md) had already fixed by
+  hand — the evidence that ring [0018](../../rings/0018-map-current-state-drift-doc-only.md)'s doc-only
+  bet has now lost twice on this shape. Plan 0006's step 5 rewritten to a pointer (11 lines/137 words →
+  7/80). E-009 Open→Paid with its **unpaid residual named**: inventory drift and doc-drift's
+  fenced-block blind spots have no fired trigger, so they are carried as ring 0058's `Revisit-when`
+  rather than re-priced (the ring 0045 honesty filter). Verification (LAW-6): five new self-tests
+  (**278**, was 273) — three firing, two exit-0 — with the test-of-the-test run **both ways**. Checks
+  (**16**), tests (**278**), garden (`drift_count` 0) green; a `minor`
+  [pollen intent](../../../pollen/pending.md) declared (17 pending). Local; push and hosted-CI
+  confirmation are the Gardener's.
 
 ## Next actions
 
@@ -1061,20 +1113,32 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
     (the Gardener's, per ring 0054) and [E-017](../entropy-ledger.md) (needs a SEED.md §6 amendment) wait
     on the Gardener; [E-022](../entropy-ledger.md) is owner-gated and rides the next dither commit —
     which is the feature-track work item 4 is waiting on, so **pay it *in* that commit, not after**;
-    [E-018](../entropy-ledger.md) waits on a live Scout of a large host. **One thing changed for the
-    Gardener's E-009 ruling:** its priced detector is falsified (recorded as a correction on the entry),
-    and the fork it now faces is **detection vs prevention** — prevention having paid this exact shape
-    three times already (E-026, E-027, and ring 0054's by-hand fix of plan 0006's step 5). The candidate
-    invariant, which needs no prose reading: *a plan that delegates live work to another plan points at
-    it and does not restate its state.*
-13. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+    [E-018](../entropy-ledger.md) waits on a live Scout of a large host. **The one thing this unit
+    changed for the Gardener's E-009 ruling** — falsifying its priced detector, so the fork became
+    *detection vs prevention* — **is now itself decided and paid; see item 13.**
+13. **U19 / [E-009](../entropy-ledger.md) — PAID as PREVENTION, local** (ring
+    [0058](../../rings/0058-a-plan-points-not-restates.md); no dither mutation — dither carries no
+    plans). Asked on U18's corrected evidence, the Gardener ruled **prevention: build the structural
+    invariant**. Check 16,
+    [validate-plan-delegation](../../../.seed/checks/validate-plan-delegation.ts), caps a block in an
+    active plan's `## Next actions` that links another *active* plan at 10 non-blank lines / 100 words;
+    it reads structure, never prose grammar. **Measurement rejected the design the fork was priced
+    with** — a *section*-scoped cap reddens the pristine tree, because most plan→plan links live in
+    progress logs, which are dated history — so the progress log, completed plans, and links to them
+    are exempt. Red on the real repository before the fix, at the very entry ring 0054 had already
+    fixed by hand. Checks (**16**), tests (**278**), garden green; a `minor`
+    [pollen intent](../../../pollen/pending.md) declared. **Push and the hosted-CI confirmation are the
+    Gardener's**, for this and U18 together. E-009's **unpaid residual** — inventory drift and
+    doc-drift's fenced-block blind spots — is named in its Paid note and carried as ring 0058's
+    `Revisit-when`, not re-priced, because no trigger has fired for it.
+14. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-14. **On cadence:** re-measure after any dither commit and extend
+15. **On cadence:** re-measure after any dither commit and extend
     [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
     hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
     a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact
