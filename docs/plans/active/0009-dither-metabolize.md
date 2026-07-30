@@ -867,7 +867,12 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   green). Five exit-0 fixtures that add a ring, a plan or a principle now regenerate first, which is the
   accepted recurring cost stated in the harness: **landing a ring means running `npm run generate`**.
   Checks (15), tests (**267**), garden (`drift_count` 0) green; a `minor`
-  [pollen intent](../../../pollen/pending.md) declared.
+  [pollen intent](../../../pollen/pending.md) declared. Pushed and confirmed on hosted CI (run
+  [30504955996](https://github.com/fliip92/the-seed/actions/runs/30504955996)), where the gate re-derived
+  all three artifacts from a fresh clone — the property that matters, since a clone carries only what was
+  committed. The run's own fitness tick reads `ledger_trend` **+1** (trailing 7 days): E-025/E-027/E-026
+  digested against the four entries this stretch of sensing opened, which is the rate behaving as ring
+  [0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md) described it.
 
 ## Next actions
 
@@ -970,7 +975,11 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    record:** the first unit that *wants* to append to § Current state is the test of whether the shape
    holds under real pressure, and a second host would be the first legitimate pressure on the budget
    (ring 0055's Revisit).
-11. **U17 / [E-026](../entropy-ledger.md) — PAID** (ring
+11. **U17 / [E-026](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `7ec6b1f`, run
+   [30504955996](https://github.com/fliip92/the-seed/actions/runs/30504955996) — the state block's first
+   hosted execution, reading *"3 generated artifact(s) match their sources"* alongside `map_reachability`
+   **100.0% (110/110 docs)**, 56 rings valid, self-test **267**, and all five git-aware gates, the
+   pollen-intent gate reading 15 portable-subtree commits since the cut against 15 intents; ring
    [0056](../../rings/0056-the-front-doors-numbers-are-generated.md); no dither mutation). The public
    README's counts are generated into [docs/generated/state.md](../../generated/state.md) and linked, not
    restated — the hand-fix from two days earlier had already decayed (53 rings → 55, twelve intents → 14),
