@@ -668,6 +668,36 @@ const CASES: ViolationCase[] = [
     expect: { check: MAP, law: LAW4, contains: ['dead link', `docs/plans/completed/${PLAN_DUP}-wrong-slug.md`] },
   },
   {
+    // E-006: the target file resolves, so the pre-anchor gate was green — the reader still
+    // lands somewhere other than the section the link names.
+    name: 'map: dead anchor on a cross-file fragment link',
+    seed: (r) => append(r, 'AGENTS.md', '\nSee [the ghost section](SEED.md#no-such-section).\n'),
+    expect: { check: MAP, law: LAW4, contains: ['dead link anchor', 'SEED.md has no heading "#no-such-section"'] },
+  },
+  {
+    // The half that was not merely unchecked but SKIPPED outright: a pure fragment never
+    // reached the link walker at all, so no anchor into the containing file was ever read.
+    name: 'map: dead anchor on a pure fragment link (the skipped-entirely half)',
+    seed: (r) => append(r, 'AGENTS.md', '\nSee [this map section](#no-such-map-section).\n'),
+    expect: { check: MAP, law: LAW4, contains: ['dead link anchor', 'AGENTS.md has no heading "#no-such-map-section"'] },
+  },
+  {
+    // Anchors and links must agree on what is code (LAW-3): fence tracking is delegated to
+    // visibleMarkdownLines, so a `## ` line inside a fenced block is sample text, not a
+    // heading — an anchor aimed at it is dead.
+    name: 'map: a heading inside a fenced code block defines no anchor',
+    seed: (r) => append(r, 'AGENTS.md', '\n```\n## Fenced Sample Heading\n```\n\nSee [it](#fenced-sample-heading).\n'),
+    expect: { check: MAP, law: LAW4, contains: ['dead link anchor', '#fenced-sample-heading'] },
+  },
+  {
+    // GitHub's duplicate suffixing is bounded by how many times the heading actually repeats:
+    // two `## Anchor Fixture` headings define `-` and `-1`, never `-2`.
+    name: 'map: a duplicate-heading suffix beyond the repeat count is a dead anchor',
+    seed: (r) =>
+      append(r, 'AGENTS.md', '\n## Anchor Fixture\n\nOne.\n\n## Anchor Fixture\n\nTwo.\n\nSee [the third](#anchor-fixture-2).\n'),
+    expect: { check: MAP, law: LAW4, contains: ['dead link anchor', '#anchor-fixture-2'] },
+  },
+  {
     name: 'rings: bad filename',
     seed: (r) => write(r, 'docs/rings/not-a-ring.md', validRing(RING_NEXT)),
     expect: { check: RINGS, law: LAW10, contains: ['does not match the ring filename format'] },
@@ -1832,6 +1862,40 @@ inTempCopy((root) => {
   const { status, output } = runChecks(root);
   report(
     'map budget: 100 lines appended OUTSIDE § Current state stay green (the budget is section-scoped)',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// --- anchor checking, the exit-0 side (E-006, ring 0057). The firing cases prove a WRONG anchor
+// --- is caught; only this proves the check is not simply "any fragment fails" — the state the
+// --- repository is actually in, since its one real fragment link resolves. All three resolvable
+// --- shapes are exercised at once: a cross-file anchor, a pure fragment into the containing file,
+// --- and the `-1` GitHub appends to a repeated heading.
+inTempCopy((root) => {
+  append(root, 'SEED.md', '\n## Anchor Fixture Section\n\nA section an anchor can name.\n');
+  append(
+    root,
+    'AGENTS.md',
+    '\n## Anchor Fixture\n\nFirst.\n\n## Anchor Fixture\n\nSecond — GitHub slugs this one `anchor-fixture-1`.\n\n' +
+      'Cross-file [a](SEED.md#anchor-fixture-section), pure fragment [b](#anchor-fixture), duplicate [c](#anchor-fixture-1).\n',
+  );
+  const { status, output } = runChecks(root);
+  report(
+    'map: valid anchors — cross-file, pure fragment, and a duplicate-suffixed heading — all stay green',
+    status === 0 && output.includes('all checks passed'),
+    `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
+  );
+});
+
+// A fragment on a NON-markdown target is left alone rather than guessed at: only markdown defines
+// headings, so there is no anchor set to check against. Without this the gate would fail every
+// line-number link into a script (`repo.ts#L42`), which is a legitimate form.
+inTempCopy((root) => {
+  append(root, 'AGENTS.md', '\nSee [the lister](.seed/lib/repo.ts#L42).\n');
+  const { status, output } = runChecks(root);
+  report(
+    'map: a fragment on a non-markdown target is not anchor-checked (a line ref is not a heading)',
     status === 0 && output.includes('all checks passed'),
     `expected exit 0 + "all checks passed", got exit ${status}:\n${output}`,
   );

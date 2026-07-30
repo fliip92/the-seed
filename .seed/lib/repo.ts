@@ -199,34 +199,116 @@ export function inlineCodeSpans(repoRelPath: string, root: string = REPO_ROOT): 
   return out;
 }
 
+/**
+ * GitHub's heading → anchor slug, for the common case (E-006). The input is a heading's
+ * RAW markdown text; GitHub slugifies what it *renders*, so inline markup is unwrapped to
+ * the text it displays (`` `code` `` → code, `[text](url)` → text, `**bold**` → bold)
+ * before punctuation is dropped, letters are lowercased, and spaces become hyphens.
+ * Letters/digits are matched by Unicode class, so a non-ASCII heading keeps its characters
+ * the way GitHub does.
+ *
+ * Deliberately not a full CommonMark renderer: it covers the inline forms this repository's
+ * headings actually use. A heading whose slug this computes differently from GitHub's fails
+ * the anchor check with the target's real anchors listed in the message, so a mismatch is
+ * self-correcting rather than silent (LAW-2).
+ */
+export function slugifyHeading(text: string): string {
+  return text
+    .replace(/`+([^`]*)`+/g, '$1')            // code spans render as their text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')     // images render as nothing
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')  // links render as their text
+    .replace(/[*~]/g, '')                     // emphasis / strike markers
+    // `_` is an emphasis marker only at a word boundary: CommonMark does not open emphasis
+    // intraword, and GitHub keeps the underscore in the anchor — `plan_traceability` slugs
+    // to `plan_traceability`, not `plantraceability`.
+    .replace(/_+/g, (run, offset: number, whole: string) => {
+      const isWordChar = (c: string | undefined): boolean => c !== undefined && /[\p{L}\p{N}]/u.test(c);
+      return isWordChar(whole[offset - 1]) && isWordChar(whole[offset + run.length]) ? run : '';
+    })
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N} _-]/gu, '')        // punctuation is dropped, not replaced
+    .replace(/ /g, '-');
+}
+
+/**
+ * The anchors a markdown file defines — one per ATX heading, slugified the GitHub way,
+ * with GitHub's duplicate suffixing (a repeated slug becomes `slug-1`, `slug-2`, …).
+ *
+ * Fence tracking is delegated to `visibleMarkdownLines` so a `#` line inside a fenced code
+ * block is not mistaken for a heading (one definition of what is code, LAW-3), but the slug
+ * is computed from the RAW line: that function BLANKS inline code spans, and GitHub keeps
+ * their rendered text in the anchor — `## The \`judge\` organ` is `#the-judge-organ`, not
+ * `#the-organ`.
+ */
+export function headingAnchors(repoRelPath: string, root: string = REPO_ROOT): Set<string> {
+  const raw = readRepoFile(repoRelPath, root).split('\n');
+  const anchors = new Set<string>();
+  const seen = new Map<string, number>();
+  for (const { n } of visibleMarkdownLines(repoRelPath, root)) {
+    const heading = raw[n - 1]?.match(/^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$/);
+    if (!heading) continue;
+    const slug = slugifyHeading(heading[1]);
+    if (slug === '') continue;
+    const count = seen.get(slug) ?? 0;
+    seen.set(slug, count + 1);
+    anchors.add(count === 0 ? slug : `${slug}-${count}`);
+  }
+  return anchors;
+}
+
 export interface MdLink {
   target: string; // repo-relative posix path of the link target (fragment stripped)
   line: number;   // 1-based line number in the source file
   raw: string;    // the target exactly as written
+  fragment: string | null; // the `#anchor` part, decoded, without the `#`; null when absent
 }
 
 /**
  * Extract local inline-markdown link targets from a file, resolved repo-relative.
- * Skips external links (http/https/mailto) and pure fragments. Targets starting with
- * `/` resolve from the repo root. Reference-style and HTML links are deliberately not
- * parsed — validate-map forbids them so this parser stays the single source of truth.
+ * Skips external links (http/https/mailto). Targets starting with `/` resolve from the
+ * repo root. Reference-style and HTML links are deliberately not parsed — validate-map
+ * forbids them so this parser stays the single source of truth.
+ *
+ * A PURE fragment (`[x](#section)`) resolves to the containing file rather than being
+ * skipped (E-006): it is a link like any other, and its anchor is checkable. It adds no
+ * reachability — the target is the file already being walked — so this only widens what the
+ * dead-link sweep sees, never what counts as reachable.
  */
 export function extractLocalLinks(repoRelPath: string, root: string = REPO_ROOT): MdLink[] {
   const links: MdLink[] = [];
   const linkRe = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+  const self = toPosix(repoRelPath);
   for (const { n, text } of visibleMarkdownLines(repoRelPath, root)) {
     for (const match of text.matchAll(linkRe)) {
       const raw = match[1];
-      if (/^(https?:|mailto:)/.test(raw) || raw.startsWith('#')) continue;
-      const noFragment = raw.split('#')[0];
-      if (noFragment === '') continue;
+      if (/^(https?:|mailto:)/.test(raw)) continue;
+      const hash = raw.indexOf('#');
+      const noFragment = hash === -1 ? raw : raw.slice(0, hash);
+      const fragment = hash === -1 ? null : decodeFragment(raw.slice(hash + 1));
+      if (noFragment === '') {
+        // Pure fragment: an anchor into this same file.
+        if (fragment !== null && fragment !== '') links.push({ target: self, line: n, raw, fragment });
+        continue;
+      }
       const target = noFragment.startsWith('/')
         ? posix.normalize(noFragment.slice(1))
         : posix.normalize(posix.join(toPosix(dirname(repoRelPath)), noFragment));
-      links.push({ target, line: n, raw });
+      links.push({ target, line: n, raw, fragment: fragment === '' ? null : fragment });
     }
   }
   return links;
+}
+
+/** A fragment may be percent-encoded in a written link; compare against the decoded form.
+ *  A malformed escape is left as written rather than throwing — the anchor check then
+ *  reports it as missing, which is the honest reading of an unresolvable fragment. */
+function decodeFragment(fragment: string): string {
+  try {
+    return decodeURIComponent(fragment);
+  } catch {
+    return fragment;
+  }
 }
 
 /** The lines of a `## <Section>` block: from just after the heading to the next `## `

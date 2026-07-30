@@ -34,7 +34,7 @@ CI additionally runs the git-aware gates (below), which need git history.
 | Check | Enforces | Law |
 |---|---|---|
 | [checks/validate-anatomy.ts](checks/validate-anatomy.ts) | The anatomy of SEED.md §2 exists; every organ has its README; no symlinks anywhere | LAW-2 |
-| [checks/validate-map.ts](checks/validate-map.ts) | No dead links; every file ≤3 hops from AGENTS.md; reports `map_reachability` | LAW-4 |
+| [checks/validate-map.ts](checks/validate-map.ts) | No dead links — including a link whose `#fragment` names no heading in its target, pure `#anchor` links included (E-006, ring [0057](../docs/rings/0057-the-dead-link-gate-learns-anchors.md)); every file ≤3 hops from AGENTS.md; reports `map_reachability` | LAW-4 |
 | [checks/validate-map-budget.ts](checks/validate-map-budget.ts) | The map's `## Current state` stays a statement of state, not a second progress log: ≤ 60 non-blank lines and ≤ 650 words, the [validate-architecture](checks/validate-architecture.ts) two-proxy shape (E-027, ring 0055); silent when the map carries no such section, so a grafted host is not bound | LAW-4 |
 | [checks/validate-stage.ts](checks/validate-stage.ts) | The growth stage agrees across every place it is hand-bumped — a **declared source set** (E-025, ring 0054, widening the pair E-011/ring 0035 built): AGENTS.md's `- **Stage:**` is the reference, compared against `CURRENT_STAGE` in [fitness.ts](checks/fitness.ts) and the public [README.md](../README.md); silent per source when one states no stage, so a grafted host is not bound | LAW-2 |
 | [checks/validate-rings.ts](checks/validate-rings.ts) | Ring filenames, sequence, and format (SEED.md §2) | LAW-10 |

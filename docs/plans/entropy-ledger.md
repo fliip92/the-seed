@@ -7,17 +7,6 @@ ledger is also a record of digestion.
 
 ## Open
 
-## E-006 — Fragment links pass validation without anchor checking
-
-- First observed: 2026-07-04, adversarial drift hunt during germination verification
-- Where: `.seed/lib/repo.ts` strips `#fragment` before existence checks, so
-  `[x](SEED.md#no-such-section)` counts as a live link
-- Interest rate: low (fragments are rare here; a wrong one still lands the reader in the
-  right file)
-- Price: small — slugify headings the way GitHub does and verify the anchor exists
-- Conversion path: invariant — extend the map validator with anchor checking when
-  fragment links first appear in real use
-
 ## E-009 — Drift detection is v0: only the stale-path-reference class
 
 - First observed: 2026-07-04, building the doc-gardener (plan 0002 scope item 3)
@@ -54,6 +43,28 @@ ledger is also a record of digestion.
   *generate-don't-detect* (E-026's path) for the countable half, plus a narrow detector for the shape that
   actually bit twice: a **plan's `Next actions` naming work its own progress log records as done**. That
   one is computable — both halves are in the same file, in formats the plan validator already parses
+- **CORRECTION, 2026-07-29 (ring [0057](../rings/0057-the-dead-link-gate-learns-anchors.md), measured while
+  converting the adjacent E-006): the detector shape priced directly above is FALSIFIED — do not build it
+  as written.** Two findings, both from re-reading the artifacts rather than the memory of them. **(1) The
+  two halves are not in the same file.** Plan 0006's `Progress log` never mentions E-002 or E-007 — that
+  work was logged in **plan 0009** — so within plan 0006 there was no contradiction to compute. What its
+  step 5 actually did was **restate a *different* plan's internal state**: it delegated step 5 to plan 0009
+  and then summarized 0009's queue, which rotted the moment 0009 moved on. That is not a
+  self-contradiction class; it is the same *restatement* shape as [E-026](entropy-ledger.md) (the README
+  restating counts the organs own) and [E-027](entropy-ledger.md) (the map restating what the plan, ledger
+  and rings own). **(2) The discriminator is pure prose grammar, demonstrated in one section before and
+  after.** The corrected step 5 **still names all four tokens** — *"E-001/E-002/E-007/E-006 all landed and
+  pushed by 2026-07-20"* — because naming landed work as history is correct. Only the grammar separates
+  that from the bug (*"Next: E-002 … then E-007, E-006"*), which is exactly the ~19-provenance-mention trap
+  ring [0054](../rings/0054-prose-state-rots-where-work-stops-touching-it.md) measured and rejected for the
+  stage scan. **A token-mention detector therefore fires on the fix.** **What this reframes, for the ruling
+  ring 0054 reserved to the Gardener:** the fork is no longer *"build the narrow detector"* vs *"defer"*, it
+  is **detection vs prevention** — and prevention has now paid this shape three times (E-026 generate,
+  E-027 state-don't-restate under a budget cap, and ring 0054's own by-hand fix making step 5 a pointer that
+  *"cannot rot into instructions"*). The candidate invariant is structural and needs no prose reading: **a
+  plan that delegates live work to another plan points at it and does not restate its state.** That still
+  needs the Gardener's taste — it constrains how plans may be written (LAW-5) — but it is a different
+  question from the one priced above, and a cheaper one to answer
 
 ## E-017 — the seed asserts LLM/context efficiency but never measures it
 
@@ -151,6 +162,42 @@ ledger is also a record of digestion.
   conversion actually worked
 
 ## Paid
+
+## E-006 — Fragment links pass validation without anchor checking
+
+- First observed: 2026-07-04, adversarial drift hunt during germination verification
+- Where: `.seed/lib/repo.ts` strips `#fragment` before existence checks, so
+  `[x](SEED.md#no-such-section)` counts as a live link
+- Interest rate: low (fragments are rare here; a wrong one still lands the reader in the
+  right file)
+- Price: small — slugify headings the way GitHub does and verify the anchor exists
+- Conversion path: invariant — extend the map validator with anchor checking when
+  fragment links first appear in real use
+- Paid: 2026-07-29 (ring [0057](../rings/0057-the-dead-link-gate-learns-anchors.md)) — converted on its
+  **own pre-registered trigger**, which had fired: a sweep of every tracked markdown file found the
+  first fragment link in real use. [validate-map](../../.seed/checks/validate-map.ts) now verifies each
+  fragment against the resolved target's heading set
+  ([`headingAnchors`](../../.seed/lib/repo.ts) + `slugifyHeading`, GitHub's slugging with duplicate
+  suffixing), failing with LAW-4 and **listing the target's real anchors** so a mismatch is
+  self-correcting rather than a bare refusal. **The measurement corrected the entry twice.** First, the
+  sweep found only two fragment links, and one is *this entry's own illustrative example* above —
+  written in backticks, which the walker blanks, so it was never a claim. Second, the single real
+  instance is not the shape priced here: `#the-exit-criterion` in
+  [pollination-dither.md](../fitness/pollination-dither.md) is a **pure** fragment, and those were not
+  merely unchecked but **skipped outright** (`raw.startsWith('#')` returned before the walker saw
+  them) — so converting only the priced cross-file half would have paid the debt on paper while
+  leaving the repository's one live fragment link unread. A pure fragment now resolves to its
+  containing file, which widens the dead-link sweep without adding a hop, so `map_reachability` is
+  untouched; a fragment on a **non-markdown** target (a `#L42` line reference into a script) is left
+  alone, since only markdown defines headings. Slugging intraword `_` as emphasis was caught by running
+  the function over the real corpus — it turned ``### The one decline: `plan_traceability` …`` into
+  `plantraceability`, which is neither GitHub's nor CommonMark's reading. Verification (LAW-6): six new
+  self-tests (**273**, was 267) — four fire (dead cross-file anchor, dead pure fragment, an anchor
+  aimed at a heading inside a fenced code block, a duplicate suffix past the repeat count) and two
+  hold (all three resolvable shapes green; a `#L42` fragment not anchor-checked); test-of-the-test both
+  ways — disabling the check reddens exactly the four firing cases, dropping duplicate suffixing
+  reddens exactly the green one. `npm run check` (15) + `npm test` (273) + `npm run garden`
+  (`drift_count` 0) green; a `minor` [pollen intent](../../pollen/pending.md) declared.
 
 ## E-001 — `docs/generated/` hand-edit rule is stated but not enforced
 

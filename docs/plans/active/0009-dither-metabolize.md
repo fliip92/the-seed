@@ -369,6 +369,36 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
 - Owner: agent
 - Depends-on: U10 (which priced it); the Gardener's go.
 
+### U18 — E-006: the dead-link gate learns anchors, and E-009's priced detector shape is falsified
+- Status: done
+- Landed: seed-side only (dither's copied engine upgrades through a release, not continuous mirroring)
+  — [ring 0057](../../rings/0057-the-dead-link-gate-learns-anchors.md)
+- Scope: convert the one open ledger entry gated on neither a stage nor the Gardener, on its **own
+  pre-registered trigger** (*"when fragment links first appear in real use"*), and verify by measurement
+  that the trigger has fired. Teach [validate-map](../../../.seed/checks/validate-map.ts) to check a
+  link's `#fragment` against the resolved target's heading set — GitHub slugging with duplicate
+  suffixing, in [repo.ts](../../../.seed/lib/repo.ts) — and stop skipping **pure** `#anchor` links
+  outright, which measurement showed is the only form actually in use here. In scope because the sweep
+  surfaced them: intraword `_` (GitHub keeps it; stripping it slugged a real heading wrongly), and
+  non-markdown targets (`#L42` line references are left alone). Also in scope, as sensing rather than
+  conversion: re-reading the artifacts behind [E-009](../entropy-ledger.md)'s priced detector, which
+  **falsified it** — recorded as a correction on the entry, not converted, since ring 0054 reserved that
+  call to the Gardener. Out of scope: E-009 itself; any dither mutation; a renderer-grade slugifier
+  (LAW-7 — the residual is made self-correcting by listing the target's real anchors instead).
+- Entry-context: [ring 0057](../../rings/0057-the-dead-link-gate-learns-anchors.md);
+  [E-006](../entropy-ledger.md)'s Paid note, which records what the measurement corrected in the entry
+  twice over; [ring 0011](../../rings/0011-drift-advisory.md) for why this is a gate and not a drift
+  class; [ring 0054](../../rings/0054-prose-state-rots-where-work-stops-touching-it.md), whose
+  ~19-provenance-mention measurement is the precedent E-009's correction now rests on.
+- Done-when: `npm run check` (15), `npm test`, and `npm run garden` (`drift_count` 0) are green; six new
+  self-tests — four firing (dead cross-file anchor, dead pure fragment, a heading inside a fenced code
+  block, a duplicate suffix past the repeat count) and two exit-0 (the three resolvable shapes; a
+  non-markdown fragment) — with the test-of-the-test run **both ways**; a ring records the decision;
+  E-006 Open→Paid; E-009 carries the correction; the portable change is declared as a pollen intent.
+- Owner: agent
+- Depends-on: none — E-006's trigger is self-contained, which is why it was reachable while the dither
+  track waits on the owner and E-009/E-017/E-022 wait on the Gardener or the host.
+
 ## Decision log
 
 - **Opens as a proposal; every dither mutation gates on the owner** (LAW-1; the
@@ -873,6 +903,36 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   committed. The run's own fitness tick reads `ledger_trend` **+1** (trailing 7 days): E-025/E-027/E-026
   digested against the four entries this stretch of sensing opened, which is the rate behaving as ring
   [0048](../../rings/0048-dither-fourth-sensing-pass-seed-dither-md-r3f.md) described it.
+- **2026-07-29** — **U18: E-006 PAID — the dead-link gate learns anchors; E-009's priced detector shape
+  falsified** (ring [0057](../../rings/0057-the-dead-link-gate-learns-anchors.md); no dither mutation).
+  With E-009 held by ring 0054 as the Gardener's call, E-017 needing a SEED.md §6 amendment, E-022
+  owner-gated on the next dither commit and E-018 deferred to a live Scout,
+  [E-006](../entropy-ledger.md) was the one open entry § Start here point 3 could reach — and its own
+  pre-registered trigger (*"when fragment links first appear in real use"*) turned out to have fired.
+  **The measurement corrected the entry twice.** A sweep of every tracked markdown file found exactly two
+  fragment links: one is *E-006's own illustrative example*, written in backticks, which the walker
+  blanks — never a claim. The other, `#the-exit-criterion` in
+  [pollination-dither.md](../../fitness/pollination-dither.md), is a **pure** fragment, and those were
+  not merely unchecked but **skipped outright** (`raw.startsWith('#')` returned before the walker saw
+  them), so converting only the priced cross-file half would have paid the debt on paper while leaving
+  the repository's one live fragment link unread. A pure fragment now resolves to its containing file —
+  it adds no hop, so `map_reachability` is untouched and only the dead-link sweep widens. Two further
+  findings came from running the code over the real corpus rather than reading the spec: intraword `_`
+  must be kept (stripping it as emphasis slugged ``### The one decline: `plan_traceability` …`` to
+  `plantraceability`, which is neither GitHub's reading nor CommonMark's), and a fragment on a
+  **non-markdown** target is left alone, since a `#L42` line reference has no heading set to check.
+  **Separately, and as sensing rather than conversion: [E-009](../entropy-ledger.md)'s priced detector
+  is falsified.** Re-reading the artifacts showed plan 0006's `Progress log` never mentions E-002 or
+  E-007 — that work was logged in *this* plan — so *"both halves are in the same file"* is false for the
+  recurrence it was written from; what step 5 did was restate **another plan's** state, the same shape
+  E-026 and E-027 paid by removing the restatement. And the corrected step 5 still names all four
+  tokens, as history, so a token-mention detector would fire on the fix. The correction is recorded on
+  the entry; the ruling stays the Gardener's, but the fork it faces is now **detection vs prevention**,
+  not build-vs-defer. Verification (LAW-6): six new self-tests (**273**, was 267) — four firing, two
+  exit-0 — with the test-of-the-test run **both ways** (disabling the check reddens exactly the four
+  firing cases; dropping duplicate suffixing reddens exactly the green one). Checks (15), tests
+  (**273**), garden (`drift_count` 0) green; a `minor` [pollen intent](../../../pollen/pending.md)
+  declared. Local; push and hosted-CI confirmation are the Gardener's.
 
 ## Next actions
 
@@ -990,14 +1050,31 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    the countable half out of its scope. Two triggers ride this record: the README's skill *list* (the count
    is generated, the enumeration is prose) is the shape to watch, and the first cut after this consumes the
    ring-0056 intent.
-12. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
+12. **U18 / [E-006](../entropy-ledger.md) — PAID, local** (ring
+    [0057](../../rings/0057-the-dead-link-gate-learns-anchors.md); no dither mutation — its copied engine
+    upgrades through a release, not continuous mirroring). The dead-link gate verifies a link's
+    `#fragment` against the target's headings and no longer skips pure `#anchor` links, which
+    measurement showed is the only form in use here; checks (15), tests (**273**), garden green; a
+    `minor` [pollen intent](../../../pollen/pending.md) declared. **Push and the hosted-CI confirmation
+    are the Gardener's** — nothing else on this track is local. **The open queue is now entirely gated,
+    so per § Start here point 3 sensing new entropy is the default work**: [E-009](../entropy-ledger.md)
+    (the Gardener's, per ring 0054) and [E-017](../entropy-ledger.md) (needs a SEED.md §6 amendment) wait
+    on the Gardener; [E-022](../entropy-ledger.md) is owner-gated and rides the next dither commit —
+    which is the feature-track work item 4 is waiting on, so **pay it *in* that commit, not after**;
+    [E-018](../entropy-ledger.md) waits on a live Scout of a large host. **One thing changed for the
+    Gardener's E-009 ruling:** its priced detector is falsified (recorded as a correction on the entry),
+    and the fork it now faces is **detection vs prevention** — prevention having paid this exact shape
+    three times already (E-026, E-027, and ring 0054's by-hand fix of plan 0006's step 5). The candidate
+    invariant, which needs no prose reading: *a plan that delegates live work to another plan points at
+    it and does not restate its state.*
+13. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
    *not* priced: the **vendored-doc reachability floor** (43 `.agents/skills/*.md` hold dither at ~48% —
    decide host-side, [ring 0043](../../rings/0043-map-reachability-scoped-to-knowledge-artifacts.md)
    Revisit); **branch protection** on `main` (the seed's own main is likewise unprotected — inherited
    posture, not a defect); **graphify** (a deliberate optional aid).
-13. **On cadence:** re-measure after any dither commit and extend
+14. **On cadence:** re-measure after any dither commit and extend
     [pollination-dither.md](../../fitness/pollination-dither.md)'s table rather than re-deriving it by
     hand; take the seed's own fitness tick alongside (the cadence lapsed 23 days before U10 caught it). If
     a **second** host is grafted, generalize the two-column proof shape into a comparable per-host artifact

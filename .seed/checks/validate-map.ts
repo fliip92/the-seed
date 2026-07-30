@@ -3,7 +3,7 @@
 // map_reachability metric (SEED.md §6).
 import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { REPO_ROOT, extractLocalLinks, resolveLinkTarget, visibleMarkdownLines } from '../lib/repo.ts';
+import { REPO_ROOT, extractLocalLinks, headingAnchors, resolveLinkTarget, visibleMarkdownLines } from '../lib/repo.ts';
 import type { Check, CheckResult, Violation } from '../lib/repo.ts';
 
 const LAW = 'LAW-4 — the map is the entry point';
@@ -76,22 +76,56 @@ export function analyzeReachability(files: string[], root: string = REPO_ROOT, m
   const queue: string[] = [mapFilename];
   const linksExtracted = new Set<string>();
 
+  // Anchors are read once per target file and reused: a heavily cross-linked doc is the
+  // common case, and the sweep below re-visits every file's links.
+  const anchorCache = new Map<string, Set<string>>();
+  const anchorsOf = (file: string): Set<string> => {
+    let anchors = anchorCache.get(file);
+    if (anchors === undefined) {
+      anchors = headingAnchors(file, root);
+      anchorCache.set(file, anchors);
+    }
+    return anchors;
+  };
+
   const checkLinksOf = (file: string): ReturnType<typeof extractLocalLinks> => {
     linksExtracted.add(file);
     const links = extractLocalLinks(file, root);
     for (const link of links) {
-      if (resolveLinkTarget(link.target, present)) continue;
-      const abs = join(root, link.target);
-      const isDir = existsSync(abs) && statSync(abs).isDirectory();
+      const resolved = resolveLinkTarget(link.target, present);
+      if (!resolved) {
+        const abs = join(root, link.target);
+        const isDir = existsSync(abs) && statSync(abs).isDirectory();
+        violations.push({
+          check: ID,
+          law: LAW,
+          problem: isDir
+            ? `${file}:${link.line} links to a directory: ${link.raw}`
+            : `${file}:${link.line} dead link: ${link.raw} (resolves to ${link.target}, which does not exist)`,
+          fix: isDir
+            ? `link to the directory's README.md instead (e.g. ${link.target}/README.md) so reachability stays well-defined.`
+            : `point the link at an existing file, or create ${link.target}. Knowledge that cannot be reached from the map is entropy (SEED.md §0).`,
+        });
+        continue;
+      }
+      // The target exists; a fragment on it must name a heading that exists too (E-006).
+      // Only markdown defines anchors — a fragment on any other file type (a `#L42` line
+      // reference into a script) has no heading set to check against, so it is left alone
+      // rather than guessed at.
+      if (link.fragment === null || !resolved.endsWith('.md')) continue;
+      const anchors = anchorsOf(resolved);
+      if (anchors.has(link.fragment)) continue;
+      const available = [...anchors].sort();
       violations.push({
         check: ID,
         law: LAW,
-        problem: isDir
-          ? `${file}:${link.line} links to a directory: ${link.raw}`
-          : `${file}:${link.line} dead link: ${link.raw} (resolves to ${link.target}, which does not exist)`,
-        fix: isDir
-          ? `link to the directory's README.md instead (e.g. ${link.target}/README.md) so reachability stays well-defined.`
-          : `point the link at an existing file, or create ${link.target}. Knowledge that cannot be reached from the map is entropy (SEED.md §0).`,
+        problem: `${file}:${link.line} dead link anchor: ${link.raw} — ${resolved} has no heading "#${link.fragment}"`,
+        fix:
+          `point the fragment at a heading that exists in ${resolved}, or add that heading. ` +
+          (available.length === 0
+            ? `${resolved} defines no anchors at all.`
+            : `Its anchors are: ${available.map((a) => `#${a}`).join(', ')}.`) +
+          ` A link that lands the reader somewhere other than the section it names is a dead link (LAW-4).`,
       });
     }
     return links;

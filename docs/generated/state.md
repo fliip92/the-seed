@@ -12,11 +12,11 @@ wrong the moment the next ring lands (ring 0056, paying E-026).
 
 | What | Count |
 |---|---|
-| Decisions recorded — [rings](../rings/README.md) | 56 |
+| Decisions recorded — [rings](../rings/README.md) | 57 |
 | [Plans](../plans/README.md) | 7 completed, 2 active |
 | [Skills](../../skills/README.md) planted | 9 |
 | [Principles](../principles/README.md) stated | 1 |
-| [Entropy ledger](../plans/entropy-ledger.md) | 5 open, 22 paid |
+| [Entropy ledger](../plans/entropy-ledger.md) | 4 open, 23 paid |
 
 ## Fitness — the latest committed snapshot
 
