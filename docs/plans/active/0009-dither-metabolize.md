@@ -985,6 +985,17 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
   (**16**), tests (**278**), garden (`drift_count` 0) green; a `minor`
   [pollen intent](../../../pollen/pending.md) declared (17 pending). Local; push and hosted-CI
   confirmation are the Gardener's.
+- **2026-07-31** — **U18 + U19 pushed; hosted CI green on `main`** (seed `ed0f603`, run
+  [30681537998](https://github.com/fliip92/the-seed/actions/runs/30681537998)). Both units went up
+  together, so **one run confirms both** — the range `956e24c..ed0f603`, which is also why
+  `plan-traceability` reads *"all 2 new commit(s) … trace to a plan or ring"* and `automerge-scope`
+  reports 2 commits on the Gardener-review path. **The delegation gate's first hosted execution:**
+  *"2 delegating block(s) point rather than restate (max 7/10 lines, 80/100 words)"*, alongside
+  `map_reachability` **100.0% (112/112 docs)**, dead links 0, 58 rings valid, self-test **278**, and
+  all five git-aware gates (`pollen-intent` reading 17 portable-subtree commits since the cut against
+  17 intents). The fitness tick reads `ledger_trend` **-1** — a net entry digested over the trailing
+  seven days, the healthy direction for a rate — with `enforcement_ratio` and `plan_traceability` both
+  100.0% and `drift_count` 0. **Nothing is left local.**
 
 ## Next actions
 
@@ -1102,21 +1113,20 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
    the countable half out of its scope. Two triggers ride this record: the README's skill *list* (the count
    is generated, the enumeration is prose) is the shape to watch, and the first cut after this consumes the
    ring-0056 intent.
-12. **U18 / [E-006](../entropy-ledger.md) — PAID, local** (ring
+12. **U18 / [E-006](../entropy-ledger.md) — PAID, pushed, seed-ci green** (seed `b7faf80`, confirmed by
+    the shared run [30681537998](https://github.com/fliip92/the-seed/actions/runs/30681537998); ring
     [0057](../../rings/0057-the-dead-link-gate-learns-anchors.md); no dither mutation — its copied engine
     upgrades through a release, not continuous mirroring). The dead-link gate verifies a link's
     `#fragment` against the target's headings and no longer skips pure `#anchor` links, which
     measurement showed is the only form in use here; checks (15), tests (**273**), garden green; a
-    `minor` [pollen intent](../../../pollen/pending.md) declared. **Push and the hosted-CI confirmation
-    are the Gardener's** — nothing else on this track is local. **The open queue is now entirely gated,
-    so per § Start here point 3 sensing new entropy is the default work**: [E-009](../entropy-ledger.md)
-    (the Gardener's, per ring 0054) and [E-017](../entropy-ledger.md) (needs a SEED.md §6 amendment) wait
-    on the Gardener; [E-022](../entropy-ledger.md) is owner-gated and rides the next dither commit —
-    which is the feature-track work item 4 is waiting on, so **pay it *in* that commit, not after**;
-    [E-018](../entropy-ledger.md) waits on a live Scout of a large host. **The one thing this unit
-    changed for the Gardener's E-009 ruling** — falsifying its priced detector, so the fork became
-    *detection vs prevention* — **is now itself decided and paid; see item 13.**
-13. **U19 / [E-009](../entropy-ledger.md) — PAID as PREVENTION, local** (ring
+    `minor` [pollen intent](../../../pollen/pending.md) declared. **The one thing this unit changed for
+    the Gardener's E-009 ruling** — falsifying its priced detector, so the fork became *detection vs
+    prevention* — **is itself decided and paid; see item 13.**
+13. **U19 / [E-009](../entropy-ledger.md) — PAID as PREVENTION, pushed, seed-ci green** (seed
+    `ed0f603`, run [30681537998](https://github.com/fliip92/the-seed/actions/runs/30681537998) — the
+    delegation gate's first hosted execution, *"2 delegating block(s) point rather than restate (max
+    7/10 lines, 80/100 words)"*, with `map_reachability` 100.0% (112/112 docs), self-test 278, and all
+    five git-aware gates; ring
     [0058](../../rings/0058-a-plan-points-not-restates.md); no dither mutation — dither carries no
     plans). Asked on U18's corrected evidence, the Gardener ruled **prevention: build the structural
     invariant**. Check 16,
@@ -1127,10 +1137,15 @@ dither's own surfaces (ADRs, Issues), not enumerated here. The [work-unit format
     progress logs, which are dated history — so the progress log, completed plans, and links to them
     are exempt. Red on the real repository before the fix, at the very entry ring 0054 had already
     fixed by hand. Checks (**16**), tests (**278**), garden green; a `minor`
-    [pollen intent](../../../pollen/pending.md) declared. **Push and the hosted-CI confirmation are the
-    Gardener's**, for this and U18 together. E-009's **unpaid residual** — inventory drift and
+    [pollen intent](../../../pollen/pending.md) declared. E-009's **unpaid residual** — inventory drift and
     doc-drift's fenced-block blind spots — is named in its Paid note and carried as ring 0058's
-    `Revisit-when`, not re-priced, because no trigger has fired for it.
+    `Revisit-when`, not re-priced, because no trigger has fired for it. **With this paid, NO ruling is
+    outstanding and nothing is local**: every remaining open entry is gated —
+    [E-017](../entropy-ledger.md) needs a SEED.md §6 amendment,
+    [E-022](../entropy-ledger.md) is owner-gated and rides the next dither commit (item 4's feature
+    track — pay it *in* that commit, not after), [E-018](../entropy-ledger.md) waits on a live Scout of
+    a large host. Per § Start here point 3 that makes **sensing the default work** (item 14) unless the
+    feature track opens, which is the higher-value path.
 14. **Refactor track: sensing stays the recurring default, at a lower rate.** The structural queue is
    drained and dither is unchanged since `b8d3823`, so passes now correctly find little (pass 4's only
    find was seed-side). Six gates + eight principles stand on dither. Carried residuals, deliberately
